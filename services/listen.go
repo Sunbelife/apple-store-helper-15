@@ -2,8 +2,9 @@ package services
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -19,7 +20,6 @@ import (
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/golang-module/carbon"
-	"github.com/parnurzeal/gorequest"
 	"github.com/tidwall/gjson"
 
 	"apple-store-helper/model"
@@ -31,10 +31,18 @@ const (
 	StatusOutStock = "无货"
 	StatusInStock  = "有货"
 	StatusWait     = "等待"
+	StatusVerify   = "需官网验证"
 
 	Pause   = "暂停"
 	Running = "监听中"
 )
+
+var errAppleVerificationRequired = errors.New("Apple Store requires browser verification")
+
+type stockLookupResult struct {
+	skus map[string]bool
+	err  error
+}
 
 func min(a, b int) int {
 	if a < b {
@@ -84,13 +92,14 @@ func (s *listenService) Add(areaTitle string, storeTitle string, productTitle st
 	s.UpdateLogStr()
 }
 
-func (s *listenService) AddWithProductInfo(areaTitle string, storeTitle string, productTitle string, productCode string, productType string) {
+func (s *listenService) AddWithProductInfo(areaTitle string, storeTitle string, productTitle string, productCode string, productType string, purchasePath string) {
 	store := Store.GetStore(areaTitle, storeTitle)
 
 	product := model.Product{
-		Title: productTitle,
-		Code:  productCode,
-		Type:  productType,
+		Title:        productTitle,
+		Code:         productCode,
+		Type:         productType,
+		PurchasePath: purchasePath,
 	}
 
 	uniqKey := store.StoreNumber + "." + product.Code
@@ -106,7 +115,7 @@ func (s *listenService) AddWithProductInfo(areaTitle string, storeTitle string, 
 	s.UpdateLogStr()
 }
 
-func (s *listenService) AddWithStoreInfo(store model.Store, productTitle string, productCode string, productType string) {
+func (s *listenService) AddWithStoreInfo(store model.Store, productTitle string, productCode string, productType string, purchasePath string) {
 	// 验证门店信息是否有效
 	if store.StoreNumber == "" {
 		log.Printf("Error: Invalid store information - StoreNumber is empty")
@@ -114,9 +123,10 @@ func (s *listenService) AddWithStoreInfo(store model.Store, productTitle string,
 	}
 
 	product := model.Product{
-		Title: productTitle,
-		Code:  productCode,
-		Type:  productType,
+		Title:        productTitle,
+		Code:         productCode,
+		Type:         productType,
+		PurchasePath: purchasePath,
 	}
 
 	uniqKey := store.StoreNumber + "." + product.Code
@@ -191,7 +201,28 @@ func (s *listenService) Run() {
 	go func() {
 		for {
 			if stats, ok := s.Status.Get(); ok == nil && stats == Running && len(s.items) > 0 {
-				skus := s.groupByStore()
+				skus, err := s.groupByStore()
+				if err != nil {
+					log.Printf("Stock lookup failed: %v", err)
+					if errors.Is(err, errAppleVerificationRequired) {
+						for key, item := range s.items {
+							s.UpdateStatus(key, StatusVerify)
+							purchaseURL, urlErr := ProductPurchaseURL(s.Area.ShortCode, item.Product.Type, item.Product.Code, item.Product.PurchasePath)
+							if urlErr == nil {
+								s.openBrowser(purchaseURL)
+								msg := "Apple 官网要求浏览器验证，已打开所选商品页，请手动查看取货库存。"
+								dialog.ShowInformation("需官网验证", msg, view.Window)
+								go s.SendPushNotificationByBark("需官网验证", msg, purchaseURL)
+							}
+							break
+						}
+					} else {
+						dialog.ShowError(fmt.Errorf("库存查询失败：%v", err), view.Window)
+					}
+					s.Status.Set(Pause)
+					s.UpdateLogStr()
+					continue
+				}
 
 				// 首先检查是否有任何店铺有货（用于location查询）
 				availableStores := make(map[string][]string) // productCode -> []storeNumbers
@@ -255,16 +286,20 @@ func (s *listenService) Run() {
 						// 构建提醒消息
 						msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
 
-						// 进入购物袋, 手动选择门店
-						bagUrl := fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.Area.ShortCode)
-						s.openBrowser(bagUrl)
+						// 打开已选好型号、容量和颜色的官网商品页。
+						purchaseURL, err := ProductPurchaseURL(s.Area.ShortCode, item.Product.Type, item.Product.Code, item.Product.PurchasePath)
+						if err != nil {
+							log.Printf("Failed to build purchase URL: %v", err)
+							continue
+						}
+						s.openBrowser(purchaseURL)
 						dialog.ShowInformation("有货提醒", msg, view.Window)
 						view.App.SendNotification(&fyne.Notification{
 							Title:   "有货提醒",
 							Content: msg,
 						})
 						go s.AlertMp3()
-						go s.SendPushNotificationByBark("有货提醒", msg, bagUrl)
+						go s.SendPushNotificationByBark("有货提醒", msg, purchaseURL)
 						break
 					} else {
 						s.UpdateStatus(key, StatusOutStock)
@@ -279,12 +314,12 @@ func (s *listenService) Run() {
 	}()
 }
 
-func (s *listenService) groupByStore() map[string]bool {
-	skus := map[string]bool{}
+func (s *listenService) groupByStore() (skus map[string]bool, err error) {
+	skus = map[string]bool{}
 
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println(r)
+			err = fmt.Errorf("stock lookup failed: %v", r)
 		}
 	}()
 
@@ -305,8 +340,6 @@ func (s *listenService) groupByStore() map[string]bool {
 	}
 
 	for storeNumber, items := range group {
-
-		var link string
 
 		// 检查是否为中国大陆、香港、日本、新加坡、美国、英国、澳大利亚
 		if s.Area.ShortCode == "cn" || s.Area.ShortCode == "hk" || s.Area.ShortCode == "jp" || s.Area.ShortCode == "sg" || s.Area.ShortCode == "us" || s.Area.ShortCode == "uk" || s.Area.ShortCode == "au" {
@@ -348,44 +381,37 @@ func (s *listenService) groupByStore() map[string]bool {
 				params = append(params, "cppart=UNLOCKED_JP")
 			}
 
-			// 构建完整URL - 根据地区使用不同域名
+			// 构建完整URL
 			queryStr := strings.Join(params, "&")
-			switch s.Area.ShortCode {
-			case "hk":
-				link = fmt.Sprintf("https://www.apple.com/hk/shop/fulfillment-messages?%s", queryStr)
-			case "jp":
-				link = fmt.Sprintf("https://www.apple.com/jp/shop/fulfillment-messages?%s", queryStr)
-			case "sg":
-				link = fmt.Sprintf("https://www.apple.com/sg/shop/fulfillment-messages?%s", queryStr)
-			case "us":
-				link = fmt.Sprintf("https://www.apple.com/us/shop/fulfillment-messages?%s", queryStr)
-			case "uk":
-				link = fmt.Sprintf("https://www.apple.com/uk/shop/fulfillment-messages?%s", queryStr)
-			case "au":
-				link = fmt.Sprintf("https://www.apple.com/au/shop/fulfillment-messages?%s", queryStr)
-			default:
-				link = fmt.Sprintf("https://www.apple.com.cn/shop/fulfillment-messages?%s", queryStr)
+			link, err := fulfillmentMessagesURL(s.Area.ShortCode, queryStr)
+			if err != nil {
+				return skus, err
 			}
+			reqs[storeNumber] = link
+			log.Printf("Store %s URL: %s", storeNumber, link)
 		}
-
-		reqs[storeNumber] = link
-		log.Printf("Store %s URL: %s", storeNumber, link)
 	}
 
 	count := len(reqs)
 	if count < 1 {
-		return skus
+		return skus, nil
 	}
 
-	ch := make(chan map[string]bool, count)
+	ch := make(chan stockLookupResult, count)
 
 	for _, link := range reqs {
-		go s.getSkuByLink(ch, link)
+		go func(stockURL string) {
+			result, err := s.getSkuByLink(stockURL)
+			ch <- stockLookupResult{skus: result, err: err}
+		}(link)
 	}
 
 	for i := 0; i < count; i++ {
 		result := <-ch
-		for key, v := range result {
+		if result.err != nil {
+			return skus, result.err
+		}
+		for key, v := range result.skus {
 			skus[key] = v
 			log.Printf("Received from channel: key=%s, available=%v", key, v)
 		}
@@ -398,86 +424,52 @@ func (s *listenService) groupByStore() map[string]bool {
 		}
 	}
 
-	return skus
+	return skus, nil
 }
 
-func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
+func (s *listenService) getSkuByLink(skUrl string) (map[string]bool, error) {
 	skus := map[string]bool{}
-
-	// 生成随机User-Agent
-	userAgents := []string{
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-	}
-
-	// 生成随机referer
-	referers := []string{
-		"https://www.apple.com/shop/buy-iphone",
-		"https://www.apple.com/shop/buy-iphone/iphone-17",
-		"https://www.apple.com/shop/buy-iphone/iphone-16",
-		"https://www.apple.com.cn/shop/buy-iphone",
-		"https://www.apple.com.cn/shop/buy-iphone/iphone-17",
-		"https://www.apple.com.cn/shop/buy-iphone/iphone-16",
-		"https://www.apple.com/shop/",
-		"https://www.apple.com.cn/shop/",
-	}
-
-	// 随机选择
-	rand.Seed(time.Now().UnixNano())
-	userAgent := userAgents[rand.Intn(len(userAgents))]
-	referer := referers[rand.Intn(len(referers))]
-
-	// 生成随机session ID
-	sessionID := fmt.Sprintf("s_%d%d", time.Now().Unix(), rand.Intn(100000))
-
-	// 生成随机cookie值
-	cookieValues := []string{
-		fmt.Sprintf("s_vi=[CS]v1|%X[CE]", rand.Int63()),
-		fmt.Sprintf("s_fid=%X-%X", rand.Int63(), rand.Int63()),
-		fmt.Sprintf("s_cc=true"),
-		fmt.Sprintf("as_dc=nc"),
-	}
-	cookieString := strings.Join(cookieValues, "; ")
-
-	// 创建新的请求客户端，禁用缓存
-	req := gorequest.New().
-		Set("referer", referer).
-		Set("user-agent", userAgent).
-		Set("accept", "application/json, text/javascript, */*; q=0.01").
-		Set("accept-language", "zh-CN,zh;q=0.9,en;q=0.8").
-		Set("accept-encoding", "gzip, deflate, br").
-		Set("cache-control", "no-cache, no-store, must-revalidate").
-		Set("pragma", "no-cache").
-		Set("x-requested-with", "XMLHttpRequest").
-		Set("sec-fetch-dest", "empty").
-		Set("sec-fetch-mode", "cors").
-		Set("sec-fetch-site", "same-origin").
-		Set("sec-ch-ua", `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`).
-		Set("sec-ch-ua-mobile", "?0").
-		Set("sec-ch-ua-platform", `"macOS"`).
-		Set("dnt", "1").
-		Set("cookie", cookieString).
-		Set("x-aos-model-page", "shop").
-		Set("x-aos-stk", sessionID).
-		Timeout(time.Second * 5)
 
 	// 添加随机延迟（100-500ms）
 	delay := time.Duration(100+rand.Intn(400)) * time.Millisecond
 	time.Sleep(delay)
 
-	resp, body, errs := req.Get(skUrl).End()
-	if len(errs) > 0 {
-		log.Println(errs)
-		ch <- skus
-		return
+	req, err := http.NewRequest(http.MethodGet, skUrl, nil)
+	if err != nil {
+		return skus, err
 	}
+	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	req.Header.Set("Accept-Language", getAcceptLanguage(s.Area.ShortCode))
+	req.Header.Set("User-Agent", "AppleStoreHelper/1.8 (+https://github.com/Sunbelife/apple-store-helper-15)")
+	req.Header.Set("X-Requested-With", "XMLHttpRequest")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return skus, err
+	}
+	defer resp.Body.Close()
 
 	log.Println(resp.Status, skUrl)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return skus, err
+	}
+	if resp.StatusCode == 541 {
+		return skus, errAppleVerificationRequired
+	}
+	if resp.StatusCode != http.StatusOK {
+		return skus, fmt.Errorf("stock endpoint returned HTTP %d", resp.StatusCode)
+	}
+
+	return parseStockResponse(body, skUrl)
+}
+
+func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
+	skus := map[string]bool{}
+	if !gjson.ValidBytes(body) {
+		return skus, fmt.Errorf("stock endpoint returned invalid JSON")
+	}
 
 	// 解析响应JSON
 	// 中国地区的响应格式: body.stores[].partsAvailability
@@ -485,7 +477,7 @@ func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
 	// 库存判断字段: pickupDisplay ("available"=有货, "ineligible"=无货)
 
 	// 先尝试中国地区格式 (body.stores)
-	stores := gjson.Get(body, "body.stores").Array()
+	stores := gjson.GetBytes(body, "body.stores").Array()
 	if len(stores) > 0 {
 		// 中国地区格式
 		for _, store := range stores {
@@ -510,7 +502,7 @@ func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
 		}
 	} else {
 		// 尝试其他地区格式 (body.content.pickupMessage.stores)
-		stores = gjson.Get(body, "body.content.pickupMessage.stores").Array()
+		stores = gjson.GetBytes(body, "body.content.pickupMessage.stores").Array()
 		if len(stores) > 0 {
 			for _, result := range stores {
 				storeNumber := result.Get("storeNumber").String()
@@ -533,7 +525,7 @@ func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
 			}
 		} else {
 			// 单店铺查询逻辑（新格式）- 国外地区
-			pickupEligibility := gjson.Get(body, "body.content.pickupMessage.pickupEligibility")
+			pickupEligibility := gjson.GetBytes(body, "body.content.pickupMessage.pickupEligibility")
 			if pickupEligibility.Exists() {
 				// 从URL中提取店铺编号
 				u, _ := url.Parse(skUrl)
@@ -569,55 +561,21 @@ func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
 				})
 			} else {
 				// 如果没有找到任何已知格式，打印响应预览帮助调试
-				log.Printf("Unknown response format, body preview: %s", body[:min(200, len(body))])
+				return skus, fmt.Errorf("unknown stock response format: %s", body[:min(200, len(body))])
 			}
 		}
 	}
 
-	ch <- skus
+	return skus, nil
 }
 
 // 型号对应预约地址
 func (s *listenService) model2Url(productType string, partNumber string) string {
-	// https://www.apple.com.cn/shop/buy-iphone/iphone-13/MLE73CH/A
-	var t string
-	switch productType {
-	// iPhone 17系列
-	case "iphone17promax", "iphone17pro":
-		t = "iphone-17-pro"
-	case "iphoneair":
-		t = "iphone-air"
-	case "iphone17":
-		t = "iphone-17"
-	// iPhone 16系列
-	case "iphone16promax", "iphone16pro":
-		t = "iphone-16-pro"
-	case "iphone16plus":
-		t = "iphone-16"
-	case "iphone16":
-		t = "iphone-16"
-	// Apple Watch系列
-	case "watchultra3":
-		t = "apple-watch-ultra"
-	case "watchs11":
-		t = "apple-watch"
-	case "watchse3":
-		t = "apple-watch-se"
+	purchaseURL, err := ProductPurchaseURL(s.Area.ShortCode, productType, partNumber, "")
+	if err != nil {
+		return ""
 	}
-
-	// 根据产品类型选择正确的URL路径
-	urlPath := "buy-iphone"
-	if strings.Contains(productType, "watch") {
-		urlPath = "buy-watch"
-	}
-
-	return fmt.Sprintf(
-		"https://www.apple.com/%s/shop/%s/%s/%s",
-		s.Area.ShortCode,
-		urlPath,
-		t,
-		partNumber,
-	)
+	return purchaseURL
 }
 
 func (s *listenService) openBrowser(link string) {
@@ -636,7 +594,7 @@ func (s *listenService) openBrowser(link string) {
 
 func (s *listenService) AlertMp3() {
 	reader := bytes.NewReader(theme.Mp3().Content())
-	streamer, _, err := mp3.Decode(ioutil.NopCloser(reader))
+	streamer, _, err := mp3.Decode(io.NopCloser(reader))
 	if err != nil {
 		panic(err)
 	}
@@ -678,7 +636,7 @@ func (s *listenService) SendPushNotificationByBark(title string, content string,
 	defer response.Body.Close()
 
 	// 读取响应内容
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Printf("Failed to read Bark response: %v", err)
 	}

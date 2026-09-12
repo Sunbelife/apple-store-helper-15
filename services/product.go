@@ -55,9 +55,10 @@ func (s *productService) UpdateFromDynamicData(data *ProductData) {
 			if p.Model != "" && p.Capacity != "" && p.Color != "" {
 				title := fmt.Sprintf("%s %s %s", p.Model, p.Capacity, p.Color)
 				modelProducts = append(modelProducts, model.Product{
-					Title: title,
-					Code:  p.Code,
-					Type:  p.Type,
+					Title:        title,
+					Code:         p.Code,
+					Type:         p.Type,
+					PurchasePath: p.PurchasePath,
 				})
 			} else if p.Code != "" {
 				// 如果解析失败但有Code，记录警告

@@ -3,8 +3,10 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -32,25 +34,9 @@ func FetchProductData(areaCode string) (*ProductData, error) {
 		Products:   make(map[string][]model.ProductInfo),
 	}
 
-	// 根据地区代码构建基础URL - 支持中国大陆、香港、日本、新加坡、美国、英国和澳大利亚
-	baseURL := ""
-	switch areaCode {
-	case "cn":
-		baseURL = "https://www.apple.com.cn"
-	case "hk":
-		baseURL = "https://www.apple.com/hk"
-	case "jp":
-		baseURL = "https://www.apple.com/jp"
-	case "sg":
-		baseURL = "https://www.apple.com/sg"
-	case "us":
-		baseURL = "https://www.apple.com/us"
-	case "uk":
-		baseURL = "https://www.apple.com/uk"
-	case "au":
-		baseURL = "https://www.apple.com/au"
-	default:
-		return nil, fmt.Errorf("unsupported area code: %s", areaCode)
+	baseURL, err := appleStoreBaseURL(areaCode)
+	if err != nil {
+		return nil, err
 	}
 
 	// 构建所有产品系列的URL
@@ -60,12 +46,9 @@ func FetchProductData(areaCode string) (*ProductData, error) {
 		url       string
 		modelType string
 	}{
+		{"iPhone Duo", fmt.Sprintf("%s/shop/buy-iphone/iphone-duo", baseURL), "iphoneduo"},
+		{"iPhone 18 Pro", fmt.Sprintf("%s/shop/buy-iphone/iphone-18-pro", baseURL), "iphone18pro"},
 		{"iPhone 16", fmt.Sprintf("%s/shop/buy-iphone/iphone-16", baseURL), "iphone16"},
-		{"iPhone 16 Pro", fmt.Sprintf("%s/shop/buy-iphone/iphone-16-pro", baseURL), "iphone16pro"},
-		// iPhone 17 系列
-		{"iPhone 17", fmt.Sprintf("%s/shop/buy-iphone/iphone-17", baseURL), "iphone17"},
-		{"iPhone 17 Pro", fmt.Sprintf("%s/shop/buy-iphone/iphone-17-pro", baseURL), "iphone17pro"},
-		{"iPhone Air", fmt.Sprintf("%s/shop/buy-iphone/iphone-air", baseURL), "iphoneair"},
 	}
 
 	for _, s := range series {
@@ -79,11 +62,51 @@ func FetchProductData(areaCode string) (*ProductData, error) {
 		}
 	}
 
+	watchSeries := []struct {
+		name      string
+		url       string
+		modelType string
+	}{
+		{"Apple Watch Series 12", fmt.Sprintf("%s/shop/buy-watch/apple-watch", baseURL), "watchs12"},
+		{"Apple Watch SE 3", fmt.Sprintf("%s/shop/buy-watch/apple-watch-se", baseURL), "watchse3"},
+		{"Apple Watch Ultra 4", fmt.Sprintf("%s/shop/buy-watch/apple-watch-ultra", baseURL), "watchultra4"},
+	}
+
+	for _, s := range watchSeries {
+		products, err := fetchWatchProducts(s.url, s.name, s.modelType)
+		if err != nil {
+			log.Printf("Failed to fetch %s: %v", s.name, err)
+			continue
+		}
+		if len(products) > 0 {
+			productData.Products[s.name] = products
+		}
+	}
+	if len(productData.Products) == 0 {
+		return nil, fmt.Errorf("no current products found for area %s", areaCode)
+	}
+
 	return productData, nil
 }
 
 // fetchSeriesProducts 获取特定系列的产品
 func fetchSeriesProducts(url string, modelType string) ([]model.ProductInfo, error) {
+	body, err := fetchProductPage(url)
+	if err != nil {
+		return nil, err
+	}
+	return parseMetricsProducts(body, modelType)
+}
+
+func fetchWatchProducts(url string, modelName string, modelType string) ([]model.ProductInfo, error) {
+	body, err := fetchProductPage(url)
+	if err != nil {
+		return nil, err
+	}
+	return parseWatchProducts(body, modelName, modelType)
+}
+
+func fetchProductPage(url string) (string, error) {
 	resp, body, errs := gorequest.New().
 		Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36").
 		Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").
@@ -93,55 +116,313 @@ func fetchSeriesProducts(url string, modelType string) ([]model.ProductInfo, err
 		End()
 
 	if len(errs) > 0 {
-		return nil, fmt.Errorf("request failed: %v", errs[0])
+		return "", fmt.Errorf("request failed: %v", errs[0])
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("status code: %d", resp.StatusCode)
+		return "", fmt.Errorf("status code: %d", resp.StatusCode)
 	}
 
-	// 查找 metrics script 标签 - 使用更灵活的正则表达式
-	re := regexp.MustCompile(`<script[^>]*id=["']metrics["'][^>]*>(.*?)</script>`)
+	return body, nil
+}
+
+func parseMetricsProducts(body string, modelType string) ([]model.ProductInfo, error) {
+	// Metrics is JSON embedded in the current Apple Store product page.
+	re := regexp.MustCompile(`(?is)<script[^>]*id=["']metrics["'][^>]*>(.*?)</script>`)
 	matches := re.FindStringSubmatch(body)
 	if len(matches) < 2 {
-		// 尝试另一种格式
-		re = regexp.MustCompile(`<script\s+type=["']application/json["']\s+id=["']metrics["']>(.*?)</script>`)
-		matches = re.FindStringSubmatch(body)
-		if len(matches) < 2 {
-			return nil, fmt.Errorf("metrics data not found in HTML")
-		}
+		return nil, fmt.Errorf("metrics data not found in HTML")
 	}
 
-	// 解析JSON数据
-	var metricsData map[string]interface{}
+	var metricsData struct {
+		Data struct {
+			Products []struct {
+				PartNumber string `json:"partNumber"`
+				Name       string `json:"name"`
+				SKU        string `json:"sku"`
+			} `json:"products"`
+		} `json:"data"`
+	}
 	if err := json.Unmarshal([]byte(matches[1]), &metricsData); err != nil {
 		return nil, fmt.Errorf("failed to parse metrics data: %v", err)
 	}
 
-	// 提取products数组
-	products := []model.ProductInfo{}
-	if data, ok := metricsData["data"].(map[string]interface{}); ok {
-		if productsArray, ok := data["products"].([]interface{}); ok {
-			for _, p := range productsArray {
-				if product, ok := p.(map[string]interface{}); ok {
-					partNumber, _ := product["partNumber"].(string)
-					name, _ := product["name"].(string)
-					sku, _ := product["sku"].(string)
+	products := make([]model.ProductInfo, 0, len(metricsData.Data.Products))
+	for _, product := range metricsData.Data.Products {
+		log.Printf("Found product: SKU=%s, PartNumber=%s, Name=%s", product.SKU, product.PartNumber, product.Name)
+		info := parseProductInfo(product.Name, product.PartNumber, modelType)
+		if info.Code != "" && info.Model != "" && info.Capacity != "" && info.Color != "" {
+			products = append(products, info)
+		}
+	}
+	if len(products) == 0 {
+		return nil, fmt.Errorf("no products found in metrics data")
+	}
 
-					// 记录提取的原始数据
-					log.Printf("Found product: SKU=%s, PartNumber=%s, Name=%s", sku, partNumber, name)
+	return products, nil
+}
 
-					// 解析产品信息
-					info := parseProductInfo(name, partNumber, modelType)
-					if info.Code != "" {
-						products = append(products, info)
+func parseWatchProducts(body string, modelName string, modelType string) ([]model.ProductInfo, error) {
+	const marker = "productSelectionData:"
+	markerIndex := strings.Index(body, marker)
+	if markerIndex < 0 {
+		return nil, fmt.Errorf("watch product selection data not found in HTML")
+	}
+
+	var selectionData struct {
+		DisplayValues                 map[string]map[string]json.RawMessage `json:"displayValues"`
+		WatchProductSelectionDataNoJS []struct {
+			URL  string `json:"url"`
+			Text string `json:"text"`
+		} `json:"watchProductSelectionDataNoJS"`
+		Products []struct {
+			Part       string            `json:"part"`
+			Dimensions map[string]string `json:"dimensions"`
+		} `json:"products"`
+	}
+	decoder := json.NewDecoder(strings.NewReader(body[markerIndex+len(marker):]))
+	if err := decoder.Decode(&selectionData); err != nil {
+		return nil, fmt.Errorf("failed to parse watch product selection data: %v", err)
+	}
+
+	products := make([]model.ProductInfo, 0, len(selectionData.Products))
+	for _, product := range selectionData.Products {
+		size := product.Dimensions["watch_cases-dimensionCaseSize"]
+		material := product.Dimensions["watch_cases-dimensionCaseMaterial"]
+		color := product.Dimensions["watch_cases-dimensionColor"]
+		connection := product.Dimensions["watch_cases-dimensionConnection"]
+
+		// Ultra pages omit fixed attributes from the dimensions object.
+		if modelType == "watchultra4" {
+			material = "titanium"
+			connection = "gpscell"
+		}
+
+		if product.Part == "" || size == "" || material == "" || color == "" || connection == "" {
+			continue
+		}
+
+		products = append(products, model.ProductInfo{
+			Model:    modelName,
+			Capacity: size,
+			Color: strings.Join([]string{
+				translateWatchMaterial(material),
+				translateWatchColor(color),
+				translateWatchConnection(connection),
+			}, " · "),
+			Code: product.Part,
+			Type: modelType,
+			PurchasePath: watchPurchasePath(
+				selectionData.WatchProductSelectionDataNoJS,
+				selectionData.DisplayValues,
+				modelType,
+				size,
+				material,
+				color,
+				connection,
+			),
+		})
+	}
+	if len(products) == 0 {
+		return nil, fmt.Errorf("no products found in watch product selection data")
+	}
+
+	return products, nil
+}
+
+func watchPurchasePath(
+	links []struct {
+		URL  string `json:"url"`
+		Text string `json:"text"`
+	},
+	displayValues map[string]map[string]json.RawMessage,
+	modelType string,
+	size string,
+	material string,
+	color string,
+	connection string,
+) string {
+	basePaths := map[string]string{
+		"watchs12":    "/shop/buy-watch/apple-watch",
+		"watchse3":    "/shop/buy-watch/apple-watch-se",
+		"watchultra4": "/shop/buy-watch/apple-watch-ultra",
+	}
+	basePath := basePaths[modelType]
+	if basePath == "" {
+		return ""
+	}
+
+	connectionSlug := connection
+	if connection == "gpscell" {
+		connectionSlug = "cellular"
+	}
+	colorSlugValues := map[string][]string{
+		"darkbronze":  {"dark-bronze"},
+		"lightgold":   {"light-gold"},
+		"nightblue":   {"night-blue"},
+		"pearlwhite":  {"pearl-white"},
+		"radiantgold": {"radiant-gold"},
+		"space_gray":  {"space-gray", "space-grey"},
+	}
+	colorSlugs := colorSlugValues[color]
+	if len(colorSlugs) == 0 {
+		colorSlugs = []string{strings.ReplaceAll(color, "_", "-")}
+	}
+	sizeSlugs := []string{size, strings.Replace(size, "mm", "-mm", 1)}
+	materialSlugs := []string{material}
+	if material == "aluminum" {
+		materialSlugs = append(materialSlugs, "aluminium")
+	}
+
+	for _, link := range links {
+		path := localizedWatchPath(link.URL, basePath)
+		for _, sizeSlug := range sizeSlugs {
+			for _, colorSlug := range colorSlugs {
+				for _, materialSlug := range materialSlugs {
+					prefix := fmt.Sprintf("%s/%s-%s-%s-%s-", basePath, sizeSlug, connectionSlug, colorSlug, materialSlug)
+					if strings.HasPrefix(strings.ToLower(path), strings.ToLower(prefix)) {
+						return path
 					}
 				}
 			}
 		}
 	}
 
-	return products, nil
+	sizeLabel := watchDisplayLabel(displayValues, "watch_cases-dimensionCaseSize", size)
+	if sizeLabel == "" {
+		sizeLabel = size
+	}
+	for _, link := range links {
+		linkText := cleanHTMLText(link.Text)
+		if !strings.Contains(normalizeWatchComparison(linkText), normalizeWatchComparison(sizeLabel)) {
+			continue
+		}
+		if firstWatchDimensionValue(linkText, displayValues, "watch_cases-dimensionColor") != color {
+			continue
+		}
+		if detectedMaterial := firstWatchDimensionValue(linkText, displayValues, "watch_cases-dimensionCaseMaterial"); detectedMaterial != "" && detectedMaterial != material {
+			continue
+		}
+		isCellular := strings.Contains(linkText, "+")
+		if (connection == "gpscell") != isCellular {
+			continue
+		}
+		if path := localizedWatchPath(link.URL, basePath); path != "" {
+			return path
+		}
+	}
+
+	return basePath
+}
+
+func localizedWatchPath(rawURL string, basePath string) string {
+	parsed, err := url.Parse(strings.TrimSpace(rawURL))
+	if err != nil {
+		return ""
+	}
+	path := strings.TrimRight(parsed.EscapedPath(), "/")
+	baseIndex := strings.Index(strings.ToLower(path), strings.ToLower(basePath))
+	if baseIndex < 0 {
+		return ""
+	}
+	return path[baseIndex:]
+}
+
+func watchDisplayLabel(displayValues map[string]map[string]json.RawMessage, dimension string, value string) string {
+	raw := displayValues[dimension][value]
+	var display struct {
+		Header string `json:"header"`
+		Text   string `json:"text"`
+	}
+	if len(raw) == 0 || json.Unmarshal(raw, &display) != nil {
+		return ""
+	}
+	if display.Text != "" {
+		return cleanHTMLText(display.Text)
+	}
+	if dimension == "watch_cases-dimensionCaseMaterial" {
+		divPattern := regexp.MustCompile(`(?is)<div[^>]*>(.*?)</div>`)
+		if match := divPattern.FindStringSubmatch(display.Header); len(match) > 1 {
+			return cleanHTMLText(match[1])
+		}
+	}
+	return cleanHTMLText(display.Header)
+}
+
+func firstWatchDimensionValue(text string, displayValues map[string]map[string]json.RawMessage, dimension string) string {
+	lowerText := strings.ToLower(text)
+	firstValue := ""
+	firstIndex := len(lowerText) + 1
+	for value := range displayValues[dimension] {
+		if value == "variantOrder" {
+			continue
+		}
+		label := watchDisplayLabel(displayValues, dimension, value)
+		if label == "" {
+			continue
+		}
+		if index := strings.Index(lowerText, strings.ToLower(label)); index >= 0 && index < firstIndex {
+			firstIndex = index
+			firstValue = value
+		}
+	}
+	return firstValue
+}
+
+func cleanHTMLText(value string) string {
+	tagPattern := regexp.MustCompile(`(?s)<[^>]*>`)
+	return normalizeSpaces(tagPattern.ReplaceAllString(html.UnescapeString(value), " "))
+}
+
+func normalizeWatchComparison(value string) string {
+	return strings.Map(func(character rune) rune {
+		if character == '-' || character == '‑' || character == '–' || character == '—' || character == ' ' {
+			return -1
+		}
+		return character
+	}, strings.ToLower(value))
+}
+
+func translateWatchMaterial(material string) string {
+	values := map[string]string{
+		"aluminum": "铝金属",
+		"titanium": "钛金属",
+		"ceramic":  "陶瓷",
+	}
+	if translated, ok := values[material]; ok {
+		return translated
+	}
+	return material
+}
+
+func translateWatchColor(color string) string {
+	values := map[string]string{
+		"black":       "黑色",
+		"darkbronze":  "深古铜色",
+		"lightgold":   "浅金色",
+		"midnight":    "午夜色",
+		"natural":     "原色",
+		"nightblue":   "夜蓝色",
+		"pearlwhite":  "珍珠白色",
+		"radiantgold": "炫金色",
+		"space_gray":  "深空灰色",
+		"starlight":   "星光色",
+	}
+	if translated, ok := values[color]; ok {
+		return translated
+	}
+	return color
+}
+
+func translateWatchConnection(connection string) string {
+	values := map[string]string{
+		"gps":     "GPS",
+		"gpscell": "GPS + 蜂窝网络",
+	}
+	if translated, ok := values[connection]; ok {
+		return translated
+	}
+	return connection
 }
 
 // normalizeSpaces 规范化字符串中的各种空格字符
@@ -199,6 +480,7 @@ func parseProductInfo(name string, partNumber string, modelType string) model.Pr
 
 		if capacityIdx > 0 && len(modelParts) > 0 {
 			info.Model = strings.Join(modelParts, " ")
+			info.Type = productTypeForModel(info.Model, modelType)
 			info.Capacity = strings.TrimSpace(parts[capacityIdx])
 			if capacityIdx+1 < len(parts) {
 				var colorParts []string
@@ -216,6 +498,21 @@ func parseProductInfo(name string, partNumber string, modelType string) model.Pr
 	}
 
 	return info
+}
+
+func productTypeForModel(model string, fallback string) string {
+	types := map[string]string{
+		"iPhone Duo":        "iphoneduo",
+		"iPhone 18 Pro":     "iphone18pro",
+		"iPhone 18 Pro Max": "iphone18promax",
+		"iPhone 16 Pro":     "iphone16pro",
+		"iPhone 16 Pro Max": "iphone16promax",
+		"iPhone 16 Plus":    "iphone16plus",
+	}
+	if productType, ok := types[model]; ok {
+		return productType
+	}
+	return fallback
 }
 
 // translateColor 翻译颜色名称到官方中文颜色
@@ -240,20 +537,11 @@ func translateColor(color string) string {
 		"Natural Titanium": "原色钛金属",
 		"Desert Titanium":  "沙漠色钛金属",
 
-		// iPhone 17 系列颜色
-		"Sage":          "鼠尾草色",
-		"Lavender":      "薰衣草色",
-		"Mist Blue":     "薄雾蓝色",
-		"Space Orange":  "宇宙橙色",
-		"Deep Blue":     "深蓝色",
-		"Silver":        "银色",
-		"Cosmic Orange": "宇宙橙色",
-
-		// iPhone Air 系列颜色
-		"Cloud White":      "云白色",
-		"Sky Blue":         "天蓝色",
-		"Deep Space Black": "深空黑色",
-		"Light Gold":       "浅金色",
+		// iPhone 18 系列颜色
+		"Burgundy":   "勃艮第酒红色",
+		"Glacier":    "冰川蓝色",
+		"Night Sky":  "夜空色",
+		"Star White": "星光白色",
 
 		// Apple Watch 系列颜色
 		"Space Black":   "深空黑色",
@@ -339,9 +627,34 @@ func SaveProductData(data *ProductData) error {
 	return ioutil.WriteFile(filePath, jsonData, 0644)
 }
 
-// LoadProductData 从本地文件加载产品数据
+// LoadProductData 优先加载运行时更新的数据，再回退到内置数据。
 func LoadProductData(areaCode string) (*ProductData, error) {
-	// 首先尝试从嵌入的数据加载
+	fileName := fmt.Sprintf("product_data_%s.json", areaCode)
+	var candidates []string
+	if executable, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Join(filepath.Dir(executable), "data", "product", fileName))
+	}
+	if workDir, err := os.Getwd(); err == nil {
+		candidates = append(candidates, filepath.Join(workDir, "data", "product", fileName))
+	}
+
+	for _, filePath := range candidates {
+		data, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			return nil, err
+		}
+
+		var productData ProductData
+		if err := json.Unmarshal(data, &productData); err != nil {
+			return nil, fmt.Errorf("failed to parse product data %s: %v", filePath, err)
+		}
+		log.Printf("Loaded product data for %s from %s", areaCode, filePath)
+		return &productData, nil
+	}
+
 	if data, exists := embedded.GetProductData(areaCode); exists {
 		var productData ProductData
 		if err := json.Unmarshal(data, &productData); err != nil {
@@ -351,32 +664,7 @@ func LoadProductData(areaCode string) (*ProductData, error) {
 		return &productData, nil
 	}
 
-	// 如果嵌入数据不存在，回退到文件系统
-	workDir, err := os.Getwd()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get current directory: %v", err)
-	}
-
-	// 从 data/product 目录加载
-	fileName := fmt.Sprintf("product_data_%s.json", areaCode)
-	filePath := filepath.Join(workDir, "data", "product", fileName)
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("product data file not found: %s", filePath)
-	}
-
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
-	var productData ProductData
-	if err := json.Unmarshal(data, &productData); err != nil {
-		return nil, err
-	}
-
-	log.Printf("Loaded product data for %s from %s", areaCode, filePath)
-	return &productData, nil
+	return nil, fmt.Errorf("product data not found for area %s", areaCode)
 }
 
 // UpdateProductDatabase 更新产品数据库

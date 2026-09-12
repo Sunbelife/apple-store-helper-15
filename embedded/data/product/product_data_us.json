@@ -1,423 +1,649 @@
 {
-  "update_time": "2025-09-11 03:53:23",
+  "update_time": "2026-09-12 21:03:31",
   "area_code": "us",
   "products": {
+    "Apple Watch SE 3": [
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "40mm",
+        "Color": "铝金属 · 午夜色 · GPS",
+        "Code": "MEHX4LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/40mm-gps-midnight-aluminum-wildflower-blue-solo-loop-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "40mm",
+        "Color": "铝金属 · 午夜色 · GPS + 蜂窝网络",
+        "Code": "MEQ24LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/40mm-cellular-midnight-aluminum-green-spark-nike-sport-band-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "44mm",
+        "Color": "铝金属 · 午夜色 · GPS + 蜂窝网络",
+        "Code": "MEQ44LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/44mm-cellular-midnight-aluminum-olive-solo-loop-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "40mm",
+        "Color": "铝金属 · 星光色 · GPS + 蜂窝网络",
+        "Code": "MEQ14LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/40mm-cellular-starlight-aluminum-burgundy-magneticlink-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "44mm",
+        "Color": "铝金属 · 午夜色 · GPS",
+        "Code": "MEP34LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/44mm-gps-midnight-aluminum-radiant-gold-link-bracelet-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "40mm",
+        "Color": "铝金属 · 星光色 · GPS",
+        "Code": "MEHV4LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/40mm-gps-starlight-aluminum-olive-solo-loop-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "44mm",
+        "Color": "铝金属 · 星光色 · GPS + 蜂窝网络",
+        "Code": "MEQ34LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/44mm-cellular-starlight-aluminum-black-unity-unity-rhythm-sport-loop-se"
+      },
+      {
+        "Model": "Apple Watch SE 3",
+        "Capacity": "44mm",
+        "Color": "铝金属 · 星光色 · GPS",
+        "Code": "MEP04LW/A",
+        "Type": "watchse3",
+        "PurchasePath": "/shop/buy-watch/apple-watch-se/44mm-gps-starlight-aluminum-pale-succulent-sport-band-se"
+      }
+    ],
+    "Apple Watch Series 12": [
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 深空灰色 · GPS",
+        "Code": "MJFN4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-gps-space-gray-aluminum-olive-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 深空灰色 · GPS + 蜂窝网络",
+        "Code": "MJJH4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-space-gray-aluminum-olive-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "钛金属 · 原色 · GPS + 蜂窝网络",
+        "Code": "MJJM4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-natural-titanium-chalk-calm-nike-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 黑色 · GPS + 蜂窝网络",
+        "Code": "MJJJ4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-black-aluminum-pride-edition-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "陶瓷 · 夜蓝色 · GPS + 蜂窝网络",
+        "Code": "MJJW4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-night-blue-ceramic-magenta-braided-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 深古铜色 · GPS + 蜂窝网络",
+        "Code": "MJJL4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-dark-bronze-aluminum-burgundy-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 深古铜色 · GPS",
+        "Code": "MJFW4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-gps-dark-bronze-aluminum-wildflower-blue-braided-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 黑色 · GPS",
+        "Code": "MJFU4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-gps-black-aluminum-burgundy-magneticlink"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "陶瓷 · 珍珠白色 · GPS + 蜂窝网络",
+        "Code": "MJJV4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-pearl-white-ceramic-pale-succulent-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 浅金色 · GPS + 蜂窝网络",
+        "Code": "MJJK4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-light-gold-aluminum-black-unity-unity-rhythm-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "钛金属 · 炫金色 · GPS + 蜂窝网络",
+        "Code": "MJJN4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-radiant-gold-titanium-burgundy-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "钛金属 · 炫金色 · GPS + 蜂窝网络",
+        "Code": "MJJQ4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-radiant-gold-titanium-navy-blue-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 深空灰色 · GPS",
+        "Code": "MJFT4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-gps-space-gray-aluminum-pale-succulent-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "钛金属 · 原色 · GPS + 蜂窝网络",
+        "Code": "MJJP4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-cellular-natural-titanium-black-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 黑色 · GPS + 蜂窝网络",
+        "Code": "MJJE4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-black-aluminum-chambray-blue-sport-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 深古铜色 · GPS",
+        "Code": "MJFR4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-gps-dark-bronze-aluminum-olive-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 深空灰色 · GPS + 蜂窝网络",
+        "Code": "MJJD4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-space-gray-aluminum-pale-succulent-sport-band"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "陶瓷 · 夜蓝色 · GPS + 蜂窝网络",
+        "Code": "MJJU4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-night-blue-ceramic-wildflower-blue-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 黑色 · GPS",
+        "Code": "MJFP4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-gps-black-aluminum-sage-modern-buckle"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "陶瓷 · 珍珠白色 · GPS + 蜂窝网络",
+        "Code": "MJJT4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-pearl-white-ceramic-midnight-magneticlink"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 浅金色 · GPS + 蜂窝网络",
+        "Code": "MJJF4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-light-gold-aluminum-navy-blue-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 深古铜色 · GPS + 蜂窝网络",
+        "Code": "MJJG4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-cellular-dark-bronze-aluminum-olive-braided-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "46mm",
+        "Color": "铝金属 · 浅金色 · GPS",
+        "Code": "MJFV4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/46mm-gps-light-gold-aluminum-black-braided-solo-loop"
+      },
+      {
+        "Model": "Apple Watch Series 12",
+        "Capacity": "42mm",
+        "Color": "铝金属 · 浅金色 · GPS",
+        "Code": "MJFQ4LS/A",
+        "Type": "watchs12",
+        "PurchasePath": "/shop/buy-watch/apple-watch/42mm-gps-light-gold-aluminum-chalk-calm-nike-sport-band"
+      }
+    ],
+    "Apple Watch Ultra 4": [
+      {
+        "Model": "Apple Watch Ultra 4",
+        "Capacity": "49mm",
+        "Color": "钛金属 · 原色 · GPS + 蜂窝网络",
+        "Code": "MJCR4LS/A",
+        "Type": "watchultra4",
+        "PurchasePath": "/shop/buy-watch/apple-watch-ultra/49mm-cellular-natural-titanium-dark-umber-trail-loop"
+      },
+      {
+        "Model": "Apple Watch Ultra 4",
+        "Capacity": "49mm",
+        "Color": "钛金属 · 黑色 · GPS + 蜂窝网络",
+        "Code": "MJCT4LS/A",
+        "Type": "watchultra4",
+        "PurchasePath": "/shop/buy-watch/apple-watch-ultra/49mm-cellular-black-titanium-translucent-gray-ocean-band"
+      }
+    ],
     "iPhone 16": [
       {
-        "model": "iPhone 16",
-        "capacity": "128GB",
-        "color": "粉色",
-        "code": "MYAR3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 16",
+        "Capacity": "128GB",
+        "Color": "粉色",
+        "Code": "MYAR3LL/A",
+        "Type": "iphone16",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16",
-        "capacity": "128GB",
-        "color": "白色",
-        "code": "MYAQ3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 16",
+        "Capacity": "128GB",
+        "Color": "白色",
+        "Code": "MYAQ3LL/A",
+        "Type": "iphone16",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16",
-        "capacity": "128GB",
-        "color": "黑色",
-        "code": "MYAP3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 16",
+        "Capacity": "128GB",
+        "Color": "黑色",
+        "Code": "MYAP3LL/A",
+        "Type": "iphone16",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16",
-        "capacity": "128GB",
-        "color": "群青色",
-        "code": "MYAT3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 16",
+        "Capacity": "128GB",
+        "Color": "群青色",
+        "Code": "MYAT3LL/A",
+        "Type": "iphone16",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16",
-        "capacity": "128GB",
-        "color": "深青色",
-        "code": "MYAW3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 16",
+        "Capacity": "128GB",
+        "Color": "深青色",
+        "Code": "MYAW3LL/A",
+        "Type": "iphone16",
+        "PurchasePath": ""
       }
     ],
-    "iPhone 16 Plus": [
+    "iPhone 18 Pro": [
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "128GB",
-        "color": "深青色",
-        "code": "MXUX3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "1TB",
+        "Color": "Silver",
+        "Code": "MJWE4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "128GB",
-        "color": "群青色",
-        "code": "MXUW3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "1TB",
+        "Color": "黑色",
+        "Code": "MJWD4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "128GB",
-        "color": "粉色",
-        "code": "MXUV3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "512GB",
+        "Color": "冰川蓝色",
+        "Code": "MJWC4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "128GB",
-        "color": "白色",
-        "code": "MXUU3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "2TB",
+        "Color": "黑色",
+        "Code": "MJWH4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "256GB",
-        "color": "黑色",
-        "code": "MXUY3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "1TB",
+        "Color": "冰川蓝色",
+        "Code": "MJWG4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "256GB",
-        "color": "粉色",
-        "code": "MXV13LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "1TB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJWF4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "256GB",
-        "color": "白色",
-        "code": "MXV03LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "2TB",
+        "Color": "冰川蓝色",
+        "Code": "MJWL4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "128GB",
-        "color": "黑色",
-        "code": "MXUT3LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "2TB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJWK4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "256GB",
-        "color": "深青色",
-        "code": "MXV43LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "2TB",
+        "Color": "Silver",
+        "Code": "MJWJ4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 16 Plus",
-        "capacity": "256GB",
-        "color": "群青色",
-        "code": "MXV33LL/A",
-        "type": "iphone"
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "256GB",
+        "Color": "Silver",
+        "Code": "MJW54LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "256GB",
+        "Color": "黑色",
+        "Code": "MJW44LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "512GB",
+        "Color": "Silver",
+        "Code": "MJW94LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "512GB",
+        "Color": "黑色",
+        "Code": "MJW84LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "256GB",
+        "Color": "冰川蓝色",
+        "Code": "MJW74LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "256GB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJW64LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro Max",
+        "Capacity": "512GB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJWA4LL/A",
+        "Type": "iphone18promax",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "512GB",
+        "Color": "Silver",
+        "Code": "MJQ84LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "512GB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJQ94LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "256GB",
+        "Color": "冰川蓝色",
+        "Code": "MJQ64LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "512GB",
+        "Color": "黑色",
+        "Code": "MJQ74LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "512GB",
+        "Color": "冰川蓝色",
+        "Code": "MJQA4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "1TB",
+        "Color": "Silver",
+        "Code": "MJQD4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "1TB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJQE4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "1TB",
+        "Color": "黑色",
+        "Code": "MJQC4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "2TB",
+        "Color": "Silver",
+        "Code": "MJQH4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "2TB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJQJ4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "1TB",
+        "Color": "冰川蓝色",
+        "Code": "MJQF4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "2TB",
+        "Color": "黑色",
+        "Code": "MJQG4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "2TB",
+        "Color": "冰川蓝色",
+        "Code": "MJQK4LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "256GB",
+        "Color": "Silver",
+        "Code": "MJQ44LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "256GB",
+        "Color": "勃艮第酒红色",
+        "Code": "MJQ54LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
+      },
+      {
+        "Model": "iPhone 18 Pro",
+        "Capacity": "256GB",
+        "Color": "黑色",
+        "Code": "MJQ34LL/A",
+        "Type": "iphone18pro",
+        "PurchasePath": ""
       }
     ],
-    "iPhone 17": [
+    "iPhone Duo": [
       {
-        "model": "iPhone 17",
-        "capacity": "256GB",
-        "color": "薄雾蓝色",
-        "code": "MG484LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "256GB",
+        "Color": "夜空色",
+        "Code": "MK1F4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "512GB",
-        "color": "薄雾蓝色",
-        "code": "MG4H4LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "512GB",
+        "Color": "夜空色",
+        "Code": "MK1H4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "256GB",
-        "color": "薰衣草色",
-        "code": "MG494LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "512GB",
+        "Color": "星光白色",
+        "Code": "MK1G4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "256GB",
-        "color": "黑色",
-        "code": "MG464LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "256GB",
+        "Color": "星光白色",
+        "Code": "MK1E4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "512GB",
-        "color": "白色",
-        "code": "MG4F4LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "1TB",
+        "Color": "夜空色",
+        "Code": "MK1L4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "256GB",
-        "color": "白色",
-        "code": "MG474LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "2TB",
+        "Color": "星光白色",
+        "Code": "MK1Q4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "512GB",
-        "color": "薰衣草色",
-        "code": "MG4J4LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "1TB",
+        "Color": "星光白色",
+        "Code": "MK1J4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       },
       {
-        "model": "iPhone 17",
-        "capacity": "512GB",
-        "color": "鼠尾草色",
-        "code": "MG4Q4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17",
-        "capacity": "256GB",
-        "color": "鼠尾草色",
-        "code": "MG4A4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17",
-        "capacity": "512GB",
-        "color": "黑色",
-        "code": "MG4E4LL/A",
-        "type": "iphone"
-      }
-    ],
-    "iPhone 17 Pro": [
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "512GB",
-        "color": "银色",
-        "code": "MG7N4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "256GB",
-        "color": "宇宙橙色",
-        "code": "MG7L4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "256GB",
-        "color": "深蓝色",
-        "code": "MG7M4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "1TB",
-        "color": "宇宙橙色",
-        "code": "MG7T4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "512GB",
-        "color": "宇宙橙色",
-        "code": "MG7P4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "1TB",
-        "color": "银色",
-        "code": "MG7R4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "512GB",
-        "color": "深蓝色",
-        "code": "MG7Q4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "1TB",
-        "color": "深蓝色",
-        "code": "MG7U4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro",
-        "capacity": "256GB",
-        "color": "银色",
-        "code": "MG7K4LL/A",
-        "type": "iphone"
-      }
-    ],
-    "iPhone 17 Pro Max": [
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "2TB",
-        "color": "银色",
-        "code": "MFXR4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "2TB",
-        "color": "宇宙橙色",
-        "code": "MFXT4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "1TB",
-        "color": "宇宙橙色",
-        "code": "MFXP4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "1TB",
-        "color": "深蓝色",
-        "code": "MFXQ4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "2TB",
-        "color": "深蓝色",
-        "code": "MFXU4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "256GB",
-        "color": "银色",
-        "code": "MFXG4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "256GB",
-        "color": "深蓝色",
-        "code": "MFXJ4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "512GB",
-        "color": "银色",
-        "code": "MFXK4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "256GB",
-        "color": "宇宙橙色",
-        "code": "MFXH4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "1TB",
-        "color": "银色",
-        "code": "MFXN4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "512GB",
-        "color": "宇宙橙色",
-        "code": "MFXL4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone 17 Pro Max",
-        "capacity": "512GB",
-        "color": "深蓝色",
-        "code": "MFXM4LL/A",
-        "type": "iphone"
-      }
-    ],
-    "iPhone Air": [
-      {
-        "model": "iPhone Air",
-        "capacity": "1TB",
-        "color": "天蓝色",
-        "code": "MG1Q4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "256GB",
-        "color": "浅金色",
-        "code": "MG1A4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "512GB",
-        "color": "云白色",
-        "code": "MG1G4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "256GB",
-        "color": "天蓝色",
-        "code": "MG1D4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "512GB",
-        "color": "深空黑色",
-        "code": "MG1E4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "512GB",
-        "color": "天蓝色",
-        "code": "MG1J4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "1TB",
-        "color": "深空黑色",
-        "code": "MG1L4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "256GB",
-        "color": "深空黑色",
-        "code": "MG184LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "512GB",
-        "color": "浅金色",
-        "code": "MG1H4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "256GB",
-        "color": "云白色",
-        "code": "MG194LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "1TB",
-        "color": "浅金色",
-        "code": "MG1P4LL/A",
-        "type": "iphone"
-      },
-      {
-        "model": "iPhone Air",
-        "capacity": "1TB",
-        "color": "云白色",
-        "code": "MG1N4LL/A",
-        "type": "iphone"
+        "Model": "iPhone Duo",
+        "Capacity": "2TB",
+        "Color": "夜空色",
+        "Code": "MK1R4LL/A",
+        "Type": "iphoneduo",
+        "PurchasePath": ""
       }
     ]
   }

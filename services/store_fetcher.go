@@ -50,7 +50,7 @@ func FetchStoresForArea(areaCode string, location string) ([]model.Store, error)
 			sampleProduct)
 	case "us":
 		sampleProduct = "MYAR3LL/A" // 美国的iPhone 16 128GB Black
-		apiURL = fmt.Sprintf("https://www.apple.com/us/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
+		apiURL = fmt.Sprintf("https://www.apple.com/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, url.QueryEscape(location))
 	case "uk":
 		sampleProduct = "MYE93QN/A" // 英国的iPhone 16 128GB White
@@ -93,6 +93,12 @@ func FetchStoresForArea(areaCode string, location string) ([]model.Store, error)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode == 541 {
+		return nil, errAppleVerificationRequired
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("store endpoint returned HTTP %d", resp.StatusCode)
 	}
 
 	// 解析fulfillment API响应
@@ -331,7 +337,7 @@ func getReferer(areaCode string) string {
 	case "sg":
 		return "https://www.apple.com/sg/shop/buy-iphone/iphone-16"
 	case "us":
-		return "https://www.apple.com/us/shop/buy-iphone/iphone-16"
+		return "https://www.apple.com/shop/buy-iphone/iphone-16"
 	case "uk":
 		return "https://www.apple.com/uk/shop/buy-iphone/iphone-16"
 	case "au":

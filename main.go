@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/url"
 	"sort"
 	"strings"
@@ -31,14 +30,14 @@ func main() {
 
 	view.App = app.NewWithID("apple-store-helper")
 	view.App.Settings().SetTheme(&appTheme.MyTheme{})
-	view.Window = view.App.NewWindow("抢你妹 - Apple 产品库存监控工具")
+	view.Window = view.App.NewWindow("抢你妹18 - Apple 产品库存监控工具")
 
 	// 定义全局变量（后面会初始化）
 	var modelWidget *widget.Select
 	var areaWidget *widget.Select
 
 	// 加载动态产品数据（必需）
-	go func() {
+	loadInitialData := func() {
 		hasData := false
 		// 默认加载中国大陆数据
 		if productData, err := services.LoadProductData("cn"); err == nil {
@@ -55,16 +54,16 @@ func main() {
 		// 如果没有缓存数据，必须从网络获取
 		if !hasData {
 			log.Println("No cached product data, fetching from Apple...")
-			time.Sleep(time.Second) // 等待窗口初始化
 
 			if err := services.UpdateProductDatabase("cn"); err != nil {
-				dialog.ShowError(errors.New("无法获取产品数据，请检查网络连接后点击「更新数据」按钮重试"), view.Window)
+				fyne.Do(func() {
+					dialog.ShowError(errors.New("无法获取产品数据，请检查网络连接后点击「更新数据」按钮重试"), view.Window)
+				})
 			}
 		}
 
 		// 数据加载后更新型号选择器
-		time.Sleep(time.Millisecond * 500)
-		if services.Product.GetDynamicProducts() != nil && modelWidget != nil {
+		if services.Product.GetDynamicProducts() != nil {
 			modelSet := make(map[string]bool)
 			for _, products := range services.Product.GetDynamicProducts() {
 				for _, p := range products {
@@ -88,11 +87,12 @@ func main() {
 			for model := range modelSet {
 				models = append(models, model)
 			}
-
-			modelWidget.Options = models
-			modelWidget.Refresh()
+			sort.Strings(models)
+			fyne.Do(func() {
+				modelWidget.SetOptions(models)
+			})
 		}
-	}()
+	}
 
 	defaultArea := services.Listen.Area.Title
 
@@ -187,7 +187,7 @@ func main() {
 	})
 	provinceWidget.PlaceHolder = "选择省份"
 
-	// 型号 selector - iPhone型号选择
+	// 型号 selector - 产品型号选择
 	var capacityWidget, colorWidget *widget.Select
 	var capacityLabel, colorLabel *widget.Label
 
@@ -199,10 +199,13 @@ func main() {
 		// 根据型号类型更新标签
 		if strings.Contains(selectedModel, "Watch") {
 			capacityLabel.Text = "尺寸"
+			colorLabel.Text = "款式"
 		} else {
 			capacityLabel.Text = "容量"
+			colorLabel.Text = "颜色"
 		}
 		capacityLabel.Refresh()
+		colorLabel.Refresh()
 
 		// 从本地数据获取该型号的所有容量选项
 		capacitySet := make(map[string]bool)
@@ -248,6 +251,7 @@ func main() {
 		} else {
 			capacityWidget.PlaceHolder = "选择容量"
 		}
+		capacityWidget.Refresh()
 
 		// 清空颜色选择
 		colorWidget.Options = []string{}
@@ -258,6 +262,7 @@ func main() {
 		} else {
 			colorWidget.PlaceHolder = "请先选择容量"
 		}
+		colorWidget.Refresh()
 	})
 	modelWidget.PlaceHolder = "选择型号"
 
@@ -314,7 +319,12 @@ func main() {
 			colorWidget.Options = colors
 			colorWidget.ClearSelected()
 			colorWidget.Enable()
-			colorWidget.PlaceHolder = "选择颜色"
+			if strings.Contains(modelWidget.Selected, "Watch") {
+				colorWidget.PlaceHolder = "选择款式"
+			} else {
+				colorWidget.PlaceHolder = "选择颜色"
+			}
+			colorWidget.Refresh()
 		}
 	})
 	capacityWidget.PlaceHolder = "请先选择型号"
@@ -511,7 +521,7 @@ func main() {
 	areaWidget.PlaceHolder = "选择地区"
 
 	// 创建精简的标题栏
-	titleLabel := widget.NewLabelWithStyle("抢你妹 - iPhone 库存监控 (支持 iPhone 17/17 Pro/17 Pro Max/Air)",
+	titleLabel := widget.NewLabelWithStyle("抢你妹18 - Apple 库存监控 (iPhone 18 / Apple Watch)",
 		fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	versionLabel := widget.NewLabel("v" + common.VERSION)
 	authorLink := widget.NewHyperlink("@Sunbelife", parseURL("https://weibo.com/x1nyang"))
@@ -575,7 +585,7 @@ func main() {
 		services.Listen.SetBarkUrl(barkUrl)
 
 		// 只使用动态数据
-		var productCode, productType string
+		var productCode, productType, purchasePath string
 		productTitle := ""
 
 		// 从动态数据获取产品代码
@@ -594,6 +604,7 @@ func main() {
 					productCode = p.Code
 					productType = p.Type
 					productTitle = p.Title
+					purchasePath = p.PurchasePath
 					found = true
 					break
 				}
@@ -613,7 +624,7 @@ func main() {
 			if areaWidget.Selected == "中国大陆" {
 				// 中国大陆：从动态数据中获取门店信息
 				selectedStore := services.Store.GetStore(areaWidget.Selected, storeWidget.Selected)
-				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType)
+				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType, purchasePath)
 			} else if areaWidget.Selected == "香港" || areaWidget.Selected == "日本" || areaWidget.Selected == "新加坡" ||
 				areaWidget.Selected == "美国" || areaWidget.Selected == "英国" || areaWidget.Selected == "澳大利亚" {
 				// 确保门店数据已加载
@@ -632,7 +643,7 @@ func main() {
 					return
 				}
 
-				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType)
+				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType, purchasePath)
 			}
 
 			// 保存设置
@@ -667,39 +678,17 @@ func main() {
 		progressDialog.Show()
 
 		go func() {
-			var productErr, storeErr error
-
-			// 更新所有地区的产品数据
-			areaCodes := []string{"cn", "hk", "jp", "sg", "us", "uk", "au"}
-			for _, areaCode := range areaCodes {
-				log.Printf("Updating product data for %s...", areaCode)
-				if err := services.UpdateProductDatabase(areaCode); err != nil {
-					log.Printf("Failed to update product data for %s: %v", areaCode, err)
-					productErr = err
-				}
-				// 添加延迟避免频繁请求
-				time.Sleep(time.Duration(2+rand.Intn(2)) * time.Second)
-			}
-
-			// 更新所有地区的门店数据
-			log.Println("Updating store data for all areas...")
-			if err := services.UpdateStoresForAllAreas(); err != nil {
-				log.Printf("Failed to update store data: %v", err)
-				storeErr = err
-			}
+			selectedArea := services.Area.GetArea(areaWidget.Selected)
+			log.Printf("Updating product data for %s...", selectedArea.ShortCode)
+			productErr := services.UpdateProductDatabase(selectedArea.ShortCode)
 
 			progressDialog.Hide()
 
-			if productErr != nil || storeErr != nil {
-				dialog.ShowError(errors.New("部分数据更新失败，请检查网络连接后重试"), view.Window)
+			if productErr != nil {
+				log.Printf("Failed to update product data for %s: %v", selectedArea.ShortCode, productErr)
+				dialog.ShowError(fmt.Errorf("产品数据更新失败，已保留内置数据: %v", productErr), view.Window)
 			} else {
-				dialog.ShowInformation("成功", "所有数据已更新完成", view.Window)
-
-				// 重新加载当前地区的门店数据到内存
-				if areaWidget.Selected != "" {
-					selectedArea := services.Area.GetArea(areaWidget.Selected)
-					services.Store.LoadForArea(selectedArea.ShortCode)
-				}
+				dialog.ShowInformation("成功", "当前地区的产品数据已更新；门店列表继续使用内置数据。", view.Window)
 
 				// 更新型号选择器选项
 				if services.Product.GetDynamicProducts() != nil {
@@ -834,6 +823,7 @@ func main() {
 	paddedContent := container.NewPadded(content)
 
 	view.Window.SetContent(paddedContent)
+	go loadInitialData()
 	view.Window.Resize(fyne.NewSize(1400, 800))
 	view.Window.CenterOnScreen()
 
