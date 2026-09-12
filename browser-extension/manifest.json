@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "抢你妹18",
   "description": "在已验证的 Apple 官网会话中监控 iPhone 和 Apple Watch 零售店库存。",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "minimum_chrome_version": "102",
   "permissions": [
     "alarms",

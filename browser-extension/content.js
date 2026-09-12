@@ -35,7 +35,7 @@
       const timer = setTimeout(() => {
         pending.delete(id);
         resolve({ status: 0, error: "Apple 页面请求超时" });
-      }, 25000);
+      }, 50000);
       pending.set(id, { resolve, timer });
     });
 

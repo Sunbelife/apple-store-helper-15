@@ -155,10 +155,11 @@ async function performStockCheck() {
       const result = await sendStockRequest(tab.id, buildFulfillmentPath(tasks));
 
       if (result.status === 541) {
+        const detail = shieldVerificationDetail(result.shield);
         for (const task of tasks) {
-          state.items[task.id] = taskState(task, "需官网验证", "请在已打开的 Apple 标签页完成验证");
+          state.items[task.id] = taskState(task, "需官网验证", detail);
         }
-        addLog(state, first.areaTitle + " · " + first.store.CityStoreName + " 需要官网验证");
+        addLog(state, first.areaTitle + " · " + first.store.CityStoreName + " 需要官网验证：" + detail);
         continue;
       }
       if (result.status !== 200) {
@@ -203,6 +204,24 @@ async function performStockCheck() {
   state.checking = false;
   state.lastCheck = new Date().toISOString();
   await chrome.storage.local.set({ monitorState: state });
+}
+
+function shieldVerificationDetail(shield) {
+  switch (shield?.retry || shield?.initial) {
+    case "shld-result":
+    case "shld-cookie":
+      return shield?.retried
+        ? "Apple 官方认证已刷新并重试，库存接口仍要求验证"
+        : "Apple 官方认证已完成，库存接口仍要求验证";
+    case "shld-no-ck":
+      return "Apple 官方认证未生成会话凭证，请在 Apple 标签页手动完成验证";
+    case "shld-error":
+      return "Apple 官方认证执行失败，请刷新 Apple 标签页后重试";
+    case "shld-timeout":
+      return "等待 Apple 官方认证超时，请刷新 Apple 标签页后重试";
+    default:
+      return "请在已打开的 Apple 标签页完成验证";
+  }
 }
 
 async function openMonitorTabs(tasks) {
