@@ -35,6 +35,8 @@ const (
 
 	Pause   = "暂停"
 	Running = "监听中"
+
+	verificationRetryInterval = 15 * time.Second
 )
 
 var errAppleVerificationRequired = errors.New("Apple Store requires browser verification")
@@ -59,12 +61,13 @@ var Listen = listenService{
 }
 
 type listenService struct {
-	items         map[string]ListenItem
-	Status        binding.String
-	Area          model.Area
-	Logs          *widget.Label
-	BarkNotifyUrl string
-	requestCount  int64 // 请求计数器
+	items          map[string]ListenItem
+	Status         binding.String
+	Area           model.Area
+	Logs           *widget.Label
+	BarkNotifyUrl  string
+	requestCount   int64 // 请求计数器
+	verifyNotified bool
 }
 
 type ListenItem struct {
@@ -205,23 +208,44 @@ func (s *listenService) Run() {
 				if err != nil {
 					log.Printf("Stock lookup failed: %v", err)
 					if errors.Is(err, errAppleVerificationRequired) {
+						var purchaseURL string
 						for key, item := range s.items {
 							s.UpdateStatus(key, StatusVerify)
-							purchaseURL, urlErr := ProductPurchaseURL(s.Area.ShortCode, item.Product.Type, item.Product.Code, item.Product.PurchasePath)
-							if urlErr == nil {
-								s.openBrowser(purchaseURL)
-								msg := "Apple 官网要求浏览器验证，已打开所选商品页，请手动查看取货库存。"
-								dialog.ShowInformation("需官网验证", msg, view.Window)
-								go s.SendPushNotificationByBark("需官网验证", msg, purchaseURL)
+							if purchaseURL == "" {
+								var urlErr error
+								purchaseURL, urlErr = ProductPurchaseURL(s.Area.ShortCode, item.Product.Type, item.Product.Code, item.Product.PurchasePath)
+								if urlErr != nil {
+									log.Printf("Failed to build verification URL: %v", urlErr)
+									purchaseURL = ""
+								}
 							}
-							break
 						}
+
+						if !s.verifyNotified && purchaseURL != "" {
+							s.verifyNotified = true
+							s.openBrowser(purchaseURL)
+							msg := "Apple 官网要求浏览器验证，已打开所选商品页。请手动完成验证，程序将每 15 秒自动重试，通过后继续监控。"
+							fyne.Do(func() {
+								dialog.ShowInformation("需官网验证", msg, view.Window)
+							})
+							go s.SendPushNotificationByBark("需官网验证", msg, purchaseURL)
+						}
+						fyne.Do(s.UpdateLogStr)
+						log.Printf("Apple verification is still required; retrying in %s", verificationRetryInterval)
+						time.Sleep(verificationRetryInterval)
+						continue
 					} else {
-						dialog.ShowError(fmt.Errorf("库存查询失败：%v", err), view.Window)
+						fyne.Do(func() {
+							dialog.ShowError(fmt.Errorf("库存查询失败：%v", err), view.Window)
+						})
 					}
 					s.Status.Set(Pause)
-					s.UpdateLogStr()
+					fyne.Do(s.UpdateLogStr)
 					continue
+				}
+				if s.verifyNotified {
+					log.Println("Apple verification cleared; automatic monitoring resumed")
+					s.verifyNotified = false
 				}
 
 				// 首先检查是否有任何店铺有货（用于location查询）
@@ -293,10 +317,12 @@ func (s *listenService) Run() {
 							continue
 						}
 						s.openBrowser(purchaseURL)
-						dialog.ShowInformation("有货提醒", msg, view.Window)
-						view.App.SendNotification(&fyne.Notification{
-							Title:   "有货提醒",
-							Content: msg,
+						fyne.Do(func() {
+							dialog.ShowInformation("有货提醒", msg, view.Window)
+							view.App.SendNotification(&fyne.Notification{
+								Title:   "有货提醒",
+								Content: msg,
+							})
 						})
 						go s.AlertMp3()
 						go s.SendPushNotificationByBark("有货提醒", msg, purchaseURL)
@@ -306,7 +332,9 @@ func (s *listenService) Run() {
 					}
 				}
 
-				s.UpdateLogStr()
+				fyne.Do(s.UpdateLogStr)
+			} else if ok == nil && stats != Running {
+				s.verifyNotified = false
 			}
 
 			time.Sleep(time.Millisecond * 500)
