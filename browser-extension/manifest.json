@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "抢你妹18",
+  "description": "在已验证的 Apple 官网会话中监控 iPhone 和 Apple Watch 零售店库存。",
+  "version": "1.9.0",
+  "minimum_chrome_version": "102",
+  "permissions": [
+    "alarms",
+    "notifications",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.apple.com/*",
+    "https://www.apple.com.cn/*",
+    "https://api.day.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "打开抢你妹18"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.apple.com/*",
+        "https://www.apple.com.cn/*"
+      ],
+      "js": ["page-bridge.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.apple.com/*",
+        "https://www.apple.com.cn/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

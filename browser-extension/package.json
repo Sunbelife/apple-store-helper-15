@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test shared.test.js",
+    "check": "node --check app.js && node --check background.js && node --check content.js && node --check page-bridge.js && node --check shared.js"
+  }
+}

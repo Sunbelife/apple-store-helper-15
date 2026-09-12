@@ -1,0 +1,27 @@
+{
+  "update_time": "2026-09-12 23:00:00",
+  "area_code": "sg",
+  "stores": [
+    {
+      "StoreNumber": "R360",
+      "CityStoreName": "Singapore-Orchard Road",
+      "Province": "Singapore",
+      "City": "Singapore",
+      "District": "238801"
+    },
+    {
+      "StoreNumber": "R606",
+      "CityStoreName": "Singapore-Marina Bay Sands",
+      "Province": "Singapore",
+      "City": "Singapore",
+      "District": "018972"
+    },
+    {
+      "StoreNumber": "R673",
+      "CityStoreName": "Singapore-Jewel Changi Airport",
+      "Province": "Singapore",
+      "City": "Singapore",
+      "District": "819666"
+    }
+  ]
+}

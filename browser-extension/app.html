@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>抢你妹18 · Apple 库存监控</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">BROWSER EDITION</p>
+      <h1>抢你妹18</h1>
+      <p class="subtitle">在你的 Apple 官网会话里检查库存</p>
+    </div>
+    <div class="version">v1.9.0 · Chrome / Edge</div>
+  </header>
+
+  <main>
+    <section class="card config-card">
+      <div class="section-heading">
+        <div><p class="step">01</p><h2>选择商品</h2></div>
+        <span class="live-dot">官网会话</span>
+      </div>
+      <div class="field-grid">
+        <label><span>地区</span><select id="area"></select></label>
+        <label><span>省份 / 州</span><select id="province"></select></label>
+        <label class="wide"><span>门店</span><select id="store"></select></label>
+        <label><span>型号</span><select id="model"></select></label>
+        <label><span>容量 / 尺寸</span><select id="capacity"></select></label>
+        <label class="wide"><span>颜色 / 款式</span><select id="color"></select></label>
+        <label class="wide">
+          <span>Bark 推送地址（可选）</span>
+          <input id="bark" type="url" placeholder="https://api.day.app/你的设备密钥">
+        </label>
+      </div>
+      <button id="add" class="primary full">添加到监控列表</button>
+      <p id="form-message" class="form-message" aria-live="polite"></p>
+    </section>
+
+    <section class="card monitor-card">
+      <div class="section-heading">
+        <div><p class="step">02</p><h2>监控任务</h2></div>
+        <span id="monitor-badge" class="status-badge idle">已暂停</span>
+      </div>
+      <div id="empty-tasks" class="empty-state">
+        <div class="empty-icon">⌁</div>
+        <p>还没有监控任务</p>
+        <span>从左侧选择门店和商品后添加</span>
+      </div>
+      <div id="tasks" class="task-list"></div>
+      <div class="controls">
+        <button id="start" class="primary">开始监控</button>
+        <button id="check" class="secondary">立即检查</button>
+        <button id="stop" class="ghost">暂停</button>
+      </div>
+      <div class="session-note">
+        <strong>保持 Apple 标签页打开。</strong>
+        如官网要求验证，只需在该标签页完成一次；后续请求会继续使用同一个浏览器会话。
+      </div>
+    </section>
+
+    <section class="card log-card">
+      <div class="section-heading compact">
+        <div><p class="step">03</p><h2>监控日志</h2></div>
+        <span id="last-check">尚未检查</span>
+      </div>
+      <div id="logs" class="logs" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>库存信息来自 Apple 官网；扩展不会读取密码、付款信息或其他网站数据。</footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
