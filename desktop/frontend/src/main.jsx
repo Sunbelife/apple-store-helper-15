@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.4 · 本地测试版</span>
+        <span>2.0.5 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -466,7 +466,6 @@ function App() {
                   <tr>
                     <th>库存状态</th>
                     <th>门店 / 产品</th>
-                    <th>更新时间</th>
                     <th>
                       <span className="sr-only">操作</span>
                     </th>
@@ -492,6 +491,12 @@ function App() {
                           </span>
                           {t.status === COOLDOWN_STATUS ? "冷却中" : t.status}
                         </span>
+                        {t.checkedAt && (
+                          <div className="stock-checked">
+                            最新检查 {new Date(t.checkedAt).toLocaleTimeString("zh-CN", { hour12: false })}
+                            {t.status === "无货" ? "，目前无货" : ""}
+                          </div>
+                        )}
                         {t.detail && (
                           <details className="error-detail">
                             <summary>查看原因</summary>
@@ -511,13 +516,6 @@ function App() {
                         </button>
                         <div className="product-name">{t.product.Title}</div>
 
-                      </td>
-                      <td className="timestamp">
-                        {t.checkedAt
-                          ? new Date(t.checkedAt).toLocaleTimeString("zh-CN", {
-                              hour12: false,
-                            })
-                          : "—"}
                       </td>
                       <td>
                         <button

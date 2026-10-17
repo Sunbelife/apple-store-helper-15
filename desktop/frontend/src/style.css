@@ -346,13 +346,10 @@ th {
 }
 th:first-child {
   padding-left: 25px;
-  width: 17%;
+  width: 34%;
 }
 th:nth-child(2) {
-  width: 57%;
-}
-th:nth-child(3) {
-  width: 19%;
+  width: 59%;
 }
 th:last-child {
   width: 7%;
@@ -365,6 +362,13 @@ td {
 }
 td:first-child {
   padding-left: 25px;
+}
+.stock-checked {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #999;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
 }
 .store-link {
   display: flex;
