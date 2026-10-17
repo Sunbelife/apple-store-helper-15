@@ -5,12 +5,13 @@ import hashlib
 import os
 from pathlib import Path
 import plistlib
+import re
 import shutil
 import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0.9'
+VERSION = '2.0.10'
 
 def run(args, **kwargs):
     subprocess.run(args, check=True, cwd=ROOT, **kwargs)
@@ -35,13 +36,18 @@ def main():
         binaries = []
         for arch in arches:
             binary = stage / arch
-            run(['go', 'build', '-tags', 'desktop,production', '-trimpath', '-ldflags=-s -w', '-o', str(binary), './desktop'], env=dict(os.environ, GOOS='darwin', GOARCH=arch, CGO_ENABLED='1'))
+            run(['go', 'build', '-tags', 'desktop,production', '-trimpath', '-ldflags=-s -w', '-o', str(binary), './desktop'], env=dict(os.environ, GOOS='darwin', GOARCH=arch, CGO_ENABLED='1', MACOSX_DEPLOYMENT_TARGET='12.0', CGO_CFLAGS='-mmacosx-version-min=12.0', CGO_LDFLAGS='-mmacosx-version-min=12.0'))
             binaries.append(str(binary))
         executable = mac / 'qiangnimei2'
         if len(binaries) == 2:
             run(['lipo', '-create', *binaries, '-output', str(executable)])
         else:
             shutil.copy2(binaries[0], executable)
+        # Info.plist cannot lower the Mach-O deployment target. Check each slice.
+        build_info = subprocess.check_output(['vtool', '-show-build', str(executable)], text=True)
+        minimums = re.findall(r'\bminos\s+(\d+)\.(\d+)', build_info)
+        if len(minimums) != len(arches) or any(tuple(map(int, v)) > (12, 0) for v in minimums):
+            raise RuntimeError('Binary deployment target exceeds macOS 12.0: ' + build_info)
         iconset = stage / 'AppIcon.iconset'
         iconset.mkdir()
         for size in (16, 32, 128, 256, 512):
@@ -49,7 +55,7 @@ def main():
                 name = f'icon_{size}x{size}' + ('@2x' if scale == 2 else '') + '.png'
                 run(['sips', '-z', str(size * scale), str(size * scale), str(ROOT / 'desktop/branding/store-logo.png'), '--out', str(iconset / name)], stdout=subprocess.DEVNULL)
         run(['iconutil', '-c', 'icns', str(iconset), '-o', str(resources / 'AppIcon.icns')])
-        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='老孙抢你妹 2026', CFBundleDisplayName='老孙抢你妹 2026', CFBundleShortVersionString=VERSION, CFBundleVersion='209', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='11.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
+        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='老孙抢你妹 2026', CFBundleDisplayName='老孙抢你妹 2026', CFBundleShortVersionString=VERSION, CFBundleVersion='210', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='12.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
         (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(plist))
         run(['xattr', '-cr', str(app)])
         run(['codesign', '--force', '--deep', '--sign', '-', str(app)])

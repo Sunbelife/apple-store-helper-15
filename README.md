@@ -20,6 +20,8 @@ Apple Store 门店取货库存监控。**2.0 使用 Wails 2 + React + Go，目�
 
 macOS：Go **1.25+**、Node.js **22+** 和 Xcode Command Line Tools。当前依赖 Wails **2.16.0**。
 
+2.0.10 通用安装包包含 Intel 和 Apple Silicon，最低系统版本为 macOS 12。修正了旧包意外继承本机 SDK 的 macOS 27 最低运行版本问题。Intel 与旧系统仍需实机验证。
+
 ```sh
 cd desktop/frontend
 npm ci

@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.9 · 本地测试版</span>
+        <span>2.0.10 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
