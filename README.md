@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.4-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
 ![Go](https://img.shields.io/badge/Go-1.17+-00ADD8.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -49,7 +49,7 @@
 
 #### 方式一：直接下载（推荐）
 1. 访问 [Releases 页面](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)
-2. 下载最新 Release 的 `qiangnimei18-v1.8.3-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
+2. 下载最新 Release 的 `qiangnimei18-v1.8.4-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
 3. 解压后双击运行
 
 #### 方式二：从源码编译
@@ -76,7 +76,7 @@
    - 在「颜色/款式」下拉框中选择颜色，或手表的材质、颜色和网络版本
 
 4. **选择门店**
-   - 中国大陆：选择省份 → 城市（可选）→ 门店；点击「全选门店并添加」可一次添加当前省市全部门店，重复项自动跳过
+   - 中国大陆：选择省份 → 城市（可选）→ 门店；门店选择「全部门店」，再点击「添加到监控列表」可一次添加当前省市全部门店，重复项自动跳过
    - 其他地区：选择具体门店
 
 5. **设置提醒**

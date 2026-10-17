@@ -99,6 +99,7 @@ func main() {
 	// 按实际门店数据筛选省份和城市；空城市表示整个省份。
 	var provinceWidget, cityWidget *widget.Select
 	var currentProvince, currentCity string
+	const allStoresOption = "全部门店"
 	storeWidget := widget.NewSelect(nil, nil)
 	storeWidget.PlaceHolder = "请先选择地区"
 	storeWidget.Disable()
@@ -109,7 +110,7 @@ func main() {
 		}
 		stores := services.Store.ByLocationForOptions(areaWidget.Selected, currentProvince, currentCity)
 		storeWidget.ClearSelected()
-		storeWidget.SetOptions(stores)
+		storeWidget.SetOptions(append([]string{allStoresOption}, stores...))
 		storeWidget.PlaceHolder = "选择门店"
 		if len(stores) == 0 {
 			storeWidget.PlaceHolder = "该地区暂无门店"
@@ -388,7 +389,7 @@ func main() {
 			// 香港：直接显示所有门店
 			zipCodeEntry.Disable()
 			zipCodeEntry.Text = ""
-			storeWidget.Options = services.Store.ByAreaTitleForOptions(value)
+			storeWidget.SetOptions(append([]string{allStoresOption}, services.Store.ByAreaTitleForOptions(value)...))
 			storeWidget.Enable()
 			storeWidget.PlaceHolder = "选择门店"
 			locationContainer.Objects = []fyne.CanvasObject{
@@ -401,7 +402,7 @@ func main() {
 			// 日本：直接显示所有门店
 			zipCodeEntry.Disable()
 			zipCodeEntry.Text = ""
-			storeWidget.Options = services.Store.ByAreaTitleForOptions(value)
+			storeWidget.SetOptions(append([]string{allStoresOption}, services.Store.ByAreaTitleForOptions(value)...))
 			storeWidget.Enable()
 			storeWidget.PlaceHolder = "选择门店"
 			locationContainer.Objects = []fyne.CanvasObject{
@@ -414,7 +415,7 @@ func main() {
 			// 新加坡：直接显示所有门店
 			zipCodeEntry.Disable()
 			zipCodeEntry.Text = ""
-			storeWidget.Options = services.Store.ByAreaTitleForOptions(value)
+			storeWidget.SetOptions(append([]string{allStoresOption}, services.Store.ByAreaTitleForOptions(value)...))
 			storeWidget.Enable()
 			storeWidget.PlaceHolder = "选择门店"
 			locationContainer.Objects = []fyne.CanvasObject{
@@ -447,7 +448,7 @@ func main() {
 			// 英国：直接显示所有门店
 			zipCodeEntry.Disable()
 			zipCodeEntry.Text = ""
-			storeWidget.Options = services.Store.ByAreaTitleForOptions(value)
+			storeWidget.SetOptions(append([]string{allStoresOption}, services.Store.ByAreaTitleForOptions(value)...))
 			storeWidget.Enable()
 			storeWidget.PlaceHolder = "选择门店"
 			locationContainer.Objects = []fyne.CanvasObject{
@@ -460,7 +461,7 @@ func main() {
 			// 澳大利亚：直接显示所有门店
 			zipCodeEntry.Disable()
 			zipCodeEntry.Text = ""
-			storeWidget.Options = services.Store.ByAreaTitleForOptions(value)
+			storeWidget.SetOptions(append([]string{allStoresOption}, services.Store.ByAreaTitleForOptions(value)...))
 			storeWidget.Enable()
 			storeWidget.PlaceHolder = "选择门店"
 			locationContainer.Objects = []fyne.CanvasObject{
@@ -511,15 +512,15 @@ func main() {
 	}
 
 	// 创建操作按钮组
-	addSelection := func(allStores bool) {
+	addSelection := func() {
 		// 检查必填项
 		var errorMsg string
 		if areaWidget.Selected == "中国大陆" || areaWidget.Selected == "美国" {
-			if currentProvince == "" || (!allStores && storeWidget.Selected == "") {
+			if currentProvince == "" || storeWidget.Selected == "" {
 				errorMsg = "请选择州/省份和门店"
 			}
 		} else if areaWidget.Selected == "香港" || areaWidget.Selected == "日本" || areaWidget.Selected == "新加坡" || areaWidget.Selected == "英国" || areaWidget.Selected == "澳大利亚" {
-			if !allStores && storeWidget.Selected == "" {
+			if storeWidget.Selected == "" {
 				errorMsg = "请选择门店"
 			}
 		}
@@ -585,8 +586,13 @@ func main() {
 
 		if productCode != "" {
 			storeNames := []string{storeWidget.Selected}
-			if allStores {
-				storeNames = append([]string(nil), storeWidget.Options...)
+			if storeWidget.Selected == allStoresOption {
+				storeNames = nil
+				for _, name := range storeWidget.Options {
+					if name != allStoresOption {
+						storeNames = append(storeNames, name)
+					}
+				}
 			}
 			if len(storeNames) == 0 {
 				dialog.ShowError(errors.New("当前省市没有可添加的门店"), view.Window)
@@ -617,8 +623,7 @@ func main() {
 			services.SaveSettings(settings)
 		}
 	}
-	addButton := widget.NewButton("添加到监控列表", func() { addSelection(false) })
-	addAllButton := widget.NewButton("全选门店并添加", func() { addSelection(true) })
+	addButton := widget.NewButton("添加到监控列表", func() { addSelection() })
 	addButton.Importance = widget.HighImportance
 
 	clearButton := widget.NewButton("清空列表", func() {
@@ -708,8 +713,6 @@ func main() {
 		),
 		widget.NewSeparator(),
 		locationContainer, // 动态位置选择容器
-		addAllButton,
-		widget.NewLabel("添加当前省市全部门店，重复项自动跳过"),
 	))
 
 	// 第二列：产品选择和控制
