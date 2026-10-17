@@ -1,172 +1,76 @@
-# 抢你妹18 - Apple 产品库存监控工具
+# 抢你妹18
 
-<div align="center">
+Apple Store 零售店取货库存监控工具。选择产品和门店后自动查询，发现有货时响铃、弹窗并打开苹果官网购买页；支持可选的 Bark 推送。程序不下单、不占库存、不代付，提醒不保证最终能买到。
 
-![Version](https://img.shields.io/badge/version-1.8.6-blue.svg)
-![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
-![Go](https://img.shields.io/badge/Go-1.17+-00ADD8.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+## 当前版本
 
-**支持 iPhone Duo、iPhone 18 Pro / Pro Max 和 Apple Watch 的 Apple Store 库存监控。**
+桌面源码版本 **1.8.6**，使用 Go + Fyne 2.8.2。macOS 打包支持 Apple 芯片和 Intel，最低 macOS 11。源码也可用于其他桌面平台，但本仓库当前主要验证 macOS。
 
-[下载地址](#下载安装) | [使用教程](#使用教程) | [Bark 推送](#bark-推送设置) | [问题反馈](#问题反馈)
+支持中国大陆、香港、日本、新加坡、美国、英国、澳大利亚。产品选项来自各地区产品目录，包括 iPhone Duo、iPhone 18 Pro 系列及 Apple Watch；具体可选型号、颜色以程序加载的目录为准。不同地区库存接口可能受限，不能保证所有地区持续可用。
 
-</div>
+## 下载与运行
 
-## ✨ 功能特色
+已发布安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases)。源码版本与已发布安装包可能不同；1.8.6 当前为本地测试版，尚未发布 Release。
 
-### 🚀 核心功能
-- **实时监控**：自动扫描 Apple Store 库存状态
-- **多地区支持**：支持中国大陆、香港、日本、新加坡、美国、英国、澳大利亚
-- **智能提醒**：Bark 推送 + 声音提醒，不错过任何机会
-- **快速下单**：iPhone 直达所选 SKU；Apple Watch 直达对应表壳的官方完整选配页
-- **独立运行**：无需外部数据文件，单文件即可运行
+源码运行需 Go 1.22+、C 编译工具链和 Fyne 的平台依赖。macOS 安装 Xcode Command Line Tools 后：
 
-### 📱 支持的产品
-- **iPhone 系列**：iPhone Duo、iPhone 18 Pro/18 Pro Max、iPhone 16/16 Plus
-- **Apple Watch 系列**：Apple Watch Series 12、Apple Watch SE 3、Apple Watch Ultra 4
+```sh
+git clone https://github.com/Sunbelife/apple-store-helper-15.git
+cd apple-store-helper-15
+go run .
+```
 
-### 🌍 支持的地区
-| 地区 | 产品数据 | 门店数据 | 状态 |
-|------|----------|----------|------|
-| 🇨🇳 中国大陆 | ✅ 当前在售目录 | ✅ 49 个门店 | 支持 |
-| 🇭🇰 香港 | ✅ 当前在售目录 | ✅ 6 个门店 | 支持 |
-| 🇯🇵 日本 | ✅ 当前在售目录 | ✅ 11 个门店 | 支持 |
-| 🇸🇬 新加坡 | ✅ 当前在售目录 | 内置门店数据 | 支持 |
-| 🇺🇸 美国 | ✅ 当前在售目录 | ✅ 274 个门店 | 支持 |
-| 🇬🇧 英国 | ✅ 当前在售目录 | ✅ 40 个门店 | 支持 |
-| 🇦🇺 澳大利亚 | ✅ 当前在售目录 | ✅ 22 个门店 | 支持 |
+测试、打包：
 
-## 📥 下载安装
+```sh
+go test ./...
+python3 scripts/package_macos.py --output dist
+```
 
-### 系统要求
-- **操作系统**：macOS 10.15+ (Catalina 或更高版本)
-- **架构**：Intel x64 / Apple Silicon (M1/M2/M3)
-- **内存**：至少 4GB RAM
-- **网络**：稳定的互联网连接
+打包脚本需要 macOS、Xcode 工具链和 Python 3，生成通用架构 ZIP 及 SHA-256。应用使用本地临时签名，未经过 Apple 公证。
 
-### 下载方式
+## 使用
 
-#### 方式一：直接下载（推荐）
-1. 访问 [Releases 页面](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)
-2. 下载最新 Release 的 `qiangnimei18-v1.8.6-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
-3. 解压后双击运行
+1. 选择地区、型号、容量或尺寸、颜色或款式。
+2. 选择省份、城市和门店。中国大陆可选「全部城市」「全部门店」，点击「添加到监控列表」一次加入当前筛选的门店；重复项跳过。
+3. 如需手机通知，将 Bark 应用提供的推送地址填入「Bark 推送」。地址属于私人推送凭据，请勿公开。
+4. 点击「开始监控」。每家门店查完立即刷新，有货时立即进入提醒流程；有货后暂停监控，由用户在官网完成购买。
+5. 点击「暂停监控」停止后续查询。关闭窗口或让电脑休眠会影响持续监控，需保持程序运行和网络连接。
 
-#### 方式二：从源码编译
+## 状态与查询频率
 
-# 克隆仓库
-# 编译程序
-# 运行程序
+| 状态 | 含义 |
+| --- | --- |
+| 等待 | 尚未查询该监控项 |
+| 查询中 | 正在请求门店库存 |
+| 有货 / 无货 | 接口明确返回的门店取货状态 |
+| 未返回库存 | 响应中没有该门店或 SKU 的有效库存字段 |
+| 库存接口受限 | 接口不可用或被限制，不能判断库存 |
+| 查询失败 | 请求或解析失败，不能判断库存 |
+| 需官网验证 | 接口确实返回验证页面；外部浏览器会话不能自动共享给桌面应用 |
 
-## 🚀 使用教程
+同一门店的 SKU 合并查询，门店逐个请求，间隔至少 3 秒；每轮结束后等 30 秒。受限后等 60 秒重试。间隔目前固定，没有界面设置。有货时立即提醒，不等其他门店查完。
 
-### 首次使用
+当前门店取货接口为 `/shop/retail/pickup-message`。旧 `/shop/fulfillment-messages` 的 HTTP 541 错误页不能作为库存结果；接口失败或字段缺失均不推断为无货。库存可能在点击通知前变化。
 
-1. **启动程序**
-   - 双击 `抢你妹18` 启动
-   - 首次启动会自动加载数据，请耐心等待
+## 数据与配置
 
-2. **选择地区**
-   - 在「地区」下拉框中选择目标地区
-   - 程序会自动加载该地区的产品和门店数据
+产品和门店目录内置在 `embedded/data`；「更新数据」可刷新产品目录。桌面监控配置保存于可执行文件旁的 `user_settings.json`，升级前可备份。该文件可能含 Bark 地址，请勿提交到 Git。
 
-3. **选择产品**
-   - 在「型号」下拉框中选择产品型号
-   - 在「容量/尺寸」下拉框中选择规格
-   - 在「颜色/款式」下拉框中选择颜色，或手表的材质、颜色和网络版本
+有货提醒弹窗出现后，应用异步向 `https://sunbelife.com/api/iphone-stock/events` 发送公开库存事实：地区、省市、门店、型号、容量、颜色、SKU、发现时间。不发送用户身份、设备标识、Bark 地址或监控列表；上报失败不影响提醒。
 
-4. **选择门店**
-   - 中国大陆：选择省份 → 城市（可选）→ 门店；门店选择「全部门店」，再点击「添加到监控列表」可一次添加当前省市全部门店，重复项自动跳过
-   - 其他地区：选择具体门店
+管理员历史列表位于 `https://sunbelife.com/iphone-stock`，使用密码登录。保留最近 180 天、最多 100000 条记录，同一分钟同一地区、门店、SKU 去重。历史记录不代表实时库存。服务端源码见 `server/stock-log`。
 
-5. **设置提醒**
-   - 配置 Bark 推送（见下方教程）
-   - 选择提醒方式（通知推送/持续响铃）
+## 目录
 
-6. **开始监控**
-   - 点击「开始监控」按钮
-   - 程序将自动扫描库存状态
-
-### 高级功能
-
-#### 批量监控
-- 可以同时监控多个产品
-- 支持不同地区、不同门店的监控
-- 每个监控任务独立运行
-
-#### 自定义扫描间隔
-- 默认每轮查询间隔：30 秒；多门店请求逐个发送并至少间隔 3 秒，避免并发突发
-- 可根据网络情况调整
-- 建议不要设置过短，避免被限制
-
-#### 数据更新
-- 程序内置最新数据，无需手动更新
-- 支持手动刷新当前地区的产品数据
-- 自动检测数据更新
-
-> 桌面版门店取货查询使用 `/shop/retail/pickup-message`。旧 `/shop/fulfillment-messages` 返回的 541 错误页不是库存结果。接口受限、查询失败、未返回所选门店或 SKU 时均不判为无货。
-
-## 浏览器扩展版
-
-如桌面版持续收到官网验证，可使用 `browser-extension` 目录中的 Chrome / Edge 扩展。扩展让库存请求直接运行在 Apple 官网标签页中，复用同一个浏览器验证会话，支持 Windows 和 macOS。安装和使用说明见 `browser-extension/README.md`。
+- `main.go`、`view`、`theme`：Fyne 桌面界面。
+- `services`：库存请求、目录加载、提醒与配置。
+- `model`、`embedded`：数据类型与内置目录。
+- `scripts/package_macos.py`：macOS 通用包构建。
+- `browser-extension`：早期浏览器扩展实验，未随本次桌面接口修复验证，不作为推荐备用方案。
 
 ## 老孙的店
 
 如果抢你妹帮你抢到了心仪的 iPhone，欢迎来[老孙的店](https://store.sunbelife.com)逛逛，买点喜欢的东西支持我们。
 
-## 📱 Bark 推送设置
-
-Bark 是一款优秀的 iOS 推送工具，让你第一时间收到库存提醒！
-
-### 步骤 1：下载 Bark
-
-从 App Store 下载 Bark：
-
-🔗 **下载链接**：https://apps.apple.com/my/app/bark-custom-notifications/id1403753865
-
-![Bark App Store](https://ibeta-vue.oss-cn-hangzhou.aliyuncs.com/undefined20250910234709.png)
-
-### 步骤 2：注册设备
-
-1. 打开 Bark 应用
-2. 点击「注册设备」按钮
-3. 系统会自动生成你的推送地址
-
-![注册设备](https://ibeta-vue.oss-cn-hangzhou.aliyuncs.com/undefined20250910234832.png)
-
-### 步骤 3：配置推送
-
-1. 复制 Bark 生成的推送地址
-2. 在「抢你妹18」程序中粘贴到「Bark 推送」输入框
-3. 选择提醒方式：
-   - **通知推送**：静默推送，适合办公环境
-   - **持续响铃**：持续响铃提醒，确保不错过
-
-![配置推送](https://ibeta-vue.oss-cn-hangzhou.aliyuncs.com/undefined3a01fa675551970c68a81f9858b97637.png)
-
-### 步骤 4：开始监控
-
-1. 在「抢你妹18」中点击「开始监控」
-2. 程序开始扫描库存
-3. 有库存时会立即推送通知
-
-### 步骤 5：快速下单
-
-1. 点击 iPhone 上的推送通知
-2. 自动跳转到所选 SKU 的苹果官网商品页
-3. 完成下单购买
-
-
-<div align="center">
-
-**⭐ 如果这个项目对你有帮助，请给个 Star！**
-
-Made with ❤️ by [Your Name]
-
-</div>
-
-## 公开库存记录
-
-桌面版在有货提醒弹窗出现后，异步向 `https://sunbelife.com/api/iphone-stock/events` 提交公开门店库存（地区、省市、门店、型号、容量、颜色、SKU 和发现时间）。不提交用户身份、设备标识、Bark 地址或监控列表。失败不影响提醒，不会补传监控历史。
-
-后台：`https://sunbelife.com/iphone-stock`，仅需输入账单页相同的访问密码，无需账号；保留最近 180 天、最多 100000 条记录，同一分钟同一地区、门店和 SKU 合并。记录为客户端报告，仅供历史参考，不代表实时库存。
+问题反馈请到 [Issues](https://github.com/Sunbelife/apple-store-helper-15/issues)，附程序版本、地区和错误状态；请先遮盖 Bark 地址等凭据。

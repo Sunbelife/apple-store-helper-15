@@ -31,6 +31,7 @@ const (
 	StatusOutStock = "无货"
 	StatusInStock  = "有货"
 	StatusWait     = "等待"
+	StatusQuerying = "查询中"
 	StatusUnknown  = "未返回库存"
 	StatusVerify   = "需官网验证"
 	StatusLimited  = "库存接口受限"
@@ -316,7 +317,6 @@ func (s *listenService) Run() {
 					hasStock := false
 					storeKey := fmt.Sprintf("%s.%s", item.Store.StoreNumber, item.Product.Code)
 					if _, exists := skus[storeKey]; !exists {
-						s.UpdateStatus(key, StatusUnknown)
 						continue
 					}
 
@@ -457,13 +457,43 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 		return skus, nil
 	}
 
-	for _, link := range reqs {
+	for storeNumber, link := range reqs {
+		if state, err := s.Status.Get(); err == nil && state != Running {
+			break
+		}
+		for key, item := range s.items {
+			if item.Store.StoreNumber == storeNumber {
+				s.UpdateStatus(key, StatusQuerying)
+			}
+		}
+		fyne.Do(s.UpdateLogStr)
 		result, err := s.getSkuByLink(link)
 		if err != nil {
 			return skus, err
 		}
 		for key, available := range result {
 			skus[key] = available
+		}
+		foundStock := false
+		for key, item := range s.items {
+			if item.Store.StoreNumber != storeNumber {
+				continue
+			}
+			available, exists := result[key]
+			status := StatusUnknown
+			if exists {
+				status = StatusOutStock
+				if available {
+					status = StatusInStock
+					foundStock = true
+				}
+			}
+			s.UpdateStatus(key, status)
+		}
+		fyne.Do(s.UpdateLogStr)
+		// 发现目标库存后立即交给提醒流程，不等待其他门店。
+		if foundStock {
+			return skus, nil
 		}
 		if count > 1 {
 			s.waitForRetry(3 * time.Second)
