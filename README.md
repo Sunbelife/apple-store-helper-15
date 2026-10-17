@@ -48,13 +48,15 @@ npm --prefix desktop/frontend ci
 npm --prefix desktop/frontend run build
 go test ./...
 go test -race ./desktop
+# 真实生产监控循环的 11 分钟稳定性检查（不缩短查询间隔）
+QNM_LIVE_SOAK=1 QNM_SOAK_REPORT=/tmp/qiangnimei-soak.jsonl go test ./desktop -run TestLiveDesktopSoak -v -count=1 -timeout 13m
 # 可选的真实苹果接口检查，会发送一次公网请求
 APPLE_STOCK_LIVE=1 go test ./services -run TestLivePostalPickupGuangdong -v -count=1
 ```
 
 ## 查询与状态
 
-使用 `/shop/retail/pickup-message`。中国大陆优先按门店邮编查询附近门店，一次响应覆盖的监控项直接复用，避免重复请求。剩余门店请求至少间隔 3 秒；一轮结束后等 30 秒。
+使用 `/shop/retail/pickup-message`。程序先建立匿名 Apple 商店会话，在内存中保留商店发放的 Cookie 并复用连接；遇到 541 / 403 后，下一次退避重试会重新建立会话。不读取浏览器资料、Apple ID 或登录 Cookie，也不把会话 Cookie 写入配置或日志。中国大陆优先按门店邮编查询附近门店，一次响应覆盖的监控项直接复用，避免重复请求。剩余门店请求至少间隔 3 秒；一轮结束后等 30 秒。
 
 苹果可能间歇性返回 541 错误页、403、429 或 503。受限时立即结束当前轮次，按 1、2、4、5 分钟退避，成功后恢复正常频率。单个门店失败不会覆盖其他门店的有效结果，需结合每行更新时间判断新鲜度。响应缺失门店、SKU 或有效状态时显示「未返回库存」，不能当作「无货」。
 

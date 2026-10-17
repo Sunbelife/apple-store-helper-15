@@ -51,6 +51,7 @@ type savedSettings struct {
 	Bark  string   `json:"bark"`
 }
 type Desktop struct {
+	onStock      func(context.Context, uint64, Target)
 	query        func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error)
 	mu           sync.Mutex
 	ctx          context.Context
@@ -532,7 +533,11 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 				}
 			}
 			if found != nil {
-				a.stockFound(ctx, id, *found)
+				if a.onStock != nil {
+					a.onStock(ctx, id, *found)
+				} else {
+					a.stockFound(ctx, id, *found)
+				}
 				return
 			}
 		}

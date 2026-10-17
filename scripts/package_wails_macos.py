@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0.0'
+VERSION = '2.0.1'
 
 def run(args, **kwargs):
     subprocess.run(args, check=True, cwd=ROOT, **kwargs)
@@ -49,7 +49,7 @@ def main():
                 name = f'icon_{size}x{size}' + ('@2x' if scale == 2 else '') + '.png'
                 run(['sips', '-z', str(size * scale), str(size * scale), str(ROOT / 'Icon.png'), '--out', str(iconset / name)], stdout=subprocess.DEVNULL)
         run(['iconutil', '-c', 'icns', str(iconset), '-o', str(resources / 'AppIcon.icns')])
-        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='抢你妹2', CFBundleDisplayName='抢你妹2', CFBundleShortVersionString=VERSION, CFBundleVersion='200', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='11.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
+        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='抢你妹2', CFBundleDisplayName='抢你妹2', CFBundleShortVersionString=VERSION, CFBundleVersion='201', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='11.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
         (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(plist))
         run(['xattr', '-cr', str(app)])
         run(['codesign', '--force', '--deep', '--sign', '-', str(app)])

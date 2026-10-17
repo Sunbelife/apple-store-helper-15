@@ -555,8 +555,13 @@ func (s *listenService) getSkuByLinkContext(ctx context.Context, skUrl string) (
 	req.Header.Set("User-Agent", "AppleStoreHelper/1.8 (+https://github.com/Sunbelife/apple-store-helper-15)")
 	req.Header.Set("X-Requested-With", "XMLHttpRequest")
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	var resp *http.Response
+	if isApplePickupURL(s.Area.ShortCode, skUrl) {
+		resp, err = sessionForArea(s.Area.ShortCode).do(ctx, s.Area.ShortCode, skUrl)
+	} else {
+		client := &http.Client{Timeout: 10 * time.Second}
+		resp, err = client.Do(req)
+	}
 	if err != nil {
 		return skus, err
 	}
