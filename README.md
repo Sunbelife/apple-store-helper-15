@@ -4,13 +4,13 @@ Apple Store 零售店取货库存监控工具。选择产品和门店后自动�
 
 ## 当前版本
 
-桌面源码版本 **1.8.6**，使用 Go + Fyne 2.8.2。macOS 打包支持 Apple 芯片和 Intel，最低 macOS 11。源码也可用于其他桌面平台，但本仓库当前主要验证 macOS。
+桌面源码版本 **1.8.7**，使用 Go + Fyne 2.8.2。macOS 打包支持 Apple 芯片和 Intel，最低 macOS 11。源码也可用于其他桌面平台，但本仓库当前主要验证 macOS。
 
 支持中国大陆、香港、日本、新加坡、美国、英国、澳大利亚。产品选项来自各地区产品目录，包括 iPhone Duo、iPhone 18 Pro 系列及 Apple Watch；具体可选型号、颜色以程序加载的目录为准。不同地区库存接口可能受限，不能保证所有地区持续可用。
 
 ## 下载与运行
 
-已发布安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases)。源码版本与已发布安装包可能不同；1.8.6 当前为本地测试版，尚未发布 Release。
+已发布安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases)。源码版本与已发布安装包可能不同；1.8.7 当前为本地测试版，尚未发布 Release。
 
 源码运行需 Go 1.22+、C 编译工具链和 Fyne 的平台依赖。macOS 安装 Xcode Command Line Tools 后：
 
