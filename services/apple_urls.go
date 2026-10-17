@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -64,4 +65,19 @@ func ProductPurchaseURL(areaCode string, productType string, partNumber string, 
 	}
 
 	return fmt.Sprintf("%s/shop/product/%s", baseURL, partNumber), nil
+}
+
+// pickupLocationQuery follows the website's postal-code search in mainland China.
+// Some valid retail store IDs return HTTP 541 when sent as store=.
+func pickupLocationQuery(areaCode, storeNumber, postalCode string) string {
+	validPostal := len(postalCode) == 6
+	for _, c := range postalCode {
+		if c < '0' || c > '9' {
+			validPostal = false
+		}
+	}
+	if areaCode == "jp" || (areaCode == "cn" && validPostal) {
+		return "location=" + url.QueryEscape(postalCode)
+	}
+	return "store=" + url.QueryEscape(storeNumber)
 }

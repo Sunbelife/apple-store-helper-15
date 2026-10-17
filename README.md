@@ -4,13 +4,13 @@ Apple Store 零售店取货库存监控工具。选择产品和门店后自动�
 
 ## 当前版本
 
-桌面源码版本 **1.8.7**，使用 Go + Fyne 2.8.2。macOS 打包支持 Apple 芯片和 Intel，最低 macOS 11。源码也可用于其他桌面平台，但本仓库当前主要验证 macOS。
+桌面源码版本 **1.8.8**，使用 Go + Fyne 2.8.2。macOS 打包支持 Apple 芯片和 Intel，最低 macOS 11。源码也可用于其他桌面平台，但本仓库当前主要验证 macOS。
 
 支持中国大陆、香港、日本、新加坡、美国、英国、澳大利亚。产品选项来自各地区产品目录，包括 iPhone Duo、iPhone 18 Pro 系列及 Apple Watch；具体可选型号、颜色以程序加载的目录为准。不同地区库存接口可能受限，不能保证所有地区持续可用。
 
 ## 下载与运行
 
-已发布安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases)。源码版本与已发布安装包可能不同；1.8.7 当前为本地测试版，尚未发布 Release。
+已发布安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases)。源码版本与已发布安装包可能不同；1.8.8 当前为本地测试版，尚未发布 Release。
 
 源码运行需 Go 1.22+、C 编译工具链和 Fyne 的平台依赖。macOS 安装 Xcode Command Line Tools 后：
 
@@ -49,9 +49,9 @@ python3 scripts/package_macos.py --output dist
 | 查询失败 | 请求或解析失败，不能判断库存 |
 | 需官网验证 | 接口确实返回验证页面；外部浏览器会话不能自动共享给桌面应用 |
 
-同一门店的 SKU 合并查询，门店逐个请求，间隔至少 3 秒；每轮结束后等 30 秒。受限后等 60 秒重试。间隔目前固定，没有界面设置。有货时立即提醒，不等其他门店查完。
+中国大陆优先按邮编查询附近门店；返回结果覆盖的监控项不再重复请求。同一门店的 SKU 合并查询，剩余门店逐个请求，间隔至少 3 秒；每轮结束后等 30 秒。接口受限时停止当前轮次，按 1、2、4、5 分钟退避重试，成功后恢复正常间隔；其他门店保留上次结果和时间。间隔目前固定，没有界面设置。有货时立即提醒，不等其他门店查完。
 
-当前门店取货接口为 `/shop/retail/pickup-message`。旧 `/shop/fulfillment-messages` 的 HTTP 541 错误页不能作为库存结果；接口失败或字段缺失均不推断为无货。库存可能在点击通知前变化。
+当前门店取货接口为 `/shop/retail/pickup-message`。旧 `/shop/fulfillment-messages` 的 HTTP 541 错误页不能作为库存结果；接口失败或字段缺失均不推断为无货。单个门店失败只更新该门店，不覆盖其他门店的有效结果。库存可能在点击通知前变化。
 
 ## 数据与配置
 

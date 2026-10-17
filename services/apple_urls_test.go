@@ -94,3 +94,19 @@ func TestPickupMessagesURL(t *testing.T) {
 		}
 	}
 }
+
+func TestPickupLocationQuery(t *testing.T) {
+	for _, tt := range []struct{ area, store, postal, want string }{
+		{"cn", "R639", "510623", "location=510623"},
+		{"cn", "R761", "518001", "location=518001"},
+		{"cn", "R793", "518101", "location=518101"},
+		{"cn", "R484", "深圳", "store=R484"},
+		{"cn", "R484", "", "store=R484"},
+		{"jp", "R079", "104-0061", "location=104-0061"},
+		{"us", "R001", "95014", "store=R001"},
+	} {
+		if got := pickupLocationQuery(tt.area, tt.store, tt.postal); got != tt.want {
+			t.Errorf("%+v got %s", tt, got)
+		}
+	}
+}

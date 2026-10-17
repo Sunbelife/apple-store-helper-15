@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestParseStockResponse(t *testing.T) {
@@ -143,4 +144,54 @@ func TestLiveRetailPickup(t *testing.T) {
 		t.Fatal("target store/SKU missing from live response")
 	}
 	t.Logf("Real Apple retail pickup response: R572 MK2P4CH/A available=%v", available)
+}
+
+func TestStoreResultsRequireAllExplicitSKUs(t *testing.T) {
+	items := []ListenItem{
+		{Store: model.Store{StoreNumber: "R639"}, Product: model.Product{Code: "MK2P4CH/A"}},
+		{Store: model.Store{StoreNumber: "R639"}, Product: model.Product{Code: "OTHERCH/A"}},
+	}
+	results := map[string]bool{"R639.MK2P4CH/A": false}
+	if storeResultsComplete(items, results) {
+		t.Fatal("missing SKU must still be queried")
+	}
+	results["R639.OTHERCH/A"] = true
+	if !storeResultsComplete(items, results) {
+		t.Fatal("both true and false are explicit results and may be reused")
+	}
+}
+
+func TestLivePostalPickupGuangdong(t *testing.T) {
+	if os.Getenv("APPLE_STOCK_LIVE") != "1" {
+		t.Skip("opt-in public Apple API check")
+	}
+	link, err := pickupMessagesURL("cn", "pl=true&mts.0=regular&parts.0=MK2P4CH%2FA&"+pickupLocationQuery("cn", "R639", "510623"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := listenService{Area: modelAreaForTest("cn")}
+	stock, err := service.getSkuByLink(link)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, store := range []string{"R639", "R577", "R793", "R484", "R761"} {
+		available, exists := stock[store+".MK2P4CH/A"]
+		if !exists {
+			t.Errorf("missing monitored store %s", store)
+		}
+		t.Logf("%s available=%v", store, available)
+	}
+}
+
+func TestStockBackoff(t *testing.T) {
+	delay := time.Duration(0)
+	for _, want := range []time.Duration{time.Minute, 2 * time.Minute, 4 * time.Minute, 5 * time.Minute, 5 * time.Minute} {
+		delay = nextStockRetryBackoff(delay, true)
+		if delay != want {
+			t.Fatalf("got %s want %s", delay, want)
+		}
+	}
+	if nextStockRetryBackoff(delay, false) != 0 {
+		t.Fatal("successful round must clear backoff")
+	}
 }

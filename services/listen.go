@@ -69,6 +69,8 @@ type listenService struct {
 	requestCount    int64 // 请求计数器
 	verifyNotified  bool
 	limitedNotified bool
+	lookupLimited   bool
+	retryBackoff    time.Duration
 }
 
 type ListenItem struct {
@@ -363,7 +365,13 @@ func (s *listenService) Run() {
 				}
 
 				fyne.Do(s.UpdateLogStr)
-				s.waitForRetry(30 * time.Second)
+				retryAfter := 30 * time.Second
+				s.retryBackoff = nextStockRetryBackoff(s.retryBackoff, s.lookupLimited)
+				if s.retryBackoff > 0 {
+					retryAfter = s.retryBackoff
+				}
+				log.Printf("Next stock round in %s", retryAfter)
+				s.waitForRetry(retryAfter)
 			} else if ok == nil && stats != Running {
 				s.verifyNotified = false
 				s.limitedNotified = false
@@ -376,6 +384,7 @@ func (s *listenService) Run() {
 
 func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 	skus = map[string]bool{}
+	s.lookupLimited = false
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -406,34 +415,20 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 			// 使用特定店铺查询API格式
 			var params []string
 
-			// 1. 固定参数 fae=true
-			params = append(params, "fae=true")
-
-			// 2. pl=true（只出现一次）
+			// 使用当前 pickup-message 的必要参数。
 			params = append(params, "pl=true")
 
 			// 3. 所有产品的mts.i=regular和parts.i=SKU（索引递增）
 			for i, item := range items {
 				params = append(params, fmt.Sprintf("mts.%d=regular", i))
-				// 注意：SKU中的/不编码，保持原样
-				params = append(params, fmt.Sprintf("parts.%d=%s", i, item.Product.Code))
+				params = append(params, fmt.Sprintf("parts.%d=%s", i, url.QueryEscape(item.Product.Code)))
 			}
 
 			// 4. 添加查询参数
 			if len(items) > 0 {
 				store := items[0].Store
 
-				// 各地区特殊处理
-				if s.Area.ShortCode == "jp" {
-					// 日本使用location参数（邮编），cppart参数放在最后
-					params = append(params, "location="+store.District)
-					log.Printf("Japan location query for store %s (%s) with postal code %s",
-						store.StoreNumber, store.CityStoreName, store.District)
-				} else {
-					// 其他地区使用店铺编号参数
-					params = append(params, fmt.Sprintf("store=%s", store.StoreNumber))
-					log.Printf("Store-specific query for store %s (%s)", store.StoreNumber, store.CityStoreName)
-				}
+				params = append(params, pickupLocationQuery(s.Area.ShortCode, store.StoreNumber, store.District))
 			}
 
 			// 5. 日本特殊参数cppart放在最后
@@ -458,6 +453,9 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 	}
 
 	for storeNumber, link := range reqs {
+		if storeResultsComplete(group[storeNumber], skus) {
+			continue
+		}
 		if state, err := s.Status.Get(); err == nil && state != Running {
 			break
 		}
@@ -469,17 +467,36 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 		fyne.Do(s.UpdateLogStr)
 		result, err := s.getSkuByLink(link)
 		if err != nil {
-			return skus, err
+			status := StatusError
+			if errors.Is(err, errAppleStockLimited) {
+				status = StatusLimited
+			}
+			if errors.Is(err, errAppleVerificationRequired) {
+				status = StatusVerify
+			}
+			log.Printf("Store %s lookup failed: %v", storeNumber, err)
+			for key, item := range s.items {
+				if item.Store.StoreNumber == storeNumber {
+					s.UpdateStatus(key, status)
+				}
+			}
+			fyne.Do(s.UpdateLogStr)
+			if status == StatusLimited || status == StatusVerify {
+				s.lookupLimited = true
+				return skus, nil
+			}
+			s.waitForRetry(3 * time.Second)
+			continue
 		}
 		for key, available := range result {
 			skus[key] = available
 		}
 		foundStock := false
 		for key, item := range s.items {
-			if item.Store.StoreNumber != storeNumber {
+			available, exists := result[key]
+			if !exists && item.Store.StoreNumber != storeNumber {
 				continue
 			}
-			available, exists := result[key]
 			status := StatusUnknown
 			if exists {
 				status = StatusOutStock
@@ -542,7 +559,7 @@ func (s *listenService) getSkuByLink(skUrl string) (map[string]bool, error) {
 		return skus, err
 	}
 	if err := classifyStockHTTPResponse(resp.StatusCode, body); err != nil {
-		return skus, err
+		return skus, fmt.Errorf("HTTP %d: %w", resp.StatusCode, err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return skus, fmt.Errorf("stock endpoint returned HTTP %d", resp.StatusCode)
@@ -774,4 +791,30 @@ func (s *listenService) SendPushNotificationByBark(title string, content string,
 	}
 
 	log.Printf("Bark notification sent successfully, response: %s", string(body))
+}
+
+// A postal response can include nearby monitored stores. Query only missing SKUs.
+func storeResultsComplete(items []ListenItem, results map[string]bool) bool {
+	if len(items) == 0 {
+		return false
+	}
+	for _, item := range items {
+		if _, exists := results[item.Store.StoreNumber+"."+item.Product.Code]; !exists {
+			return false
+		}
+	}
+	return true
+}
+
+func nextStockRetryBackoff(previous time.Duration, limited bool) time.Duration {
+	if !limited {
+		return 0
+	}
+	if previous < time.Minute {
+		return time.Minute
+	}
+	if previous >= 5*time.Minute/2 {
+		return 5 * time.Minute
+	}
+	return previous * 2
 }
