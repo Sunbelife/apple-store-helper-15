@@ -7,3 +7,10 @@ tmp/build-errors.log
 /*.app/
 
 /dist/
+
+/desktop/frontend/node_modules/
+/desktop/frontend/dist/
+/desktop/frontend/wailsjs/
+/desktop/build/bin/
+/desktop/抢你妹2
+**/user_settings.json

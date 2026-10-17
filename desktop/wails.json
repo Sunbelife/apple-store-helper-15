@@ -1,0 +1,17 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "qiangnimei2",
+  "outputfilename": "抢你妹2",
+  "frontend:install": "npm ci",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": { "name": "Sunbelife", "email": "i@sunbelife.com" },
+  "info": {
+    "companyName": "Sunbelife",
+    "productName": "抢你妹2",
+    "productVersion": "2.0.0",
+    "copyright": "Sunbelife",
+    "comments": "Apple Store 库存监控"
+  }
+}

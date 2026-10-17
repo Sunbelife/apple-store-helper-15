@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -531,13 +532,21 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 }
 
 func (s *listenService) getSkuByLink(skUrl string) (map[string]bool, error) {
+	return s.getSkuByLinkContext(context.Background(), skUrl)
+}
+
+func (s *listenService) getSkuByLinkContext(ctx context.Context, skUrl string) (map[string]bool, error) {
 	skus := map[string]bool{}
 
 	// 添加随机延迟（100-500ms）
 	delay := time.Duration(100+rand.Intn(400)) * time.Millisecond
-	time.Sleep(delay)
+	select {
+	case <-time.After(delay):
+	case <-ctx.Done():
+		return skus, ctx.Err()
+	}
 
-	req, err := http.NewRequest(http.MethodGet, skUrl, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, skUrl, nil)
 	if err != nil {
 		return skus, err
 	}
