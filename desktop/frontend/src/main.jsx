@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.6 · 本地测试版</span>
+        <span>2.0.7 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -493,7 +493,7 @@ function App() {
                             <span className="stock-label">{t.status === COOLDOWN_STATUS ? "冷却中" : t.status === "无货" ? "暂无库存" : t.status}</span>
                             <span className="stock-checked">
                               {t.checkedAt
-                                ? `${new Date(t.checkedAt).toLocaleTimeString("zh-CN", { hour12: false })} 检查`
+                                ? `${new Date(t.checkedAt).toLocaleTimeString("zh-CN", { hour12: false })}`
                                 : "等待首次检查"}
                             </span>
                           </span>

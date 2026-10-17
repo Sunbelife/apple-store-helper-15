@@ -1125,6 +1125,39 @@ input:focus-visible {
 .purchase-dialog > .button {
   margin-top: 4px;
 }
+/* Stock reads as a quiet line of information, never as a button. */
+.stock,
+.stock.in,
+.stock.out,
+.stock.waiting,
+.stock.querying,
+.stock.error {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  gap: 6px;
+}
+.stock-emoji {
+  font-size: 12px;
+}
+.stock-copy {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 7px;
+}
+.stock-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+.stock-checked {
+  font-size: 10px;
+  color: #aaa;
+}
+.stock-checked::before {
+  content: "·";
+  margin-right: 7px;
+  color: #c6c6c6;
+}
 /* Compact configuration stays fully visible at the supported window height. */
 .configuration {
   padding: 16px 18px 12px;
