@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import "./style.css";
 import ShopRail from "./ShopRail.jsx";
-import storeLogo from "./assets/store-logo.png";
+import profileAvatar from "./assets/weibo-avatar.jpg";
 const COOLDOWN_STATUS = "触发风控，冷却中，稍后再尝试";
 const call = (n, ...a) =>
   window.go?.main?.Desktop?.[n](...a) ??
@@ -241,13 +241,13 @@ function App() {
   return (
     <>
       <div className="titlebar">
-        <span>老孙抢你妹 2026</span>
-        <span>2.0.3 · 本地测试版</span>
+        <span aria-hidden="true" />
+        <span>2.0.4 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
           <span className="brand-mark">
-            <img src={storeLogo} alt="老孙的店" />
+            <img src={profileAvatar} alt="Sunbelife 微博头像" />
           </span>
           <div>
             <h1>
@@ -464,8 +464,8 @@ function App() {
               <table>
                 <thead>
                   <tr>
-                    <th>门店 / 产品</th>
                     <th>库存状态</th>
+                    <th>门店 / 产品</th>
                     <th>更新时间</th>
                     <th>
                       <span className="sr-only">操作</span>
@@ -475,19 +475,6 @@ function App() {
                 <tbody>
                   {shown.map((t) => (
                     <tr key={t.id}>
-                      <td>
-                        <button
-                          className="store-link"
-                          onClick={() =>
-                            action(() => call("OpenPurchase", t.id))
-                          }
-                        >
-                          {t.store.CityStoreName}
-                          <ArrowUpRight size={12} />
-                        </button>
-                        <div className="product-name">{t.product.Title}</div>
-                        <div className="area-name">{t.area.Title}</div>
-                      </td>
                       <td>
                         <span
                           className={
@@ -500,9 +487,9 @@ function App() {
                             }[t.status] || "error")
                           }
                         >
-                          {t.status === "查询中" && (
-                            <RefreshCw size={11} className="spin" />
-                          )}
+                          <span className="stock-emoji" aria-hidden="true">
+                            {({ 有货: "🟢", 无货: "⚪️", 等待: "⏳", 查询中: "🔎" }[t.status]) || (t.status === COOLDOWN_STATUS ? "🧊" : "⚠️")}
+                          </span>
                           {t.status === COOLDOWN_STATUS ? "冷却中" : t.status}
                         </span>
                         {t.detail && (
@@ -511,6 +498,19 @@ function App() {
                             <p>{t.detail}</p>
                           </details>
                         )}
+                      </td>
+                      <td>
+                        <button
+                          className="store-link"
+                          onClick={() =>
+                            action(() => call("OpenPurchase", t.id))
+                          }
+                        >
+                          {t.store.CityStoreName}
+                          <ArrowUpRight size={12} />
+                        </button>
+                        <div className="product-name">{t.product.Title}</div>
+
                       </td>
                       <td className="timestamp">
                         {t.checkedAt

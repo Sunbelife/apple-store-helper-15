@@ -346,10 +346,10 @@ th {
 }
 th:first-child {
   padding-left: 25px;
-  width: 51%;
+  width: 17%;
 }
 th:nth-child(2) {
-  width: 23%;
+  width: 57%;
 }
 th:nth-child(3) {
   width: 19%;
@@ -359,7 +359,7 @@ th:last-child {
   padding: 0;
 }
 td {
-  padding: 17px 12px;
+  padding: 7px 12px;
   border-bottom: 1px solid #f3f3f3;
   vertical-align: middle;
 }
@@ -388,8 +388,8 @@ td:first-child {
 .product-name {
   font-size: 10px;
   color: #9d9d9d;
-  margin-top: 7px;
-  line-height: 1.6;
+  margin-top: 2px;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 .area-name {
