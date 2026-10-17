@@ -667,6 +667,10 @@ td:first-child {
 .stock-dialog > .text-button {
   margin-top: 8px;
 }
+.stock-shop-button {
+  display: flex;
+  margin: 10px auto 0;
+}
 .toast {
   position: fixed;
   bottom: 26px;

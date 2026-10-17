@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.8 · 本地测试版</span>
+        <span>2.0.9 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -708,6 +708,13 @@ function App() {
               onClick={() => action(() => call("OpenPurchase", s.alert.id))}
             >
               前往购买
+              <ArrowUpRight size={16} />
+            </button>
+            <button
+              className="button secondary stock-shop-button"
+              onClick={() => action(() => call("OpenShop"))}
+            >
+              来老孙的店买个配件
               <ArrowUpRight size={16} />
             </button>
             <button
