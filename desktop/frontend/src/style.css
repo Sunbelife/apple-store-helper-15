@@ -346,10 +346,13 @@ th {
 }
 th:first-child {
   padding-left: 25px;
-  width: 34%;
+  width: 19%;
 }
 th:nth-child(2) {
-  width: 59%;
+  width: 19%;
+}
+th:nth-child(3) {
+  width: 55%;
 }
 th:last-child {
   width: 7%;

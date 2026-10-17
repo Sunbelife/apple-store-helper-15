@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.7 · 本地测试版</span>
+        <span>2.0.8 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -464,6 +464,7 @@ function App() {
               <table>
                 <thead>
                   <tr>
+                    <th>更新时间</th>
                     <th>库存状态</th>
                     <th>门店 / 产品</th>
                     <th>
@@ -474,6 +475,11 @@ function App() {
                 <tbody>
                   {shown.map((t) => (
                     <tr key={t.id}>
+                      <td className="timestamp">
+                        {t.checkedAt
+                          ? new Date(t.checkedAt).toLocaleTimeString("zh-CN", { hour12: false })
+                          : "—"}
+                      </td>
                       <td>
                         <span
                           className={
@@ -491,11 +497,6 @@ function App() {
                           </span>
                           <span className="stock-copy">
                             <span className="stock-label">{t.status === COOLDOWN_STATUS ? "冷却中" : t.status === "无货" ? "暂无库存" : t.status}</span>
-                            <span className="stock-checked">
-                              {t.checkedAt
-                                ? `${new Date(t.checkedAt).toLocaleTimeString("zh-CN", { hour12: false })}`
-                                : "等待首次检查"}
-                            </span>
                           </span>
                         </span>
                         {t.detail && (
