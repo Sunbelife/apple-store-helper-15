@@ -31,7 +31,10 @@ const (
 	StatusOutStock = "无货"
 	StatusInStock  = "有货"
 	StatusWait     = "等待"
+	StatusUnknown  = "未返回库存"
 	StatusVerify   = "需官网验证"
+	StatusLimited  = "库存接口受限"
+	StatusError    = "查询失败"
 
 	Pause   = "暂停"
 	Running = "监听中"
@@ -40,11 +43,7 @@ const (
 )
 
 var errAppleVerificationRequired = errors.New("Apple Store requires browser verification")
-
-type stockLookupResult struct {
-	skus map[string]bool
-	err  error
-}
+var errAppleStockLimited = errors.New("Apple 库存接口暂不可用或受限，打开商品页不能解除该状态")
 
 func min(a, b int) int {
 	if a < b {
@@ -61,13 +60,14 @@ var Listen = listenService{
 }
 
 type listenService struct {
-	items          map[string]ListenItem
-	Status         binding.String
-	Area           model.Area
-	Logs           *widget.Label
-	BarkNotifyUrl  string
-	requestCount   int64 // 请求计数器
-	verifyNotified bool
+	items           map[string]ListenItem
+	Status          binding.String
+	Area            model.Area
+	Logs            *widget.Label
+	BarkNotifyUrl   string
+	requestCount    int64 // 请求计数器
+	verifyNotified  bool
+	limitedNotified bool
 }
 
 type ListenItem struct {
@@ -154,6 +154,11 @@ func (s *listenService) SetBarkUrl(barkUrl string) {
 
 func (s *listenService) SetListenItems(items map[string]ListenItem) {
 	s.items = items
+	// 保存的是监控配置；历史查询状态不能代表本次启动的会话。
+	for key, item := range s.items {
+		item.Status = StatusWait
+		s.items[key] = item
+	}
 	s.UpdateLogStr()
 }
 
@@ -207,6 +212,20 @@ func (s *listenService) Run() {
 				skus, err := s.groupByStore()
 				if err != nil {
 					log.Printf("Stock lookup failed: %v", err)
+					if errors.Is(err, errAppleStockLimited) {
+						for key := range s.items {
+							s.UpdateStatus(key, StatusLimited)
+						}
+						if !s.limitedNotified {
+							s.limitedNotified = true
+							fyne.Do(func() {
+								dialog.ShowInformation("库存接口受限", "Apple 库存接口返回了不可用页面。程序没有获得有效库存，不能据此判断有货或无货。无需在商品页反复验证；程序将在 60 秒后重试。", view.Window)
+							})
+						}
+						fyne.Do(s.UpdateLogStr)
+						s.waitForRetry(time.Minute)
+						continue
+					}
 					if errors.Is(err, errAppleVerificationRequired) {
 						var purchaseURL string
 						for key, item := range s.items {
@@ -224,7 +243,7 @@ func (s *listenService) Run() {
 						if !s.verifyNotified && purchaseURL != "" {
 							s.verifyNotified = true
 							s.openBrowser(purchaseURL)
-							msg := "Apple 官网要求浏览器验证，已打开所选商品页。请手动完成验证，程序将每 15 秒自动重试，通过后继续监控。"
+							msg := "Apple 库存接口返回验证页面。已打开所选商品页，但外部浏览器的验证会话无法自动共享给桌面版；程序每 15 秒重试，只有实际查到有效库存后，列表才会恢复。"
 							fyne.Do(func() {
 								dialog.ShowInformation("需官网验证", msg, view.Window)
 							})
@@ -232,9 +251,12 @@ func (s *listenService) Run() {
 						}
 						fyne.Do(s.UpdateLogStr)
 						log.Printf("Apple verification is still required; retrying in %s", verificationRetryInterval)
-						time.Sleep(verificationRetryInterval)
+						s.waitForRetry(verificationRetryInterval)
 						continue
 					} else {
+						for key := range s.items {
+							s.UpdateStatus(key, StatusError)
+						}
 						fyne.Do(func() {
 							dialog.ShowError(fmt.Errorf("库存查询失败：%v", err), view.Window)
 						})
@@ -243,6 +265,7 @@ func (s *listenService) Run() {
 					fyne.Do(s.UpdateLogStr)
 					continue
 				}
+				s.limitedNotified = false
 				if s.verifyNotified {
 					log.Println("Apple verification cleared; automatic monitoring resumed")
 					s.verifyNotified = false
@@ -292,6 +315,10 @@ func (s *listenService) Run() {
 					// 检查指定店铺是否有库存
 					hasStock := false
 					storeKey := fmt.Sprintf("%s.%s", item.Store.StoreNumber, item.Product.Code)
+					if _, exists := skus[storeKey]; !exists {
+						s.UpdateStatus(key, StatusUnknown)
+						continue
+					}
 
 					if available, exists := skus[storeKey]; exists && available {
 						hasStock = true
@@ -336,8 +363,10 @@ func (s *listenService) Run() {
 				}
 
 				fyne.Do(s.UpdateLogStr)
+				s.waitForRetry(30 * time.Second)
 			} else if ok == nil && stats != Running {
 				s.verifyNotified = false
+				s.limitedNotified = false
 			}
 
 			time.Sleep(time.Millisecond * 500)
@@ -414,7 +443,7 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 
 			// 构建完整URL
 			queryStr := strings.Join(params, "&")
-			link, err := fulfillmentMessagesURL(s.Area.ShortCode, queryStr)
+			link, err := pickupMessagesURL(s.Area.ShortCode, queryStr)
 			if err != nil {
 				return skus, err
 			}
@@ -428,23 +457,19 @@ func (s *listenService) groupByStore() (skus map[string]bool, err error) {
 		return skus, nil
 	}
 
-	ch := make(chan stockLookupResult, count)
-
 	for _, link := range reqs {
-		go func(stockURL string) {
-			result, err := s.getSkuByLink(stockURL)
-			ch <- stockLookupResult{skus: result, err: err}
-		}(link)
-	}
-
-	for i := 0; i < count; i++ {
-		result := <-ch
-		if result.err != nil {
-			return skus, result.err
+		result, err := s.getSkuByLink(link)
+		if err != nil {
+			return skus, err
 		}
-		for key, v := range result.skus {
-			skus[key] = v
-			log.Printf("Received from channel: key=%s, available=%v", key, v)
+		for key, available := range result {
+			skus[key] = available
+		}
+		if count > 1 {
+			s.waitForRetry(3 * time.Second)
+		}
+		if state, err := s.Status.Get(); err == nil && state != Running {
+			break
 		}
 	}
 
@@ -486,14 +511,45 @@ func (s *listenService) getSkuByLink(skUrl string) (map[string]bool, error) {
 	if err != nil {
 		return skus, err
 	}
-	if resp.StatusCode == 541 {
-		return skus, errAppleVerificationRequired
+	if err := classifyStockHTTPResponse(resp.StatusCode, body); err != nil {
+		return skus, err
 	}
 	if resp.StatusCode != http.StatusOK {
 		return skus, fmt.Errorf("stock endpoint returned HTTP %d", resp.StatusCode)
 	}
 
 	return parseStockResponse(body, skUrl)
+}
+
+func classifyStockHTTPResponse(status int, body []byte) error {
+	text := strings.ToLower(string(body))
+	if status == 541 {
+		if strings.Contains(text, "page not found") || strings.Contains(text, "page you’re looking for") || strings.Contains(text, "page you're looking for") {
+			return errAppleStockLimited
+		}
+		return errAppleVerificationRequired
+	}
+	if status == http.StatusForbidden || status == http.StatusTooManyRequests || status == http.StatusServiceUnavailable {
+		return errAppleStockLimited
+	}
+	return nil
+}
+
+func (s *listenService) waitForRetry(delay time.Duration) {
+	deadline := time.NewTimer(delay)
+	defer deadline.Stop()
+	ticker := time.NewTicker(250 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-deadline.C:
+			return
+		case <-ticker.C:
+			if state, err := s.Status.Get(); err != nil || state != Running {
+				return
+			}
+		}
+	}
 }
 
 func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
@@ -519,6 +575,9 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 				uniqKey := fmt.Sprintf("%s.%s", storeNumber, productCode)
 				// 检查 pickupDisplay 字段，"available" 表示有货，"ineligible" 表示无货
 				pickupDisplay := availability.Get("pickupDisplay").String()
+				if pickupDisplay != "available" && pickupDisplay != "unavailable" && pickupDisplay != "ineligible" {
+					continue
+				}
 				isAvailable := (pickupDisplay == "available")
 
 				// pickupDisplay 为 "available" 表示有货
@@ -542,6 +601,9 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 					uniqKey := fmt.Sprintf("%s.%s", storeNumber, productCode)
 					// 检查 pickupDisplay 字段，"available" 表示有货，"ineligible" 表示无货
 					pickupDisplay := availability.Get("pickupDisplay").String()
+					if pickupDisplay != "available" && pickupDisplay != "unavailable" && pickupDisplay != "ineligible" {
+						continue
+					}
 					isAvailable := (pickupDisplay == "available")
 
 					// pickupDisplay 为 "available" 表示有货
@@ -578,6 +640,9 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 						pickupDisplay = productInfo.Get("messageTypes.compact.pickupDisplay").String()
 					}
 
+					if pickupDisplay != "available" && pickupDisplay != "unavailable" && pickupDisplay != "ineligible" {
+						return true
+					}
 					isAvailable := (pickupDisplay == "available")
 
 					skus[uniqKey] = isAvailable

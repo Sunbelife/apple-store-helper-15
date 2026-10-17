@@ -34,31 +34,31 @@ func FetchStoresForArea(areaCode string, location string) ([]model.Store, error)
 		sampleProduct = "MYEW3CH/A" // iPhone 16 白色 128GB
 		// 中国大陆使用邮编格式，如果location不是邮编则转换为邮编
 		postalCode := getPostalCodeForLocation(location)
-		apiURL = fmt.Sprintf("https://www.apple.com.cn/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
+		apiURL = fmt.Sprintf("https://www.apple.com.cn/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, postalCode)
 	case "hk":
 		sampleProduct = "MYEW3ZA/A" // 香港的iPhone 16 白色 128GB
-		apiURL = fmt.Sprintf("https://www.apple.com/hk/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=Central",
+		apiURL = fmt.Sprintf("https://www.apple.com/hk/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=Central",
 			sampleProduct)
 	case "jp":
 		sampleProduct = "MYDR3J/A" // 日本的iPhone 16
-		apiURL = fmt.Sprintf("https://www.apple.com/jp/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s&cppart=UNLOCKED_JP",
+		apiURL = fmt.Sprintf("https://www.apple.com/jp/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s&cppart=UNLOCKED_JP",
 			sampleProduct, url.QueryEscape(location))
 	case "sg":
 		sampleProduct = "MXY23ZP/A" // 新加坡的iPhone 16 Plus 256GB Ultramarine
-		apiURL = fmt.Sprintf("https://www.apple.com/sg/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=Singapore",
+		apiURL = fmt.Sprintf("https://www.apple.com/sg/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=Singapore",
 			sampleProduct)
 	case "us":
 		sampleProduct = "MYAR3LL/A" // 美国的iPhone 16 128GB Black
-		apiURL = fmt.Sprintf("https://www.apple.com/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
+		apiURL = fmt.Sprintf("https://www.apple.com/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, url.QueryEscape(location))
 	case "uk":
 		sampleProduct = "MYE93QN/A" // 英国的iPhone 16 128GB White
-		apiURL = fmt.Sprintf("https://www.apple.com/uk/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
+		apiURL = fmt.Sprintf("https://www.apple.com/uk/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, url.QueryEscape(location))
 	case "au":
 		sampleProduct = "MYE93X/A" // 澳大利亚的iPhone 16 128GB White
-		apiURL = fmt.Sprintf("https://www.apple.com/au/shop/fulfillment-messages?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
+		apiURL = fmt.Sprintf("https://www.apple.com/au/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, url.QueryEscape(location))
 	default:
 		return nil, fmt.Errorf("unsupported area code: %s", areaCode)

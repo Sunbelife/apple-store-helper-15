@@ -18,12 +18,12 @@ func appleStoreBaseURL(areaCode string) (string, error) {
 	}
 }
 
-func fulfillmentMessagesURL(areaCode string, query string) (string, error) {
+func pickupMessagesURL(areaCode string, query string) (string, error) {
 	baseURL, err := appleStoreBaseURL(areaCode)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s/shop/fulfillment-messages?%s", baseURL, query), nil
+	return fmt.Sprintf("%s/shop/retail/pickup-message?%s", baseURL, query), nil
 }
 
 // ProductPurchaseURL returns the locale-specific Apple purchase page.

@@ -74,18 +74,18 @@ func TestProductPurchaseURLRejectsMismatchedWatchPath(t *testing.T) {
 	}
 }
 
-func TestFulfillmentMessagesURL(t *testing.T) {
+func TestPickupMessagesURL(t *testing.T) {
 	tests := map[string]string{
-		"cn": "https://www.apple.com.cn/shop/fulfillment-messages?fae=true",
-		"hk": "https://www.apple.com/hk/shop/fulfillment-messages?fae=true",
-		"jp": "https://www.apple.com/jp/shop/fulfillment-messages?fae=true",
-		"sg": "https://www.apple.com/sg/shop/fulfillment-messages?fae=true",
-		"us": "https://www.apple.com/shop/fulfillment-messages?fae=true",
-		"uk": "https://www.apple.com/uk/shop/fulfillment-messages?fae=true",
-		"au": "https://www.apple.com/au/shop/fulfillment-messages?fae=true",
+		"cn": "https://www.apple.com.cn/shop/retail/pickup-message?fae=true",
+		"hk": "https://www.apple.com/hk/shop/retail/pickup-message?fae=true",
+		"jp": "https://www.apple.com/jp/shop/retail/pickup-message?fae=true",
+		"sg": "https://www.apple.com/sg/shop/retail/pickup-message?fae=true",
+		"us": "https://www.apple.com/shop/retail/pickup-message?fae=true",
+		"uk": "https://www.apple.com/uk/shop/retail/pickup-message?fae=true",
+		"au": "https://www.apple.com/au/shop/retail/pickup-message?fae=true",
 	}
 	for region, want := range tests {
-		got, err := fulfillmentMessagesURL(region, "fae=true")
+		got, err := pickupMessagesURL(region, "fae=true")
 		if err != nil {
 			t.Fatal(err)
 		}

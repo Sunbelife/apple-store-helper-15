@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.8.4-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.6-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
 ![Go](https://img.shields.io/badge/Go-1.17+-00ADD8.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -49,7 +49,7 @@
 
 #### 方式一：直接下载（推荐）
 1. 访问 [Releases 页面](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)
-2. 下载最新 Release 的 `qiangnimei18-v1.8.4-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
+2. 下载最新 Release 的 `qiangnimei18-v1.8.6-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
 3. 解压后双击运行
 
 #### 方式二：从源码编译
@@ -95,7 +95,7 @@
 - 每个监控任务独立运行
 
 #### 自定义扫描间隔
-- 默认扫描间隔：500ms
+- 默认每轮查询间隔：30 秒；多门店请求逐个发送并至少间隔 3 秒，避免并发突发
 - 可根据网络情况调整
 - 建议不要设置过短，避免被限制
 
@@ -104,7 +104,7 @@
 - 支持手动刷新当前地区的产品数据
 - 自动检测数据更新
 
-> Apple 目前会对库存接口触发浏览器验证。桌面版会打开对应的官网商品或选配页并继续重试，但 Safari 的验证会话无法共享给桌面版请求，因此可能持续返回验证状态；这种情况下请使用下面的浏览器扩展版。
+> 桌面版门店取货查询使用 `/shop/retail/pickup-message`。旧 `/shop/fulfillment-messages` 返回的 541 错误页不是库存结果。接口受限、查询失败、未返回所选门店或 SKU 时均不判为无货。
 
 ## 浏览器扩展版
 
