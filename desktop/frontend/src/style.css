@@ -1109,6 +1109,51 @@ input:focus-visible {
 .purchase-dialog > .button {
   margin-top: 4px;
 }
+/* Compact configuration stays fully visible at the supported window height. */
+.configuration {
+  padding: 16px 18px 12px;
+}
+.configuration .section-heading {
+  margin-bottom: 12px;
+}
+.configuration .field {
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.configuration > .field {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.configuration > .field > span:first-child {
+  flex: 0 0 36px;
+  white-space: nowrap;
+}
+.configuration > .field > .select {
+  flex: 1;
+  min-width: 0;
+}
+.configuration select {
+  height: 34px;
+  padding-left: 9px;
+  padding-right: 24px;
+  font-size: 12px;
+}
+.configuration .select svg {
+  top: 10px;
+  right: 7px;
+}
+.configuration .form-divider {
+  margin: 13px 0 7px;
+}
+.configuration .add {
+  min-height: 35px;
+  margin-top: 2px;
+}
+.configuration .form-note {
+  margin-top: 8px;
+  line-height: 1.6;
+}
 @media (max-height: 780px) {
   .app-header {
     padding-top: 12px;

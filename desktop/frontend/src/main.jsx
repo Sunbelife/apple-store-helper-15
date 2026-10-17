@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span>老孙抢你妹 2026</span>
-        <span>2.0.2 · 本地测试版</span>
+        <span>2.0.3 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -299,6 +299,7 @@ function App() {
             <span>产品</span>
           </div>
           {dropdown("型号", model, changeModel, models)}
+          <div className="field-pair">
           {dropdown(
             model.includes("Watch") ? "尺寸" : "容量",
             cap,
@@ -311,6 +312,7 @@ function App() {
             setSku,
             products.map((p) => ({ value: p.Code, label: p.Color })),
           )}
+          </div>
           <div className="form-divider">
             <span>门店</span>
           </div>
