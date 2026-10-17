@@ -73,10 +73,14 @@ func TestParseMetricsProductsSupportsDuo(t *testing.T) {
 
 func TestTranslateCurrentAppleColors(t *testing.T) {
 	tests := map[string]string{
-		"Burgundy":   "勃艮第酒红色",
-		"Glacier":    "冰川蓝色",
-		"Night Sky":  "夜空色",
-		"Star White": "星光白色",
+		"Burgundy":              "勃艮第酒红色",
+		"Glacier":               "冰川蓝色",
+		"Night Sky":             "夜空色",
+		"Star White":            "星光白色",
+		"Silver":                "银色",
+		"silver":                "银色",
+		"Star White finish":     "星光白色",
+		"Black Titanium finish": "黑色钛金属",
 	}
 	for input, want := range tests {
 		if got := translateColor(input); got != want {

@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -527,6 +528,7 @@ func translateColor(color string) string {
 		// iPhone 基础颜色
 		"Black":       "黑色",
 		"White":       "白色",
+		"Silver":      "银色",
 		"Pink":        "粉色",
 		"Teal":        "深青色",
 		"Ultramarine": "群青色",
@@ -585,9 +587,19 @@ func translateColor(color string) string {
 	}
 
 	// 如果没有找到翻译，尝试部分匹配
-	for english, chinese := range colorMap {
+	keys := make([]string, 0, len(colorMap))
+	for english := range colorMap {
+		keys = append(keys, english)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if len(keys[i]) == len(keys[j]) {
+			return keys[i] < keys[j]
+		}
+		return len(keys[i]) > len(keys[j])
+	})
+	for _, english := range keys {
 		if strings.Contains(strings.ToLower(color), strings.ToLower(english)) {
-			return chinese
+			return colorMap[english]
 		}
 	}
 

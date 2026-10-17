@@ -53,7 +53,7 @@ func (s *productService) UpdateFromDynamicData(data *ProductData) {
 		for _, p := range products {
 			// 构建标题 - 只有当所有字段都存在时才生成有效的Title
 			if p.Model != "" && p.Capacity != "" && p.Color != "" {
-				title := fmt.Sprintf("%s %s %s", p.Model, p.Capacity, p.Color)
+				title := fmt.Sprintf("%s %s %s", p.Model, p.Capacity, translateColor(p.Color))
 				modelProducts = append(modelProducts, model.Product{
 					Title:        title,
 					Code:         p.Code,
@@ -63,7 +63,7 @@ func (s *productService) UpdateFromDynamicData(data *ProductData) {
 			} else if p.Code != "" {
 				// 如果解析失败但有Code，记录警告
 				log.Printf("Warning: Product with code %s has incomplete data (Model: %s, Capacity: %s, Color: %s)",
-					p.Code, p.Model, p.Capacity, p.Color)
+					p.Code, p.Model, p.Capacity, translateColor(p.Color))
 			}
 		}
 		if len(modelProducts) > 0 {

@@ -1,96 +1,38 @@
 name: Build
-
 on:
   push:
-    branches:
-      - '*'
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
-      - "*.png"
-      - "*.go"
+    branches: ['master']
   pull_request:
-    types: [ opened, synchronize, reopened ]
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
-      - "*.png"
-      - "*.go"
   release:
-    types:
-      - published
-
+    types: [published]
+permissions:
+  contents: read
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [ darwin ]
-        goarch: [ amd64, arm64 ]
-    env:
-      CGO_ENABLED: 1
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
-      GOARM: ${{ matrix.goarm }}
+  macos:
+    runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: ^1.23.0
-
-      - name: Setup compiler environment
-        id: info
+          go-version: '1.25.x'
+      - name: Test desktop and inventory server
         run: |
-          export _NAME=apple-store-helper-$(jq ".$GOOS[\"$GOARCH$GOARM\"].name" -r < .github/build/build_info.json)
-          export _ARCH=$(jq ".$GOOS[\"$GOARCH$GOARM\"].arch" -r < .github/build/build_info.json)
-          export _ABI=$(jq ".$GOOS[\"$GOARCH$GOARM\"].abi // \"\"" -r < .github/build/build_info.json)
-          export _ARTIFACT=apple-store-helper-$GOOS-$GOARCH$(if [[ "$GOARM" ]]; then echo "v$GOARM"; fi)
-          echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, ABI: $_ABI, RELEASE_NAME: $_NAME, ARTIFACT_NAME: $_ARTIFACT"
-          echo "ARCH_NAME=$_ARCH" >> $GITHUB_ENV
-          echo "ABI=$_ABI" >> $GITHUB_ENV
-          echo "DIST=$_NAME" >> $GITHUB_ENV
-          echo "ARTIFACT=$_ARTIFACT" >> $GITHUB_ENV
-
-      - name: Install darwin cross compiler
-        if: env.GOOS == 'darwin'
-        run: |
-          curl -L https://github.com/Hintay/crossosx/releases/latest/download/crossosx.tar.zst -o crossosx.tar.zst
-          tar xvaf crossosx.tar.zst
-          echo "LD_LIBRARY_PATH=$(pwd)/crossosx/lib/" >> $GITHUB_ENV
-          echo "PATH=$(pwd)/crossosx/bin/:$PATH" >> $GITHUB_ENV
-          echo "CC=${{ env.ARCH_NAME }}-clang" >> $GITHUB_ENV
-          echo "CXX=${{ env.ARCH_NAME }}-clang++" >> $GITHUB_ENV
-          echo "LD_FLAGS=-w" >> $GITHUB_ENV
-
-      - name: Build
-        run: |
-          mkdir -p dist
-          go build -o dist/apple-store-helper -v main.go
-
-      - name: Archive backend artifacts
-        uses: actions/upload-artifact@v4
+          go test ./...
+          python3 -m unittest discover -s server/stock-log -p 'test_*.py'
+      - name: Package universal Mac app
+        run: python3 scripts/package_macos.py
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT }}
-          path: dist/apple-store-helper
-
-      - name: Prepare publish
+          name: qiangnimei18-macos-universal
+          path: |
+            dist/*.zip
+            dist/*.sha256
+      - name: Publish release assets
         if: github.event_name == 'release'
-        run: |
-          cp README*.md ./dist
-          find dist -printf '%P\n' | tar -C dist --no-recursion -zcvf ${{ env.DIST }}.tar.gz -T -
-          openssl dgst -sha512 ${{ env.DIST }}.tar.gz | sed 's/([^)]*)//g' | awk '{print $NF}' >> ${{ env.DIST }}.tar.gz.digest
-
-      - name: Publish
         uses: softprops/action-gh-release@v2
-        if: github.event_name == 'release'
         with:
           files: |
-            ${{ env.DIST }}.tar.gz
-            ${{ env.DIST }}.tar.gz.digest
+            dist/*.zip
+            dist/*.sha256

@@ -1,0 +1,18 @@
+[Unit]
+Description=Apple public inventory observation log
+After=network.target
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/iphone-stock
+Environment=STOCK_DB=/var/lib/iphone-stock/events.sqlite3
+ExecStart=/usr/bin/python3 /opt/iphone-stock/server.py
+Restart=on-failure
+StateDirectory=iphone-stock
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/iphone-stock
+[Install]
+WantedBy=multi-user.target

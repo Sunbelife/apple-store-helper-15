@@ -308,6 +308,8 @@ func (s *listenService) Run() {
 						s.Status.Set(Pause)
 
 						// 构建提醒消息
+						detectedAt := time.Now()
+						observation := newStockObservation(s.Area.ShortCode, item.Store, item.Product, detectedAt)
 						msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
 
 						// 打开已选好型号、容量和颜色的官网商品页。
@@ -319,6 +321,7 @@ func (s *listenService) Run() {
 						s.openBrowser(purchaseURL)
 						fyne.Do(func() {
 							dialog.ShowInformation("有货提醒", msg, view.Window)
+							go reportStockObservation(observation)
 							view.App.SendNotification(&fyne.Notification{
 								Title:   "有货提醒",
 								Content: msg,

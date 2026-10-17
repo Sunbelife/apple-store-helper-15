@@ -2,12 +2,12 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.8.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
 ![Go](https://img.shields.io/badge/Go-1.17+-00ADD8.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-**实时监控 Apple Store 库存，第一时间抢购心仪产品！**
+**支持 iPhone Duo、iPhone 18 Pro / Pro Max 和 Apple Watch 的 Apple Store 库存监控。**
 
 [下载地址](#下载安装) | [使用教程](#使用教程) | [Bark 推送](#bark-推送设置) | [问题反馈](#问题反馈)
 
@@ -48,8 +48,8 @@
 ### 下载方式
 
 #### 方式一：直接下载（推荐）
-1. 访问 [Releases 页面]
-2. 下载最新版本的编译版本。
+1. 访问 [Releases 页面](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)
+2. 下载最新 Release 的 `qiangnimei18-v1.8.3-macos-universal.zip`（同时支持 Apple 芯片和 Intel）。
 3. 解压后双击运行
 
 #### 方式二：从源码编译
@@ -76,7 +76,7 @@
    - 在「颜色/款式」下拉框中选择颜色，或手表的材质、颜色和网络版本
 
 4. **选择门店**
-   - 中国大陆：选择省份 → 城市 → 门店
+   - 中国大陆：选择省份 → 城市（可选）→ 门店；点击「全选门店并添加」可一次添加当前省市全部门店，重复项自动跳过
    - 其他地区：选择具体门店
 
 5. **设置提醒**
@@ -109,6 +109,10 @@
 ## 浏览器扩展版
 
 如桌面版持续收到官网验证，可使用 `browser-extension` 目录中的 Chrome / Edge 扩展。扩展让库存请求直接运行在 Apple 官网标签页中，复用同一个浏览器验证会话，支持 Windows 和 macOS。安装和使用说明见 `browser-extension/README.md`。
+
+## 老孙的店
+
+如果抢你妹帮你抢到了心仪的 iPhone，欢迎来[老孙的店](https://store.sunbelife.com)逛逛，买点喜欢的东西支持我们。
 
 ## 📱 Bark 推送设置
 
@@ -160,3 +164,9 @@ Bark 是一款优秀的 iOS 推送工具，让你第一时间收到库存提醒�
 Made with ❤️ by [Your Name]
 
 </div>
+
+## 公开库存记录
+
+桌面版在有货提醒弹窗出现后，异步向 `https://sunbelife.com/api/iphone-stock/events` 提交公开门店库存（地区、省市、门店、型号、容量、颜色、SKU 和发现时间）。不提交用户身份、设备标识、Bark 地址或监控列表。失败不影响提醒，不会补传监控历史。
+
+后台：`https://sunbelife.com/iphone-stock`，仅需输入账单页相同的访问密码，无需账号；保留最近 180 天、最多 100000 条记录，同一分钟同一地区、门店和 SKU 合并。记录为客户端报告，仅供历史参考，不代表实时库存。

@@ -96,94 +96,50 @@ func main() {
 
 	defaultArea := services.Listen.Area.Title
 
-	// 省市区选择器（中国大陆专用）
-	var provinceWidget, cityWidget, districtWidget *widget.Select
-	var storeWidget *widget.Select
-	var currentProvince, currentCity, currentDistrict string
-
-	// 门店 selector
-	storeWidget = widget.NewSelect([]string{}, nil)
+	// 按实际门店数据筛选省份和城市；空城市表示整个省份。
+	var provinceWidget, cityWidget *widget.Select
+	var currentProvince, currentCity string
+	storeWidget := widget.NewSelect(nil, nil)
 	storeWidget.PlaceHolder = "请先选择地区"
 	storeWidget.Disable()
 
-	// 更新门店列表的函数
 	updateStoreList := func() {
-		if currentProvince != "" && currentCity != "" && currentDistrict != "" {
-			// 确保门店数据已加载
-			selectedArea := services.Area.GetArea("中国大陆")
-			if err := services.Store.LoadForArea(selectedArea.ShortCode); err != nil {
-				log.Printf("Failed to load store data: %v", err)
-			}
-
-			// 根据省市区筛选门店
-			var stores []string
-			allStores := services.Store.ByArea(selectedArea)
-			for _, store := range allStores {
-				if store.Province == currentProvince &&
-					store.City == currentCity &&
-					store.District == currentDistrict {
-					stores = append(stores, store.CityStoreName)
-				}
-			}
-
-			// 如果该区域没有门店，显示附近所有门店
-			if len(stores) == 0 {
-				for _, store := range allStores {
-					if store.Province == currentProvince && store.City == currentCity {
-						stores = append(stores, store.CityStoreName)
-					}
-				}
-			}
-
-			storeWidget.Options = stores
-			storeWidget.Enable()
-			if len(stores) > 0 {
-				storeWidget.PlaceHolder = "选择门店"
-			} else {
-				storeWidget.PlaceHolder = "该地区暂无门店"
-			}
+		if areaWidget == nil {
+			return
 		}
+		stores := services.Store.ByLocationForOptions(areaWidget.Selected, currentProvince, currentCity)
+		storeWidget.ClearSelected()
+		storeWidget.SetOptions(stores)
+		storeWidget.PlaceHolder = "选择门店"
+		if len(stores) == 0 {
+			storeWidget.PlaceHolder = "该地区暂无门店"
+			storeWidget.Disable()
+		} else {
+			storeWidget.Enable()
+		}
+		storeWidget.Refresh()
 	}
-
-	// 区域选择器
-	districtWidget = widget.NewSelect([]string{}, func(district string) {
-		currentDistrict = district
-		// 区域选择后，更新门店列表
-		updateStoreList()
-	})
-	districtWidget.PlaceHolder = "请先选择城市"
-	districtWidget.Disable()
-
-	// 城市选择器
-	cityWidget = widget.NewSelect([]string{}, func(city string) {
+	const allCities = "全部城市"
+	cityWidget = widget.NewSelect(nil, func(city string) {
 		currentCity = city
-		// 更新区域列表
-		districts := model.GetDistrictsByProvinceAndCity(currentProvince, city)
-		districtWidget.Options = districts
-		districtWidget.ClearSelected()
-		districtWidget.Enable()
-		districtWidget.PlaceHolder = "选择区域"
+		if city == allCities {
+			currentCity = ""
+		}
+		updateStoreList()
 	})
 	cityWidget.PlaceHolder = "请先选择省份"
 	cityWidget.Disable()
 
-	// 省份选择器 - 先创建，回调在地区选择器定义后设置
-	provinceWidget = widget.NewSelect([]string{}, func(province string) {
-		currentProvince = province
-		// 更新门店列表 - 根据省份筛选
-		if areaWidget != nil {
-			// 确保门店数据已加载
-			selectedArea := services.Area.GetArea(areaWidget.Selected)
-			if err := services.Store.LoadForArea(selectedArea.ShortCode); err != nil {
-				log.Printf("Failed to load store data: %v", err)
-			}
-
-			stores := services.Store.ByAreaAndProvinceForOptions(areaWidget.Selected, province)
-			storeWidget.Options = stores
-			storeWidget.ClearSelected()
-			storeWidget.Enable()
-			storeWidget.PlaceHolder = "选择门店"
+	provinceWidget = widget.NewSelect(nil, func(province string) {
+		currentProvince, currentCity = province, ""
+		if areaWidget == nil || province == "" {
+			return
 		}
+		cities := services.Store.GetCitiesForProvince(areaWidget.Selected, province)
+		cityWidget.SetOptions(append([]string{allCities}, cities...))
+		cityWidget.Enable()
+		cityWidget.SetSelected(allCities)
+		updateStoreList()
 	})
 	provinceWidget.PlaceHolder = "选择省份"
 
@@ -346,6 +302,12 @@ func main() {
 	// 地区 selector - 使用下拉框选择
 	areaWidget = widget.NewSelect(services.Area.ForOptions(), func(value string) {
 		services.Listen.Area = services.Area.GetArea(value)
+		currentProvince, currentCity = "", ""
+		provinceWidget.ClearSelected()
+		cityWidget.ClearSelected()
+		cityWidget.SetOptions(nil)
+		cityWidget.Disable()
+		storeWidget.ClearSelected()
 
 		// 尝试加载该地区的产品数据
 		selectedArea := services.Area.GetArea(value)
@@ -404,7 +366,7 @@ func main() {
 			}
 
 			// 显示省份选择器和门店选择器
-			provinceWidget.Options = model.GetProvinces()
+			provinceWidget.SetOptions(services.Store.GetStatesForArea(value))
 			storeWidget.Options = []string{} // 初始为空，选择省份后更新
 			storeWidget.Disable()
 			storeWidget.PlaceHolder = "请先选择省份"
@@ -419,6 +381,8 @@ func main() {
 						storeWidget,
 					),
 				),
+				widget.NewLabelWithStyle("城市（可选）", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+				cityWidget,
 			}
 		} else if value == "香港" {
 			// 香港：直接显示所有门店
@@ -521,7 +485,7 @@ func main() {
 	areaWidget.PlaceHolder = "选择地区"
 
 	// 创建精简的标题栏
-	titleLabel := widget.NewLabelWithStyle("抢你妹18 - Apple 库存监控 (iPhone 18 / Apple Watch)",
+	titleLabel := widget.NewLabelWithStyle("抢你妹18 · iPhone Duo / 18 Pro / Apple Watch 库存监控",
 		fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	versionLabel := widget.NewLabel("v" + common.VERSION)
 	authorLink := widget.NewHyperlink("@Sunbelife", parseURL("https://weibo.com/x1nyang"))
@@ -547,15 +511,15 @@ func main() {
 	}
 
 	// 创建操作按钮组
-	addButton := widget.NewButton("添加到监控列表", func() {
+	addSelection := func(allStores bool) {
 		// 检查必填项
 		var errorMsg string
 		if areaWidget.Selected == "中国大陆" || areaWidget.Selected == "美国" {
-			if currentProvince == "" || storeWidget.Selected == "" {
+			if currentProvince == "" || (!allStores && storeWidget.Selected == "") {
 				errorMsg = "请选择州/省份和门店"
 			}
 		} else if areaWidget.Selected == "香港" || areaWidget.Selected == "日本" || areaWidget.Selected == "新加坡" || areaWidget.Selected == "英国" || areaWidget.Selected == "澳大利亚" {
-			if storeWidget.Selected == "" {
+			if !allStores && storeWidget.Selected == "" {
 				errorMsg = "请选择门店"
 			}
 		}
@@ -620,30 +584,26 @@ func main() {
 		}
 
 		if productCode != "" {
-			// 根据地区类型添加监控项
-			if areaWidget.Selected == "中国大陆" {
-				// 中国大陆：从动态数据中获取门店信息
-				selectedStore := services.Store.GetStore(areaWidget.Selected, storeWidget.Selected)
-				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType, purchasePath)
-			} else if areaWidget.Selected == "香港" || areaWidget.Selected == "日本" || areaWidget.Selected == "新加坡" ||
-				areaWidget.Selected == "美国" || areaWidget.Selected == "英国" || areaWidget.Selected == "澳大利亚" {
-				// 确保门店数据已加载
-				selectedArea := services.Area.GetArea(areaWidget.Selected)
-				if err := services.Store.LoadForArea(selectedArea.ShortCode); err != nil {
-					log.Printf("Failed to load store data for %s: %v", areaWidget.Selected, err)
-					dialog.ShowError(fmt.Errorf("加载门店数据失败: %v", err), view.Window)
+			storeNames := []string{storeWidget.Selected}
+			if allStores {
+				storeNames = append([]string(nil), storeWidget.Options...)
+			}
+			if len(storeNames) == 0 {
+				dialog.ShowError(errors.New("当前省市没有可添加的门店"), view.Window)
+				return
+			}
+			// 先验证所有门店，避免部分添加。
+			selectedStores := make([]model.Store, 0, len(storeNames))
+			for _, name := range storeNames {
+				store := services.Store.GetStore(areaWidget.Selected, name)
+				if store.StoreNumber == "" {
+					dialog.ShowError(fmt.Errorf("未找到门店: %s", name), view.Window)
 					return
 				}
-
-				// 从动态数据中获取门店信息
-				selectedStore := services.Store.GetStore(areaWidget.Selected, storeWidget.Selected)
-				if selectedStore.StoreNumber == "" {
-					log.Printf("Store not found: %s in %s", storeWidget.Selected, areaWidget.Selected)
-					dialog.ShowError(fmt.Errorf("未找到门店: %s", storeWidget.Selected), view.Window)
-					return
-				}
-
-				services.Listen.AddWithStoreInfo(selectedStore, productTitle, productCode, productType, purchasePath)
+				selectedStores = append(selectedStores, store)
+			}
+			for _, store := range selectedStores {
+				services.Listen.AddWithStoreInfo(store, productTitle, productCode, productType, purchasePath)
 			}
 
 			// 保存设置
@@ -656,7 +616,9 @@ func main() {
 			}
 			services.SaveSettings(settings)
 		}
-	})
+	}
+	addButton := widget.NewButton("添加到监控列表", func() { addSelection(false) })
+	addAllButton := widget.NewButton("全选门店并添加", func() { addSelection(true) })
 	addButton.Importance = widget.HighImportance
 
 	clearButton := widget.NewButton("清空列表", func() {
@@ -746,6 +708,8 @@ func main() {
 		),
 		widget.NewSeparator(),
 		locationContainer, // 动态位置选择容器
+		addAllButton,
+		widget.NewLabel("添加当前省市全部门店，重复项自动跳过"),
 	))
 
 	// 第二列：产品选择和控制
@@ -812,10 +776,15 @@ func main() {
 		titleLabel,
 	)
 
+	shopText := widget.NewLabel("如果抢你妹帮你抢到了心仪的 iPhone，欢迎来老孙的店逛逛，买点喜欢的东西支持我们。")
+	shopText.Wrapping = fyne.TextWrapWord
+	shopBanner := widget.NewCard("老孙的店", "", container.NewBorder(nil, nil, nil,
+		widget.NewHyperlink("去老孙的店逛逛 →", parseURL("https://store.sunbelife.com")), shopText))
+
 	// 主布局（更紧凑）
 	content := container.NewBorder(
 		topBar,
-		nil, nil, nil,
+		shopBanner, nil, nil,
 		threeColumns,
 	)
 

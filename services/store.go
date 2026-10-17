@@ -144,3 +144,34 @@ func (s *storeService) LoadForArea(areaCode string) error {
 
 	return nil
 }
+
+// ByLocationForOptions 返回指定省市的门店；空城市表示省内全部门店。
+func (s *storeService) ByLocationForOptions(areaTitle, province, city string) []string {
+	var names []string
+	for _, store := range s.ByArea(Area.GetArea(areaTitle)) {
+		if province != "" && store.Province != province {
+			continue
+		}
+		if city != "" && store.City != city {
+			continue
+		}
+		names = append(names, store.CityStoreName)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func (s *storeService) GetCitiesForProvince(areaTitle, province string) []string {
+	seen := make(map[string]bool)
+	for _, store := range s.ByArea(Area.GetArea(areaTitle)) {
+		if store.Province == province && store.City != "" {
+			seen[store.City] = true
+		}
+	}
+	var cities []string
+	for city := range seen {
+		cities = append(cities, city)
+	}
+	sort.Strings(cities)
+	return cities
+}
