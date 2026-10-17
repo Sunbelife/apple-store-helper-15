@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0.1'
+VERSION = '2.0.2'
 
 def run(args, **kwargs):
     subprocess.run(args, check=True, cwd=ROOT, **kwargs)
@@ -26,7 +26,7 @@ def main():
     run(['npm', '--prefix', 'desktop/frontend', 'run', 'build'])
     with tempfile.TemporaryDirectory(prefix='qiangnimei2-') as folder:
         stage = Path(folder)
-        app = stage / '抢你妹2.app'
+        app = stage / '老孙抢你妹 2026.app'
         mac = app / 'Contents/MacOS'
         resources = app / 'Contents/Resources'
         mac.mkdir(parents=True)
@@ -47,14 +47,14 @@ def main():
         for size in (16, 32, 128, 256, 512):
             for scale in (1, 2):
                 name = f'icon_{size}x{size}' + ('@2x' if scale == 2 else '') + '.png'
-                run(['sips', '-z', str(size * scale), str(size * scale), str(ROOT / 'Icon.png'), '--out', str(iconset / name)], stdout=subprocess.DEVNULL)
+                run(['sips', '-z', str(size * scale), str(size * scale), str(ROOT / 'desktop/branding/store-logo.png'), '--out', str(iconset / name)], stdout=subprocess.DEVNULL)
         run(['iconutil', '-c', 'icns', str(iconset), '-o', str(resources / 'AppIcon.icns')])
-        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='抢你妹2', CFBundleDisplayName='抢你妹2', CFBundleShortVersionString=VERSION, CFBundleVersion='201', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='11.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
+        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='老孙抢你妹 2026', CFBundleDisplayName='老孙抢你妹 2026', CFBundleShortVersionString=VERSION, CFBundleVersion='202', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='11.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
         (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(plist))
         run(['xattr', '-cr', str(app)])
         run(['codesign', '--force', '--deep', '--sign', '-', str(app)])
         run(['codesign', '--verify', '--deep', '--strict', str(app)])
-        archive = out / f'qiangnimei2-v{VERSION}-macos-{args.arch}-local.zip'
+        archive = out / f'laosun-qiangnimei-2026-v{VERSION}-macos-{args.arch}-local.zip'
         staged = stage / archive.name
         run(['ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', str(app), str(staged)])
         shutil.copyfile(staged, archive)

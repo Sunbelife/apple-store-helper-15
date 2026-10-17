@@ -1,7 +1,7 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "qiangnimei2",
-  "outputfilename": "抢你妹2",
+  "name": "laosun-qiangnimei-2026",
+  "outputfilename": "老孙抢你妹 2026",
   "frontend:install": "npm ci",
   "frontend:build": "npm run build",
   "frontend:dev:watcher": "npm run dev",
@@ -9,8 +9,8 @@
   "author": { "name": "Sunbelife", "email": "i@sunbelife.com" },
   "info": {
     "companyName": "Sunbelife",
-    "productName": "抢你妹2",
-    "productVersion": "2.0.1",
+    "productName": "老孙抢你妹 2026",
+    "productVersion": "2.0.2",
     "copyright": "Sunbelife",
     "comments": "Apple Store 库存监控"
   }

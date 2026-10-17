@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  Radio,
   Plus,
   Play,
   Pause,
@@ -16,6 +15,9 @@ import {
   Volume2,
 } from "lucide-react";
 import "./style.css";
+import ShopRail from "./ShopRail.jsx";
+import storeLogo from "./assets/store-logo.png";
+const COOLDOWN_STATUS = "触发风控，冷却中，稍后再尝试";
 const call = (n, ...a) =>
   window.go?.main?.Desktop?.[n](...a) ??
   Promise.reject(Error("请在桌面应用中运行"));
@@ -191,9 +193,13 @@ function App() {
         (!province || x.Province === province) && (!city || x.City === city),
     );
   const abnormal = s.items.filter((t) =>
-      ["库存接口受限", "需官网验证", "查询失败", "未返回库存"].includes(
-        t.status,
-      ),
+      [
+        COOLDOWN_STATUS,
+        "库存接口受限",
+        "需官网验证",
+        "查询失败",
+        "未返回库存",
+      ].includes(t.status),
     ).length,
     available = s.items.filter((t) => t.status === "有货").length;
   const shown = s.items.filter((t) =>
@@ -235,16 +241,18 @@ function App() {
   return (
     <>
       <div className="titlebar">
-        <span>抢你妹</span>
-        <span>2.0 · 本地测试版</span>
+        <span>老孙抢你妹 2026</span>
+        <span>2.0.2 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
           <span className="brand-mark">
-            <Radio size={24} />
+            <img src={storeLogo} alt="老孙的店" />
           </span>
           <div>
-            <h1>好库存，早一步。</h1>
+            <h1>
+              老孙抢你妹 <span className="brand-year">2026</span>
+            </h1>
             <p>Apple Store 门店取货监控</p>
           </div>
         </div>
@@ -393,7 +401,7 @@ function App() {
               <strong>{s.phase}</strong>
               {s.running && s.nextAt > 0 && (
                 <span>
-                  {Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后查询
+                  {Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后自动重试
                 </span>
               )}
             </div>
@@ -408,7 +416,15 @@ function App() {
           </div>
           {abnormal > 0 && (
             <div className="inline-warning">
-              部分查询未获得有效库存。查看该行原因；其他门店保留上次结果及时间。受限时自动延长重试间隔。
+              {s.items.some(
+                (t) =>
+                  t.status === COOLDOWN_STATUS || t.status === "库存接口受限",
+              )
+                ? "触发风控，冷却中，稍后再尝试。程序会在倒计时结束后自动重试。"
+                : "部分查询未获得有效库存，请查看该行原因。"}
+              <span className="warning-detail">
+                其他门店保留上次结果及时间；未查到不代表无货。
+              </span>
             </div>
           )}
           <div className="table-tools">
@@ -485,7 +501,7 @@ function App() {
                           {t.status === "查询中" && (
                             <RefreshCw size={11} className="spin" />
                           )}
-                          {t.status}
+                          {t.status === COOLDOWN_STATUS ? "冷却中" : t.status}
                         </span>
                         {t.detail && (
                           <details className="error-detail">
@@ -546,18 +562,16 @@ function App() {
           )}
         </section>
       </main>
-      <footer className="shop">
-        <div>
-          <span className="shop-name">老孙的店</span>
-          <p>
-            如果帮你抢到了心仪的 iPhone，欢迎来逛逛，买点喜欢的东西支持我们。
-          </p>
-        </div>
-        <button className="shop-link" onClick={() => call("OpenShop")}>
-          去店里逛逛
-          <ArrowUpRight size={16} />
-        </button>
-      </footer>
+      <ShopRail
+        onCopy={(id) =>
+          call("CopyShopProductLink", id)
+            .then(() => message("小程序购买链接已复制"))
+            .catch((e) => message(String(e), true))
+        }
+        onOpen={(id) =>
+          call("OpenShopProduct", id).catch((e) => message(String(e), true))
+        }
+      />
       {toast && (
         <div
           className={"toast " + (toast.error ? "toast-error" : "")}

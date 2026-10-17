@@ -8,9 +8,10 @@
     "build": "vite build"
   },
   "dependencies": {
+    "lucide-react": "^0.468.0",
+    "qrcode": "^1.5.4",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "lucide-react": "^0.468.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "vite": "^6.1.0"

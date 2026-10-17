@@ -15,9 +15,9 @@ var assets embed.FS
 func main() {
 	app := NewDesktop()
 	err := wails.Run(&options.App{
-		Title: "抢你妹 2", Width: 1180, Height: 800, MinWidth: 960, MinHeight: 680,
+		Title: "老孙抢你妹 2026", Width: 1180, Height: 800, MinWidth: 960, MinHeight: 720,
 		AssetServer:      &assetserver.Options{Assets: assets},
-		BackgroundColour: &options.RGBA{R: 246, G: 247, B: 249, A: 255},
+		BackgroundColour: &options.RGBA{R: 235, G: 235, B: 235, A: 255},
 		OnStartup:        app.startup, OnShutdown: app.shutdown, Bind: []interface{}{app},
 		Mac: &mac.Options{TitleBar: mac.TitleBarHiddenInset(), WebviewIsTransparent: false},
 	})

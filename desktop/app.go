@@ -556,6 +556,9 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		}
 		a.state.NextAt = time.Now().Add(delay).UnixMilli()
 		a.state.Phase = "等待下一轮"
+		if limited {
+			a.state.Phase = services.StatusLimited
+		}
 		a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 秒后重试", requests, int(delay.Seconds())))
 		a.mu.Unlock()
 		if !sleepContext(ctx, delay) {

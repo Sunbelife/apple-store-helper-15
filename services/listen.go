@@ -35,7 +35,7 @@ const (
 	StatusQuerying = "查询中"
 	StatusUnknown  = "未返回库存"
 	StatusVerify   = "需官网验证"
-	StatusLimited  = "库存接口受限"
+	StatusLimited  = "触发风控，冷却中，稍后再尝试"
 	StatusError    = "查询失败"
 
 	Pause   = "暂停"
