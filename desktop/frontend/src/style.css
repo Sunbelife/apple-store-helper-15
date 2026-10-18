@@ -650,6 +650,11 @@ td:first-child {
   white-space: nowrap;
   font-size: 12px;
 }
+.feedback-button {
+  min-height: 32px;
+  padding: 0 13px;
+  font-size: 12px;
+}
 .dialog.usage-guide {
   width: min(650px, 100%);
   text-align: left;

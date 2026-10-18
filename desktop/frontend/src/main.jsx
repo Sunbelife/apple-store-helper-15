@@ -61,13 +61,17 @@ function App() {
     [busy, setBusy] = useState(false),
     [settings, setSettings] = useState(false),
     [showGuide, setShowGuide] = useState(false),
+    [catalogRefreshing, setCatalogRefreshing] = useState(false),
     [logs, setLogs] = useState(false),
     [toast, setToast] = useState(null),
     [search, setSearch] = useState(""),
     [bark, setBark] = useState(""),
     [now, setNow] = useState(Date.now());
   const audio = useRef(null),
-    request = useRef(0);
+    request = useRef(0),
+    refreshedAreas = useRef(new Set()),
+    selection = useRef(null);
+  selection.current = { model, cap, sku };
   const locked = busy || s.running;
   const message = (text, error = false) => setToast({ text, error });
   async function sync() {
@@ -128,9 +132,36 @@ function App() {
   useEffect(() => {
     let id = ++request.current;
     setLoading(true);
+    setCatalogRefreshing(false);
     call("GetCatalog", area)
       .then((c) => {
-        if (id === request.current) apply(c);
+        if (id !== request.current) return;
+        apply(c);
+        setLoading(false);
+        if (refreshedAreas.current.has(area)) return;
+        refreshedAreas.current.add(area);
+        setCatalogRefreshing(true);
+        // Use cached choices immediately; refreshing never edits monitoring targets.
+        call("RefreshCatalog", area)
+          .then((fresh) => {
+            if (id !== request.current) return;
+            const old = selection.current;
+            const selected = fresh.products.find((p) => p.Code === old.sku)
+              || fresh.products.find((p) => p.Model === old.model && p.Capacity === old.cap)
+              || fresh.products.find((p) => p.Model === old.model)
+              || fresh.products[0];
+            setC(fresh);
+            setModel(selected?.Model || "");
+            setCap(selected?.Capacity || "");
+            setSku(selected?.Code || "");
+            message("产品目录已自动更新");
+          })
+          .catch(() => {
+            if (id === request.current) message("目录自动更新未成功，继续使用本地目录，可稍后手动更新");
+          })
+          .finally(() => {
+            if (id === request.current) setCatalogRefreshing(false);
+          });
       })
       .catch((e) => {
         if (id === request.current) message(String(e), true);
@@ -244,7 +275,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.13 · 本地测试版</span>
+        <span>2.0.14 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -259,6 +290,7 @@ function App() {
           </div>
         </div>
         <div className="header-actions">
+        <button className="button secondary feedback-button" onClick={() => action(() => call("OpenFeedback"))} title="不能使用或需要更新？到微博联系 Sunbelife">问题反馈 <ArrowUpRight size={14} /></button>
         <button className="text-button guide-trigger" onClick={() => setShowGuide(true)}>使用说明</button>
         <button
           className="icon-button"
@@ -277,7 +309,7 @@ function App() {
               className="text-button catalog-refresh"
               aria-label="更新产品目录"
               title="从苹果官网更新型号、容量和颜色目录，不刷新库存"
-              disabled={locked || loading}
+              disabled={locked || loading || catalogRefreshing}
               onClick={() =>
                 action(async () => {
                   setLoading(true);
@@ -290,8 +322,8 @@ function App() {
                 })
               }
             >
-              <RefreshCw size={13} className={loading ? "spin" : ""} />
-              更新目录
+              <RefreshCw size={13} className={loading || catalogRefreshing ? "spin" : ""} />
+              {catalogRefreshing ? "更新中" : "更新目录"}
             </button>
           </div>
           {dropdown(
