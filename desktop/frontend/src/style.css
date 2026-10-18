@@ -260,6 +260,60 @@ select:hover:not(:disabled) {
   color: #a5a5a5;
   font-variant-numeric: tabular-nums;
 }
+.catalog-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.monitor-reminders {
+  padding: 11px 25px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.reminder-toolbar, .reminder-bark, .reminder-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.reminder-toolbar {
+  margin-bottom: 8px;
+}
+.reminder-title {
+  gap: 6px;
+  color: #666;
+  font-size: 11px;
+  font-weight: 550;
+  margin-right: auto;
+}
+.monitor-reminders .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.reminder-bark label {
+  color: #777;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.reminder-bark label span {
+  color: #aaa;
+  margin-left: 5px;
+}
+.reminder-bark input {
+  flex: 1;
+  min-width: 0;
+  height: 29px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 9px;
+  background: #fafafa;
+  color: #666;
+  font-size: 11px;
+}
 .monitor-summary > div {
   display: flex;
   align-items: center;

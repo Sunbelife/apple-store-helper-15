@@ -244,7 +244,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.12 · 本地测试版</span>
+        <span>2.0.13 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -262,7 +262,7 @@ function App() {
         <button className="text-button guide-trigger" onClick={() => setShowGuide(true)}>使用说明</button>
         <button
           className="icon-button"
-          aria-label="提醒设置"
+          aria-label="配置与迁移" title="配置与迁移"
           onClick={() => setSettings(true)}
         >
           <Settings2 size={20} />
@@ -274,8 +274,9 @@ function App() {
           <div className="section-heading">
             <h2>添加监控</h2>
             <button
-              className="icon-button small"
+              className="text-button catalog-refresh"
               aria-label="更新产品目录"
+              title="从苹果官网更新型号、容量和颜色目录，不刷新库存"
               disabled={locked || loading}
               onClick={() =>
                 action(async () => {
@@ -289,7 +290,8 @@ function App() {
                 })
               }
             >
-              <RefreshCw size={15} className={loading ? "spin" : ""} />
+              <RefreshCw size={13} className={loading ? "spin" : ""} />
+              更新目录
             </button>
           </div>
           {dropdown(
@@ -383,6 +385,19 @@ function App() {
           </p>
         </aside>
         <section className="monitor">
+          <div className="monitor-reminders" aria-label="到货提醒配置">
+            <div className="reminder-toolbar">
+              <span className="reminder-title"><Bell size={14} />到货提醒</span>
+              <button className="text-button" onClick={beep}><Volume2 size={13} />测试提示音</button>
+              <button className="text-button" disabled={busy} onClick={() => action(async () => message((await call("EnableSystemNotifications")) ? "已允许系统通知" : "系统通知未获允许，可在系统设置中开启"))}>允许系统通知</button>
+            </div>
+            <div className="reminder-bark">
+              <label htmlFor="monitor-bark">Bark 手机推送 <span>{s.barkConfigured ? "已配置" : "未配置"}</span></label>
+              <input id="monitor-bark" type="password" autoComplete="off" aria-label="Bark 推送地址" placeholder={s.barkConfigured ? "输入新地址可替换现有配置" : "粘贴 Bark 的 HTTPS 推送地址"} value={bark} onChange={(event) => setBark(event.target.value)} />
+              <button className="text-button" disabled={busy || !bark.trim()} onClick={() => action(async () => { await call("SaveBark", bark); setBark(""); message("推送地址已保存"); })}>保存</button>
+              {s.barkConfigured && <button className="text-button" disabled={busy} onClick={() => action(() => call("SaveBark", ""))}>停用</button>}
+            </div>
+          </div>
           <div className="monitor-heading">
             <div>
               <div className="eyebrow">库存监控</div>
@@ -610,66 +625,8 @@ function App() {
             <span className="dialog-icon">
               <Bell size={24} />
             </span>
-            <h2 id="settings-title">提醒与配置</h2>
+            <h2 id="settings-title">配置与迁移</h2>
             <p>请先在默认浏览器的苹果官网把目标型号、容量和颜色加入购物袋。有货时自动打开该地区购物袋并持续响铃，监控随后暂停；取货门店需手动选择。</p>
-            <div className="dialog-actions">
-              <button className="button secondary" onClick={beep}>
-                <Volume2 size={16} />
-                测试提示音
-              </button>
-              <button
-                className="text-button"
-                onClick={() =>
-                  action(async () =>
-                    message(
-                      (await call("EnableSystemNotifications"))
-                        ? "已允许系统通知"
-                        : "系统通知未获允许，可在系统设置中开启",
-                    ),
-                  )
-                }
-              >
-                允许系统通知
-              </button>
-            </div>
-            <label className="field bark-field">
-              <span>Bark 手机推送 {s.barkConfigured && <b>已配置</b>}</span>
-              <input
-                type="password"
-                autoComplete="off"
-                placeholder={
-                  s.barkConfigured
-                    ? "输入新地址可替换现有配置"
-                    : "粘贴 Bark 提供的 HTTPS 推送地址"
-                }
-                value={bark}
-                onChange={(e) => setBark(e.target.value)}
-              />
-            </label>
-            <div className="dialog-actions">
-              <button
-                className="button primary"
-                disabled={busy || !bark.trim()}
-                onClick={() =>
-                  action(async () => {
-                    await call("SaveBark", bark);
-                    setBark("");
-                    message("推送地址已保存");
-                  })
-                }
-              >
-                保存推送地址
-              </button>
-              {s.barkConfigured && (
-                <button
-                  className="text-button"
-                  disabled={busy}
-                  onClick={() => action(() => call("SaveBark", ""))}
-                >
-                  停用 Bark
-                </button>
-              )}
-            </div>
             <div className="import">
               <h3>从 1.x 迁移</h3>
               <p>
