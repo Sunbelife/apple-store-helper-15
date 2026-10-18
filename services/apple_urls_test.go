@@ -2,6 +2,26 @@ package services
 
 import "testing"
 
+func TestShoppingBagURL(t *testing.T) {
+	for area, want := range map[string]string{
+		"cn": "https://www.apple.com.cn/shop/bag",
+		"us": "https://www.apple.com/shop/bag",
+		"hk": "https://www.apple.com/hk/shop/bag",
+		"jp": "https://www.apple.com/jp/shop/bag",
+		"sg": "https://www.apple.com/sg/shop/bag",
+		"uk": "https://www.apple.com/uk/shop/bag",
+		"au": "https://www.apple.com/au/shop/bag",
+	} {
+		got, err := ShoppingBagURL(area)
+		if err != nil || got != want {
+			t.Fatalf("%s: got %s, %v; want %s", area, got, err, want)
+		}
+	}
+	if _, err := ShoppingBagURL(""); err == nil {
+		t.Fatal("unknown region must not open another region's bag")
+	}
+}
+
 func TestProductPurchaseURL(t *testing.T) {
 	tests := []struct {
 		name         string

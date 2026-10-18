@@ -242,7 +242,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.10 · 本地测试版</span>
+        <span>2.0.11 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -456,7 +456,7 @@ function App() {
               <p>
                 在左侧选择心仪的产品和门店。
                 <br />
-                有货时，我们会提醒你并打开官网购买页。
+                有货时，我们会提醒你并打开苹果购物袋。
               </p>
             </div>
           ) : (
@@ -605,7 +605,7 @@ function App() {
               <Bell size={24} />
             </span>
             <h2 id="settings-title">提醒与配置</h2>
-            <p>有货时打开官网购买页并持续响铃，监控随后暂停。</p>
+            <p>请先在默认浏览器的苹果官网把目标型号、容量和颜色加入购物袋。有货时自动打开该地区购物袋并持续响铃，监控随后暂停；取货门店需手动选择。</p>
             <div className="dialog-actions">
               <button className="button secondary" onClick={beep}>
                 <Volume2 size={16} />
@@ -699,16 +699,22 @@ function App() {
             <h2>{s.alert.store.CityStoreName}</h2>
             <p>{s.alert.product.Title}</p>
             <p>
-              已打开官网购买页，监控已暂停。
+              已打开苹果购物袋，监控已暂停。
               <br />
-              请尽快核对库存并完成购买。
+              请在购物袋选择提醒中的取货门店，再核对并下单。
             </p>
             <button
               className="button primary"
+              onClick={() => action(() => call("OpenBag", s.alert.id))}
+            >
+              前往购物袋
+              <ArrowUpRight size={16} />
+            </button>
+            <button
+              className="text-button"
               onClick={() => action(() => call("OpenPurchase", s.alert.id))}
             >
-              前往购买
-              <ArrowUpRight size={16} />
+              购物袋没有目标手机？查看商品页
             </button>
             <button
               className="button secondary stock-shop-button"

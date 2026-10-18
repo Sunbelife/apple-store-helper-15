@@ -342,8 +342,8 @@ func (s *listenService) Run() {
 						observation := newStockObservation(s.Area.ShortCode, item.Store, item.Product, detectedAt)
 						msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
 
-						// 打开已选好型号、容量和颜色的官网商品页。
-						purchaseURL, err := ProductPurchaseURL(s.Area.ShortCode, item.Product.Type, item.Product.Code, item.Product.PurchasePath)
+						// Open the existing browser shopping bag; the user chooses pickup.
+						purchaseURL, err := ShoppingBagURL(s.Area.ShortCode)
 						if err != nil {
 							log.Printf("Failed to build purchase URL: %v", err)
 							continue

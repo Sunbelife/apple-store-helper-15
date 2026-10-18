@@ -27,6 +27,15 @@ func pickupMessagesURL(areaCode string, query string) (string, error) {
 	return fmt.Sprintf("%s/shop/retail/pickup-message?%s", baseURL, query), nil
 }
 
+// ShoppingBagURL opens the user's existing browser bag; it does not add items.
+func ShoppingBagURL(areaCode string) (string, error) {
+	baseURL, err := appleStoreBaseURL(areaCode)
+	if err != nil {
+		return "", err
+	}
+	return baseURL + "/shop/bag", nil
+}
+
 // ProductPurchaseURL returns the locale-specific Apple purchase page.
 // iPhone uses Apple's SKU resolver; Watch uses its complete configuration path.
 func ProductPurchaseURL(areaCode string, productType string, partNumber string, purchasePath string) (string, error) {

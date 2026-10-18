@@ -567,7 +567,7 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 	}
 }
 func (a *Desktop) stockFound(ctx context.Context, id uint64, t Target) {
-	purchase, err := services.ProductPurchaseURL(t.Area.ShortCode, t.Product.Type, t.Product.Code, t.Product.PurchasePath)
+	purchase, err := services.ShoppingBagURL(t.Area.ShortCode)
 	if err != nil {
 		a.update(id, t.ID, services.StatusError, err.Error())
 		a.addLog(err.Error())
@@ -615,6 +615,24 @@ func (a *Desktop) AlertShown(id string) {
 	go services.ReportPublicStock(t.Area.ShortCode, t.Store, t.Product, detected)
 }
 func (a *Desktop) DismissAlert() { a.mu.Lock(); defer a.mu.Unlock(); a.state.Alert = nil }
+func (a *Desktop) OpenBag(id string) error {
+	a.mu.Lock()
+	var area string
+	for _, target := range a.state.Items {
+		if target.ID == id {
+			area = target.Area.ShortCode
+			break
+		}
+	}
+	a.mu.Unlock()
+	u, err := services.ShoppingBagURL(area)
+	if err != nil {
+		return err
+	}
+	wruntime.BrowserOpenURL(a.ctx, u)
+	return nil
+}
+
 func (a *Desktop) OpenPurchase(id string) error {
 	a.mu.Lock()
 	var target *Target
