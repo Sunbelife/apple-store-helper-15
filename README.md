@@ -22,6 +22,8 @@ macOS：Go **1.25+**、Node.js **22+** 和 Xcode Command Line Tools。当前依�
 
 2.0.10 通用安装包包含 Intel 和 Apple Silicon，最低系统版本为 macOS 12。修正了旧包意外继承本机 SDK 的 macOS 27 最低运行版本问题。Intel 与旧系统仍需实机验证。
 
+后续打包必须遵守 [macOS 打包要求](workdoc/macOS打包要求.md)，交付前核对两种架构的 Mach-O 最低版本与签名。
+
 ```sh
 cd desktop/frontend
 npm ci
