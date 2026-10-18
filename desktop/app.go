@@ -654,6 +654,9 @@ func (a *Desktop) OpenPurchase(id string) error {
 	return err
 }
 func (a *Desktop) OpenShop() { wruntime.BrowserOpenURL(a.ctx, "https://store.sunbelife.com") }
+func (a *Desktop) OpenUsageArticle() {
+	wruntime.BrowserOpenURL(a.ctx, "https://mp.weixin.qq.com/s/PCVWj6xmK13lBM_BbBokiA")
+}
 func sendBark(endpoint, message, purchase string) {
 	u, err := url.Parse(endpoint)
 	if err != nil || u.Scheme != "https" || u.Host == "" {

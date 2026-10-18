@@ -586,6 +586,64 @@ td:first-child {
   z-index: 10;
   padding: 25px;
 }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.guide-trigger {
+  color: #747474;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.dialog.usage-guide {
+  width: min(650px, 100%);
+  text-align: left;
+}
+.usage-guide .guide-intro {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.guide-steps {
+  padding-left: 22px;
+  margin: 0;
+}
+.guide-steps li {
+  padding-left: 6px;
+  margin-bottom: 19px;
+}
+.guide-steps li::marker {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.guide-steps h3 {
+  margin: 0 0 5px;
+  font-size: 13px;
+  color: #383838;
+}
+.usage-guide p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 0;
+  color: #777;
+}
+.guide-note {
+  border-top: 1px solid var(--line);
+  padding-top: 17px;
+  margin: 4px 0 14px;
+}
+.guide-note strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.usage-guide .guide-extra {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 14px;
+}
 .dialog {
   position: relative;
   background: #fff;

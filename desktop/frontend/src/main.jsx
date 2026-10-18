@@ -17,6 +17,7 @@ import {
 import "./style.css";
 import ShopRail from "./ShopRail.jsx";
 import profileAvatar from "./assets/weibo-avatar.jpg";
+import UsageGuide from "./UsageGuide.jsx";
 const COOLDOWN_STATUS = "触发风控，冷却中，稍后再尝试";
 const call = (n, ...a) =>
   window.go?.main?.Desktop?.[n](...a) ??
@@ -59,6 +60,7 @@ function App() {
   const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [settings, setSettings] = useState(false),
+    [showGuide, setShowGuide] = useState(false),
     [logs, setLogs] = useState(false),
     [toast, setToast] = useState(null),
     [search, setSearch] = useState(""),
@@ -242,7 +244,7 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.11 · 本地测试版</span>
+        <span>2.0.12 · 本地测试版</span>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -256,6 +258,8 @@ function App() {
             <p>Apple Store 门店取货监控</p>
           </div>
         </div>
+        <div className="header-actions">
+        <button className="text-button guide-trigger" onClick={() => setShowGuide(true)}>使用说明</button>
         <button
           className="icon-button"
           aria-label="提醒设置"
@@ -263,6 +267,7 @@ function App() {
         >
           <Settings2 size={20} />
         </button>
+        </div>
       </header>
       <main className="workspace">
         <aside className="configuration">
@@ -585,6 +590,7 @@ function App() {
           </button>
         </div>
       )}
+      {showGuide && <UsageGuide onClose={() => setShowGuide(false)} onArticle={() => action(() => call("OpenUsageArticle"))} />}
       {settings && (
         <div className="overlay" onClick={() => setSettings(false)}>
           <section
