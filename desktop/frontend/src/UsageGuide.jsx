@@ -65,7 +65,7 @@ export default function UsageGuide({ onClose, onArticle }) {
           <strong>提醒不等于锁定库存</strong>
           <p>程序不自动加购、选店、下单或付款。库存会随时变化，以苹果结账页为准。我们保留购物袋入口：结账直达链接依赖会过期的浏览器会话，不能保证直接进入取货页。</p>
         </div>
-        <p className="guide-extra">可在监控列表顶部的「到货提醒」测试提示音、开启系统通知，或配置 Bark。当前版本尚未接入微信绑定和微信到货通知。</p>
+        <p className="guide-extra">可在「关注的门店」前的闹钟按钮中测试提示音、开启系统通知，或配置 Bark。当前版本尚未接入微信绑定和微信到货通知。</p>
         <button className="text-button" onClick={onArticle}>查看老孙公众号原文 <ArrowUpRight size={13} /></button>
       </section>
     </div>

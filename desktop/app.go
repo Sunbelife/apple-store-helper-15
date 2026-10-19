@@ -729,6 +729,10 @@ func sendBark(endpoint, message, purchase string) {
 }
 
 // EnableSystemNotifications is invoked only by the user's settings action.
+func (a *Desktop) GetSystemNotificationStatus() (bool, error) {
+	return wruntime.CheckNotificationAuthorization(a.ctx)
+}
+
 func (a *Desktop) EnableSystemNotifications() (bool, error) {
 	if err := wruntime.InitializeNotifications(a.ctx); err != nil {
 		return false, err

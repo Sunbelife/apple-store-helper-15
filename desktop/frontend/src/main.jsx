@@ -5,6 +5,7 @@ import {
   Play,
   Pause,
   Settings2,
+  AlarmClock,
   RefreshCw,
   X,
   ChevronDown,
@@ -62,6 +63,8 @@ function App() {
     [busy, setBusy] = useState(false),
     [settings, setSettings] = useState(false),
     [showGuide, setShowGuide] = useState(false),
+    [reminderOpen, setReminderOpen] = useState(false),
+    [systemNotifications, setSystemNotifications] = useState(false),
     [catalogRefreshing, setCatalogRefreshing] = useState(false),
     [logs, setLogs] = useState(false),
     [toast, setToast] = useState(null),
@@ -137,6 +140,15 @@ function App() {
     setCity("");
     setStore("");
   }
+  useEffect(() => {
+    call("GetSystemNotificationStatus").then(setSystemNotifications).catch(() => setSystemNotifications(false));
+  }, [reminderOpen]);
+  useEffect(() => {
+    if (!reminderOpen) return;
+    const onKey = (event) => { if (event.key === "Escape") setReminderOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [reminderOpen]);
   useEffect(() => {
     let closed = false,
       pending = false;
@@ -463,25 +475,16 @@ function App() {
           </p>
         </aside>
         <section className="monitor">
-          <div className="monitor-reminders" aria-label="到货提醒配置">
-            <div className="reminder-toolbar">
-              <span className="reminder-title"><Bell size={14} />到货提醒</span>
-              <button className="text-button" onClick={beep}><Volume2 size={13} />测试提示音</button>
-              <button className="text-button" disabled={busy} onClick={() => action(async () => message((await call("EnableSystemNotifications")) ? "已允许系统通知" : "系统通知未获允许，可在系统设置中开启"))}>允许系统通知</button>
-            </div>
-            <div className="reminder-bark">
-              <label htmlFor="monitor-bark">Bark 手机推送 <span>{s.barkConfigured ? "已配置" : "未配置"}</span></label>
-              <input id="monitor-bark" type="password" autoComplete="off" aria-label="Bark 推送地址" placeholder={s.barkConfigured ? "输入新地址可替换现有配置" : "粘贴 Bark 的 HTTPS 推送地址"} value={bark} onChange={(event) => setBark(event.target.value)} />
-              <button className="text-button" disabled={busy || !bark.trim()} onClick={() => action(async () => { await call("SaveBark", bark); setBark(""); message("推送地址已保存"); })}>保存</button>
-              {s.barkConfigured && <button className="text-button" disabled={busy} onClick={() => action(() => call("SaveBark", ""))}>停用</button>}
-            </div>
-          </div>
           <div className="monitor-heading">
             <div>
               <div className="eyebrow">库存监控</div>
-              <h2>
-                关注的门店<span>{s.items.length}</span>
-              </h2>
+              <div className="monitor-title-row">
+                <button className="alarm-trigger" aria-label="到货提醒配置" title={(s.barkConfigured || systemNotifications) ? "额外提醒已配置，点击修改" : "仅本地响铃，点击配置通知"} onClick={() => setReminderOpen(true)}>
+                  <AlarmClock size={24} strokeWidth={1.6} />
+                  <span className={"alarm-status " + ((s.barkConfigured || systemNotifications) ? "ready" : "local")} />
+                </button>
+                <h2>关注的门店<span>{s.items.length}</span></h2>
+              </div>
             </div>
             <button
               className={"button " + (s.running ? "secondary" : "primary")}
@@ -681,6 +684,29 @@ function App() {
           <button aria-label="关闭提示" onClick={() => setToast(null)}>
             <X size={14} />
           </button>
+        </div>
+      )}
+      {reminderOpen && (
+        <div className="overlay" onClick={() => setReminderOpen(false)}>
+          <section className="dialog reminder-dialog" role="dialog" aria-modal="true" aria-labelledby="reminder-heading" onClick={(event) => event.stopPropagation()}>
+            <button autoFocus className="icon-button dialog-close" aria-label="关闭提醒配置" onClick={() => setReminderOpen(false)}><X size={18} /></button>
+            <h2 id="reminder-heading">到货提醒</h2>
+            <p>发现有货后自动响铃并打开苹果购物袋，监控随后暂停。</p>
+          <div className="monitor-reminders" aria-label="到货提醒配置">
+            <div className="reminder-toolbar">
+              <span className="reminder-title"><Bell size={14} />到货提醒</span>
+              <button className="text-button" onClick={beep}><Volume2 size={13} />测试提示音</button>
+              <button className="text-button" disabled={busy} onClick={() => action(async () => message((await call("EnableSystemNotifications").then((allowed) => { setSystemNotifications(allowed); return allowed; })) ? "已允许系统通知" : "系统通知未获允许，可在系统设置中开启"))}>允许系统通知</button>
+            </div>
+            <div className="reminder-bark">
+              <label htmlFor="monitor-bark">Bark 手机推送 <span>{s.barkConfigured ? "已配置" : "未配置"}</span></label>
+              <input id="monitor-bark" type="password" autoComplete="off" aria-label="Bark 推送地址" placeholder={s.barkConfigured ? "输入新地址可替换现有配置" : "粘贴 Bark 的 HTTPS 推送地址"} value={bark} onChange={(event) => setBark(event.target.value)} />
+              <button className="text-button" disabled={busy || !bark.trim()} onClick={() => action(async () => { await call("SaveBark", bark); setBark(""); message("推送地址已保存"); })}>保存</button>
+              {s.barkConfigured && <button className="text-button" disabled={busy} onClick={() => action(() => call("SaveBark", ""))}>停用</button>}
+            </div>
+          </div>
+            <p className="reminder-status-text">{s.barkConfigured ? "Bark 手机推送已配置。" : "Bark 手机推送未配置。"}{systemNotifications ? "系统通知已允许。" : "系统通知未允许或暂不可用。"}状态灯只表示提醒配置，不表示监控已开始或通知一定送达。</p>
+          </section>
         </div>
       )}
       {showGuide && <UsageGuide onClose={() => setShowGuide(false)} onArticle={() => action(() => call("OpenUsageArticle"))} />}
