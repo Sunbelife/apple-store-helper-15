@@ -1423,4 +1423,4 @@ input:focus-visible {
 .configuration-actions .add { margin-top: 0; }
 .configuration-fields > .field { margin-top: 10px; }
 
-.monitor-heading { padding: 17px 25px; gap: 16px; border-bottom: 1px solid #f2f2f2; flex-shrink: 0; }
+.monitor-heading { padding: 17px 25px; gap: 16px; flex-shrink: 0; }

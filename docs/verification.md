@@ -1,5 +1,9 @@
 # 2.0 本地验证记录
 
+## 2.0.28 表头分隔线与Windows可行性（2026-10-19）
+
+移除标题底部分隔线，保留表头与数据行的原边界。Windows amd64通过GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -tags desktop,production ./desktop交叉编译；未进行Windows实机测试。目前更新资产名称固定macOS，非darwin安装更新返回不支持，正式Windows交付仍需单独打包、更新适配和WebView2运行环境验证。
+
 ## 2.0.27 压缩列表顶部（2026-10-19）
 
 标题、提醒入口、门店数量、有货／异常及清空列表合为同一行，移除库存监控小标题和独立工具栏，缩减顶部留白，将空间交还门店表格。前端构建和Universal打包通过。
