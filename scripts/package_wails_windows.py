@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Package a Windows x64 portable Wails app with icon and GUI manifest."""
-import argparse,hashlib,os,re,subprocess,tempfile,zipfile
+import argparse,hashlib,os,re,shutil,subprocess,tempfile,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 VERSION=re.search(r'AppVersion\s*=\s*"([^"]+)"',(ROOT/'desktop/version.go').read_text()).group(1)
-def run(args,**kwargs):subprocess.run(args,cwd=ROOT,check=True,**kwargs)
+def run(args,**kwargs):
+ executable=shutil.which(args[0])
+ if not executable:raise RuntimeError(f'Missing build tool: {args[0]}')
+ subprocess.run([executable,*args[1:]],cwd=ROOT,check=True,**kwargs)
 def main():
  parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,default=ROOT/'dist');args=parser.parse_args()
  out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
