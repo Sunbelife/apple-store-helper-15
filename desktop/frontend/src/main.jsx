@@ -19,6 +19,7 @@ import "./style.css";
 import ShopRail from "./ShopRail.jsx";
 import profileAvatar from "./assets/weibo-avatar.jpg";
 import UsageGuide from "./UsageGuide.jsx";
+import StockStatistics from "./StockStatistics.jsx";
 const COOLDOWN_STATUS = "触发风控，冷却中，稍后再尝试";
 const call = (n, ...a) =>
   window.go?.main?.Desktop?.[n](...a) ??
@@ -62,6 +63,7 @@ function App() {
     [busy, setBusy] = useState(false),
     [settings, setSettings] = useState(false),
     [showGuide, setShowGuide] = useState(false),
+    [showStatistics, setShowStatistics] = useState(false),
     [reminderOpen, setReminderOpen] = useState(false),
     [systemNotifications, setSystemNotifications] = useState(false),
     [catalogRefreshing, setCatalogRefreshing] = useState(false),
@@ -340,6 +342,7 @@ function App() {
         </div>
         <div className="header-actions">
         <button className="button secondary feedback-button" onClick={() => action(() => call("OpenFeedback"))} title="不能使用或需要更新？到微博联系 Sunbelife">问题反馈 <ArrowUpRight size={14} /></button>
+        <button className="text-button guide-trigger" onClick={() => setShowStatistics(true)}>库存统计</button>
         <button className="text-button guide-trigger" onClick={() => setShowGuide(true)}>使用说明</button>
         <button
           className="icon-button"
@@ -688,6 +691,7 @@ function App() {
           </section>
         </div>
       )}
+      {showStatistics && <StockStatistics onClose={() => setShowStatistics(false)} load={(filters) => call("GetStockStatistics", filters)} />}
       {showGuide && <UsageGuide onClose={() => setShowGuide(false)} onArticle={() => action(() => call("OpenUsageArticle"))} />}
       {showUpdate && update?.available && (
         <div className="overlay" onClick={() => !installingUpdate && setShowUpdate(false)}>

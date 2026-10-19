@@ -7,7 +7,7 @@ import threading
 import auth
 import os
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
@@ -64,6 +64,40 @@ def record(payload):
         db.execute("DELETE FROM events WHERE received_at < strftime('%Y-%m-%dT%H:%M:%S', 'now', '-180 days')")
         db.execute('DELETE FROM events WHERE id IN (SELECT id FROM events ORDER BY id DESC LIMIT -1 OFFSET 100000)')
     return inserted
+
+def statistics(params):
+    tz = timezone(timedelta(hours=8))
+    now = datetime.now(tz)
+    day = params.get('date', [now.date().isoformat()])[0]
+    start = datetime.strptime(day, '%Y-%m-%d').replace(tzinfo=tz)
+    if start.date() > now.date() or (now.date()-start.date()).days > 180:
+        raise ValueError('date out of range')
+    end = start + timedelta(days=1)
+    clauses, values = ['detected_at >= ?', 'detected_at < ?'], [start.astimezone(timezone.utc).isoformat(timespec='seconds'), end.astimezone(timezone.utc).isoformat(timespec='seconds')]
+    for key in ('area','model','capacity','color','city'):
+        value = params.get(key, [''])[0]
+        if len(value) > 160: raise ValueError('invalid filter')
+        if value:
+            clauses.append(key+' = ?'); values.append(value)
+    if params.get('recent', [''])[0] == '1':
+        clauses.append('detected_at >= ?'); values.append((now-timedelta(hours=1)).astimezone(timezone.utc).isoformat(timespec='seconds'))
+    with connect() as db:
+        rows = db.execute('SELECT area,city,store_number,detected_at FROM events WHERE '+' AND '.join(clauses),values).fetchall()
+        options = {k:[r[0] for r in db.execute('SELECT DISTINCT '+k+' FROM events ORDER BY '+k) if r[0]] for k in ('area','model','capacity','color')}
+        latest = db.execute('SELECT max(detected_at) FROM events').fetchone()[0]
+    hourly = [0]*24
+    cities = {}
+    for r in rows:
+        detected = datetime.fromisoformat(r['detected_at']).astimezone(tz)
+        hourly[detected.hour] += 1
+        key = (r['area'],r['city'])
+        city = cities.setdefault(key,dict(area=r['area'],city=r['city'],count=0,stores=set(),last_at=''))
+        city['count'] += 1; city['stores'].add(r['store_number']); city['last_at'] = max(city['last_at'],r['detected_at'])
+    ranking = []
+    for city in cities.values():
+        city['stores'] = len(city['stores']); ranking.append(city)
+    ranking.sort(key=lambda c:(-c['count'],c['city']))
+    return dict(date=day, timezone='Asia/Shanghai', total=len(rows), city_count=len(ranking), hourly=hourly, cities=ranking, options=options, latest_at=latest, updated_at=now.isoformat(timespec='seconds'))
 
 class Handler(BaseHTTPRequestHandler):
     server_version = 'StockLog'
@@ -131,6 +165,13 @@ class Handler(BaseHTTPRequestHandler):
         self.reply(201 if inserted else 200, {'ok':True, 'inserted':inserted})
     def do_GET(self):
         parts = urlsplit(self.path)
+        if parts.path == '/iphone-stock/api/stats':
+            try:
+                return self.reply(200, statistics(parse_qs(parts.query)))
+            except (ValueError, TypeError):
+                return self.reply(400, {'error':'invalid filters'})
+            except sqlite3.Error:
+                return self.reply(503, {'error':'temporarily unavailable'})
         if parts.path in ('/iphone-stock', '/iphone-stock/') and not auth.valid_session(AUTH_CONFIG,self.headers.get('Cookie')):
             return self.render_login()
         if parts.path == '/iphone-stock/api/events' and not auth.valid_session(AUTH_CONFIG,self.headers.get('Cookie')):

@@ -1368,3 +1368,33 @@ input:focus-visible {
   .monitor-heading { flex-wrap: wrap; gap: 16px; }
   .monitor-controls { margin-left: auto; gap: 14px; }
 }
+
+.stats-dialog { width: min(820px, calc(100vw - 48px)); max-height: 86vh; overflow: auto; background: white; padding: 28px; border-radius: 22px; box-shadow: 0 20px 90px #0002; }
+.stats-heading, .stats-actions, .stats-ranking-title { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.stats-heading h2 { margin: 0; font-size: 24px; }
+.stats-filters { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 18px; }
+.stats-filters label { display: flex; flex-direction: column; gap: 6px; color: #888; font-size: 11px; flex: 1; min-width: 110px; }
+.stats-filters select, .stats-filters input { width: 100%; border: 1px solid #eee; border-radius: 8px; padding: 9px; background: #fafafa; color: #444; font-size: 12px; }
+.stats-period { display: flex; gap: 8px; }
+.stats-period button { border: 0; background: #f7f7f7; padding: 7px 12px; border-radius: 8px; color: #999; cursor: pointer; }
+.stats-period .selected { color: var(--accent); background: #fff1ed; }
+.stats-metrics { display: flex; gap: 44px; align-items: flex-end; padding: 24px 0; }
+.stats-metrics > div { display: flex; align-items: baseline; gap: 8px; }
+.stats-metrics strong { font-size: 42px; font-weight: 600; letter-spacing: -2px; }
+.stats-metrics span, .stats-metrics p { font-size: 12px; color: #999; }
+.stats-metrics p { margin-left: auto; }
+.stats-chart { height: 115px; display: flex; align-items: flex-end; gap: 5px; border-bottom: 1px solid #eee; margin-bottom: 25px; }
+.stats-hour { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.stats-hour > div { background: linear-gradient(#fe6043,#ffc1a7); border-radius: 4px 4px 0 0; min-height: 1px; }
+.stats-hour span { font-size: 9px; color: #aaa; height: 20px; padding-top: 5px; }
+.stats-ranking-title h3 { font-size: 16px; }
+.stats-ranking-title > span { color: #aaa; font-size: 11px; }
+.stats-city { display: flex; align-items: center; gap: 16px; width: 100%; padding: 16px 0; border: 0; border-bottom: 1px solid #f1f1f1; background: white; text-align: left; cursor: pointer; color: #333; }
+.stats-city:hover { background: #fafafa; }
+.stats-rank { font-size: 18px; color: #bbb; width: 26px; }
+.stats-city > div:nth-child(2) { flex: 1; }
+.stats-city > div:last-child { text-align: right; }
+.stats-city small { display: block; font-size: 11px; color: #aaa; margin-top: 6px; }
+.stats-city-bar { height: 3px; background: #fe9179; margin-top: 10px; border-radius: 3px; }
+.stats-empty { padding: 32px 0; text-align: center; color: #999; font-size: 13px; }
+.stats-footnote { font-size: 10px; color: #aaa; line-height: 1.7; margin: 16px 0 0; }

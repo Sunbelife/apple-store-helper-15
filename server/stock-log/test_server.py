@@ -25,6 +25,18 @@ class StockLogTests(unittest.TestCase):
         for change in ({'device_id':'no'},{'detected_at':'2020-01-01T00:00:00Z'},{'city':''},{'area':'unknown'}):
             with self.assertRaises(ValueError):server.record(dict(self.event,**change))
 
+    def test_statistics_timezone_filters_and_public_fields(self):
+        server.record(self.event)
+        server.record(dict(self.event,store_number='R002'))
+        day = datetime.now(timezone.utc).astimezone(timezone(__import__('datetime').timedelta(hours=8))).date().isoformat()
+        result = server.statistics({'date':[day]})
+        self.assertEqual(result['total'],2)
+        self.assertEqual(sum(result['hourly']),2)
+        self.assertEqual(result['cities'][0]['stores'],2)
+        self.assertNotIn('events',result)
+        self.assertEqual(server.statistics({'date':[day],'color':['missing']})['total'],0)
+        with self.assertRaises(ValueError):server.statistics({'date':["bad"]})
+
 
 class PasswordSessionTests(unittest.TestCase):
     def test_settlement_password_verifier_and_session_expiry(self):
