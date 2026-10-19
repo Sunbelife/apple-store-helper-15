@@ -9,7 +9,6 @@ import {
   RefreshCw,
   X,
   ChevronDown,
-  Search,
   MapPin,
   Bell,
   ArrowUpRight,
@@ -68,7 +67,6 @@ function App() {
     [catalogRefreshing, setCatalogRefreshing] = useState(false),
     [logs, setLogs] = useState(false),
     [toast, setToast] = useState(null),
-    [search, setSearch] = useState(""),
     [bark, setBark] = useState(""),
     [appInfo, setAppInfo] = useState({ version: "" }),
     [update, setUpdate] = useState(null),
@@ -275,11 +273,7 @@ function App() {
       ].includes(t.status),
     ).length,
     available = s.items.filter((t) => t.status === "有货").length;
-  const shown = s.items.filter((t) =>
-    (t.store.CityStoreName + " " + t.product.Title)
-      .toLowerCase()
-      .includes(search.toLowerCase()),
-  );
+  const shown = s.items;
   function changeModel(m) {
     setModel(m);
     const p = c.products.find((p) => p.Model === m);
@@ -531,15 +525,6 @@ function App() {
             </div>
           )}
           <div className="table-tools">
-            <label className="search">
-              <Search size={15} />
-              <input
-                aria-label="搜索门店或产品"
-                placeholder="搜索门店或产品"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </label>
             <button
               className="text-button"
               disabled={locked || !s.items.length}

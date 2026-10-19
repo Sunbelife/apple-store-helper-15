@@ -11,8 +11,8 @@ func TestFeaturedProductsKeepMiniProgramPromotionLinks(t *testing.T) {
 	if err := json.Unmarshal(shopProductsJSON, &products); err != nil {
 		t.Fatal(err)
 	}
-	if len(products) != 6 {
-		t.Fatalf("got %d featured products, want six", len(products))
+	if len(products) != 9 {
+		t.Fatalf("got %d featured products, want nine", len(products))
 	}
 	seen := map[string]bool{}
 	for _, p := range products {

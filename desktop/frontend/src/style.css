@@ -387,27 +387,10 @@ select:hover:not(:disabled) {
   color: #a87d3d;
 }
 .table-tools {
+  justify-content: flex-end;
   padding: 16px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-.search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #b5b5b5;
-}
-.search input {
-  border: 0;
-  background: transparent;
-  font-size: 11px;
-  width: 180px;
-  padding: 5px 0;
-  color: #797979;
-}
-.search input::placeholder {
-  color: #b5b5b5;
 }
 .text-button {
   border: 0;
@@ -1395,6 +1378,7 @@ input:focus-visible {
   margin-top: 2px;
 }
 .configuration .form-note {
+  text-align: center;
   margin-top: 8px;
   line-height: 1.6;
 }

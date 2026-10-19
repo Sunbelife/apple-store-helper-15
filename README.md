@@ -11,7 +11,7 @@ Apple Store 门店取货库存监控。**2.0 使用 Wails 2 + React + Go，目�
 - 启动时自动检查 GitHub Releases；也可点击窗口右上角手动检查，下载后校验 SHA-256、Bundle ID、版本号和应用签名，再原位更新并重启。
 - 有货时自动打开对应地区的苹果购物袋，弹窗、持续提示音，可选 Bark 手机推送，然后暂停监控。提醒弹窗另提供商品页入口。
 - 配置保存在系统应用配置目录，支持通过设置页导入 1.x 的 `user_settings.json`。
-- 使用老孙的店当前图标、灰白底和橙色主题，底部固定展示六件最近在售商品。
+- 使用老孙的店当前图标、灰白底和橙色主题，底部展示九款店铺商品，土豆片、土豆子 2 号机和科技织物壳优先展示。
 - 商品使用后台生成的专属分销渠道链接，微信扫码进入对应商品的小程序页面；Mac 浏览器无法直接打开小程序时，可复制链接或手机扫码。
 - 保留公开库存上报。受限时显示「触发风控，冷却中，稍后再尝试」和自动重试倒计时。
 
@@ -122,7 +122,7 @@ APPLE_STOCK_LIVE=1 go test ./services -run TestLivePostalPickupGuangdong -v -cou
 
 ## 固定商品推荐
 
-商品快照和公开分销链接位于 `desktop/frontend/src/shop-products.json`，图片随应用打包，不在运行时读取店铺管理 API。快照取自 2026-10-17 最近六件在售商品，价格和库存以小程序为准。渠道为 `qiangnimei_2026_<商品ID>`；管理员凭据不打入应用。品牌图标来自店铺公开 layout 配置，构建图标位于 `desktop/branding/store-logo.png`。
+商品快照和公开分销链接位于 `desktop/frontend/src/shop-products.json`，图片随应用打包，不在运行时读取店铺管理 API。快照于 2026-10-19 补充土豆片、土豆子 2 号机和科技织物壳，共九款商品，价格和库存以小程序为准。渠道为 `qiangnimei_2026_<商品ID>`；管理员凭据不打入应用。品牌图标来自店铺公开 layout 配置，构建图标位于 `desktop/branding/store-logo.png`。
 
 ## 配置与数据
 
