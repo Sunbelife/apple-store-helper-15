@@ -461,7 +461,6 @@ function App() {
         <section className="monitor">
           <div className="monitor-heading">
             <div>
-              <div className="eyebrow">库存监控</div>
               <div className="monitor-title-row">
                 <h2>关注的门店</h2>
                 <button className="alarm-trigger" aria-label="到货提醒配置" title="到货提醒配置" onClick={() => setReminderOpen(true)}>
@@ -475,6 +474,14 @@ function App() {
                 <span>有货 <b>{available}</b></span>
                 <span className={abnormal ? "warn" : ""}>异常 <b>{abnormal}</b></span>
               </div>
+            <button
+              className="text-button"
+              disabled={locked || !s.items.length}
+              onClick={() => action(() => call("ClearTargets"))}
+            >
+              清空列表
+            </button>
+
 
             </div>
           </div>
@@ -491,15 +498,6 @@ function App() {
               </span>
             </div>
           )}
-          <div className="table-tools">
-            <button
-              className="text-button"
-              disabled={locked || !s.items.length}
-              onClick={() => action(() => call("ClearTargets"))}
-            >
-              清空列表
-            </button>
-          </div>
           {!s.items.length ? (
             <div className="empty">
               <span className="empty-icon">

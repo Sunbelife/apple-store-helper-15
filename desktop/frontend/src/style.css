@@ -346,12 +346,6 @@ select:hover:not(:disabled) {
 .warn {
   color: #a87d3d;
 }
-.table-tools {
-  justify-content: flex-end;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-}
 .text-button {
   border: 0;
   background: none;
@@ -1428,3 +1422,5 @@ input:focus-visible {
 .configuration-actions { margin-top: auto; padding-top: 18px; flex-shrink: 0; }
 .configuration-actions .add { margin-top: 0; }
 .configuration-fields > .field { margin-top: 10px; }
+
+.monitor-heading { padding: 17px 25px; gap: 16px; border-bottom: 1px solid #f2f2f2; flex-shrink: 0; }
