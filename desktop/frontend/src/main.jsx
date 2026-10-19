@@ -480,35 +480,29 @@ function App() {
                 <span className="monitor-count">{s.items.length}</span>
               </div>
             </div>
-            <button
-              className={"button " + (s.running ? "secondary" : "primary")}
-              disabled={busy || (!s.running && !s.items.length)}
-              onClick={() => {
-                readyAudio();
-                action(() => call(s.running ? "Pause" : "Start"));
-              }}
-            >
-              {s.running ? <Pause size={16} /> : <Play size={16} />}{" "}
-              {s.running ? "暂停监控" : "开始监控"}
-            </button>
-          </div>
-          <div className="monitor-summary">
-            <div>
-              <i className={"live-dot " + (s.running ? "active" : "")} />
-              <strong>{s.phase}</strong>
-              {s.running && s.nextAt > 0 && (
-                <span>
-                  {Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后自动重试
+            <div className="monitor-controls">
+              <div className="monitor-counts" aria-label={`有货 ${available}，异常 ${abnormal}`}>
+                <span>有货 <b>{available}</b></span>
+                <span className={abnormal ? "warn" : ""}>异常 <b>{abnormal}</b></span>
+              </div>
+              <button
+                className={"button monitor-toggle " + (s.running ? "secondary" : "primary")}
+                disabled={busy || (!s.running && !s.items.length)}
+                onClick={() => {
+                  readyAudio();
+                  action(() => call(s.running ? "Pause" : "Start"));
+                }}
+              >
+                {s.running ? <Pause size={16} /> : <Play size={16} />}
+                <span className="monitor-toggle-copy">
+                  <strong>{s.running ? "暂停监控" : "开始监控"}</strong>
+                  <small title={s.phase}>
+                    {s.phase}{s.running && s.nextAt > 0
+                      ? ` · ${Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后重试`
+                      : ""}
+                  </small>
                 </span>
-              )}
-            </div>
-            <div className="summary-counts">
-              <span>
-                有货 <b>{available}</b>
-              </span>
-              <span className={abnormal ? "warn" : ""}>
-                异常 <b>{abnormal}</b>
-              </span>
+              </button>
             </div>
           </div>
           {abnormal > 0 && (
