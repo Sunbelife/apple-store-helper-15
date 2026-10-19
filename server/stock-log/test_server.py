@@ -34,6 +34,11 @@ class StockLogTests(unittest.TestCase):
         self.assertEqual(sum(result['hourly']),2)
         self.assertEqual(result['cities'][0]['stores'],2)
         self.assertNotIn('events',result)
+        self.assertEqual(result['products'][0]['model'],'iPhone Duo')
+        self.assertEqual(result['products'][0]['color'],'星光白色')
+        self.assertEqual(result['products'][0]['capacity'],'512GB')
+        self.assertEqual(result['cities'][0]['products'][0]['count'],2)
+        self.assertIn('深圳-益田假日广场',result['cities'][0]['products'][0]['stores'])
         self.assertEqual(server.statistics({'date':[day],'color':['missing']})['total'],0)
         with self.assertRaises(ValueError):server.statistics({'date':["bad"]})
 

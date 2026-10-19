@@ -82,22 +82,35 @@ def statistics(params):
     if params.get('recent', [''])[0] == '1':
         clauses.append('detected_at >= ?'); values.append((now-timedelta(hours=1)).astimezone(timezone.utc).isoformat(timespec='seconds'))
     with connect() as db:
-        rows = db.execute('SELECT area,city,store_number,detected_at FROM events WHERE '+' AND '.join(clauses),values).fetchall()
+        rows = db.execute('SELECT area,city,store_number,store_name,model,capacity,color,detected_at FROM events WHERE '+' AND '.join(clauses),values).fetchall()
         options = {k:[r[0] for r in db.execute('SELECT DISTINCT '+k+' FROM events ORDER BY '+k) if r[0]] for k in ('area','model','capacity','color')}
         latest = db.execute('SELECT max(detected_at) FROM events').fetchone()[0]
     hourly = [0]*24
     cities = {}
+    products = {}
     for r in rows:
         detected = datetime.fromisoformat(r['detected_at']).astimezone(tz)
         hourly[detected.hour] += 1
         key = (r['area'],r['city'])
         city = cities.setdefault(key,dict(area=r['area'],city=r['city'],count=0,stores=set(),last_at=''))
+        variant = (r['model'], r['color'], r['capacity'])
+        for groups in (products, city.setdefault('products', {})):
+            product = groups.setdefault(variant, dict(model=r['model'], color=r['color'], capacity=r['capacity'], count=0, stores=set(), last_at=''))
+            product['count'] += 1
+            product['stores'].add(r['store_name'])
+            product['last_at'] = max(product['last_at'],r['detected_at'])
         city['count'] += 1; city['stores'].add(r['store_number']); city['last_at'] = max(city['last_at'],r['detected_at'])
+    def product_rows(groups):
+        result = []
+        for product in groups.values():
+            product['stores'] = sorted(product['stores'])
+            result.append(product)
+        return sorted(result, key=lambda p:(-p['count'],p['model'],p['capacity'],p['color']))
     ranking = []
     for city in cities.values():
-        city['stores'] = len(city['stores']); ranking.append(city)
+        city['stores'] = len(city['stores']); city['products'] = product_rows(city['products']); ranking.append(city)
     ranking.sort(key=lambda c:(-c['count'],c['city']))
-    return dict(date=day, timezone='Asia/Shanghai', total=len(rows), city_count=len(ranking), hourly=hourly, cities=ranking, options=options, latest_at=latest, updated_at=now.isoformat(timespec='seconds'))
+    return dict(date=day, timezone='Asia/Shanghai', total=len(rows), city_count=len(ranking), hourly=hourly, cities=ranking, products=product_rows(products), options=options, latest_at=latest, updated_at=now.isoformat(timespec='seconds'))
 
 class Handler(BaseHTTPRequestHandler):
     server_version = 'StockLog'

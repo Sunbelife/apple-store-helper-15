@@ -1398,3 +1398,11 @@ input:focus-visible {
 .stats-city-bar { height: 3px; background: #fe9179; margin-top: 10px; border-radius: 3px; }
 .stats-empty { padding: 32px 0; text-align: center; color: #999; font-size: 13px; }
 .stats-footnote { font-size: 10px; color: #aaa; line-height: 1.7; margin: 16px 0 0; }
+
+.stats-products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.stats-product { padding: 12px 14px; border-radius: 10px; background: #fafafa; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.stats-product strong { font-size: 13px; width: 100%; }
+.stats-product span { font-size: 12px; color: #888; }
+.stats-product b { margin-left: auto; color: var(--accent); font-size: 12px; font-weight: 500; }
+.stats-city-product { display: block; margin-top: 12px; }
+.stats-city-product strong { font-size: 12px; font-weight: 500; color: #555; }
