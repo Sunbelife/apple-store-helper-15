@@ -5,6 +5,7 @@ import (
 	"apple-store-helper/services"
 	"context"
 	"errors"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -97,5 +98,47 @@ func TestOneStoreErrorDoesNotOverwriteSuccessfulStore(t *testing.T) {
 	s := awaitState(t, a, func(s State) bool { return s.Items[1].Status == services.StatusError })
 	if s.Items[0].Status != services.StatusOutStock {
 		t.Fatalf("successful result overwritten: %+v", s.Items)
+	}
+}
+
+func TestLimitedStoreDoesNotStopOtherStores(t *testing.T) {
+	a := NewDesktop()
+	a.ctx = context.Background()
+	a.state.Items = []Target{testTarget("R484"), testTarget("R639")}
+	limitedErr := errors.New("test risk control")
+	a.queryErrorStatus = func(err error) string {
+		if errors.Is(err, limitedErr) {
+			return services.StatusLimited
+		}
+		return services.StatusError
+	}
+	requested := make(chan string, 2)
+	a.query = func(_ context.Context, _ model.Area, s model.Store, _ []model.Product) (map[string]bool, error) {
+		requested <- s.StoreNumber
+		if s.StoreNumber == "R484" {
+			return nil, limitedErr
+		}
+		return map[string]bool{"R639.MK2P4CH/A": false}, nil
+	}
+	if err := a.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer a.Pause()
+	s := awaitState(t, a, func(s State) bool {
+		return s.Items[0].Status == services.StatusLimited &&
+			s.Items[1].Status == services.StatusOutStock &&
+			s.Phase == "部分门店冷却中，其他门店继续监控"
+	})
+	if s.Phase != "部分门店冷却中，其他门店继续监控" {
+		t.Fatalf("unexpected phase after partial risk control: %q", s.Phase)
+	}
+	if len(requested) != 2 {
+		t.Fatalf("sent %d requests, want both stores queried", len(requested))
+	}
+	if first, second := <-requested, <-requested; first != "R484" || second != "R639" {
+		t.Fatalf("query order = %s, %s; want limited store followed by healthy store", first, second)
+	}
+	if detail := s.Items[0].Detail; !strings.Contains(detail, "仅该门店冷却") {
+		t.Fatalf("limited store detail does not explain isolation: %q", detail)
 	}
 }

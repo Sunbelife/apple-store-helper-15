@@ -13,6 +13,7 @@ import {
   Bell,
   ArrowUpRight,
   Volume2,
+  Download,
 } from "lucide-react";
 import "./style.css";
 import ShopRail from "./ShopRail.jsx";
@@ -66,6 +67,11 @@ function App() {
     [toast, setToast] = useState(null),
     [search, setSearch] = useState(""),
     [bark, setBark] = useState(""),
+    [appInfo, setAppInfo] = useState({ version: "" }),
+    [update, setUpdate] = useState(null),
+    [showUpdate, setShowUpdate] = useState(false),
+    [checkingUpdate, setCheckingUpdate] = useState(false),
+    [installingUpdate, setInstallingUpdate] = useState(false),
     [now, setNow] = useState(Date.now());
   const audio = useRef(null),
     request = useRef(0),
@@ -86,6 +92,32 @@ function App() {
       message(String(e), true);
     } finally {
       setBusy(false);
+    }
+  }
+  async function checkUpdate(notify = true) {
+    if (checkingUpdate) return;
+    setCheckingUpdate(true);
+    try {
+      const info = await call("CheckForUpdates");
+      setUpdate(info);
+      if (info.available) {
+        setShowUpdate(true);
+      } else if (notify) {
+        message(`当前 v${info.currentVersion} 已是最新版本`);
+      }
+    } catch (e) {
+      if (notify) message(String(e), true);
+    } finally {
+      setCheckingUpdate(false);
+    }
+  }
+  async function installUpdate() {
+    setInstallingUpdate(true);
+    try {
+      await call("InstallUpdate");
+    } catch (e) {
+      setInstallingUpdate(false);
+      message(String(e), true);
     }
   }
   function apply(c) {
@@ -128,6 +160,10 @@ function App() {
       clearInterval(t);
       clearInterval(clock);
     };
+  }, []);
+  useEffect(() => {
+    call("GetAppInfo").then(setAppInfo).catch(() => {});
+    checkUpdate(false);
   }, []);
   useEffect(() => {
     let id = ++request.current;
@@ -275,7 +311,17 @@ function App() {
     <>
       <div className="titlebar">
         <span aria-hidden="true" />
-        <span>2.0.14 · 本地测试版</span>
+        <button
+          className={"title-update " + (update?.available ? "available" : "")}
+          disabled={checkingUpdate}
+          onClick={() => update?.available ? setShowUpdate(true) : checkUpdate(true)}
+        >
+          {checkingUpdate
+            ? "正在检查更新…"
+            : update?.available
+              ? `v${update.latestVersion} 可更新`
+              : `${appInfo.version ? `v${appInfo.version} · ` : ""}检查更新`}
+        </button>
       </div>
       <header className="app-header">
         <div className="brand">
@@ -474,10 +520,10 @@ function App() {
                 (t) =>
                   t.status === COOLDOWN_STATUS || t.status === "库存接口受限",
               )
-                ? "触发风控，冷却中，稍后再尝试。程序会在倒计时结束后自动重试。"
+                ? "触发风控的门店会单独冷却；其他门店继续监控，不会被一起暂停。"
                 : "部分查询未获得有效库存，请查看该行原因。"}
               <span className="warning-detail">
-                其他门店保留上次结果及时间；未查到不代表无货。
+                冷却门店会在冷却期结束后自动重试；未查到不代表无货。
               </span>
             </div>
           )}
@@ -638,6 +684,44 @@ function App() {
         </div>
       )}
       {showGuide && <UsageGuide onClose={() => setShowGuide(false)} onArticle={() => action(() => call("OpenUsageArticle"))} />}
+      {showUpdate && update?.available && (
+        <div className="overlay" onClick={() => !installingUpdate && setShowUpdate(false)}>
+          <section
+            className="dialog update-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="update-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="icon-button dialog-close"
+              aria-label="稍后更新"
+              disabled={installingUpdate}
+              onClick={() => setShowUpdate(false)}
+            >
+              <X size={18} />
+            </button>
+            <span className="dialog-icon update-icon">
+              <Download size={24} />
+            </span>
+            <div className="eyebrow">GitHub OTA 更新</div>
+            <h2 id="update-title">发现 v{update.latestVersion}</h2>
+            <p>当前版本 v{update.currentVersion}，更新包约 {Math.max(1, Math.ceil(update.downloadSize / 1024 / 1024))} MB。</p>
+            <div className="update-notes">
+              {update.notes || update.name || "包含功能改进和问题修复。"}
+            </div>
+            <button
+              className="button primary update-install"
+              disabled={installingUpdate}
+              onClick={installUpdate}
+            >
+              <Download size={16} />
+              {installingUpdate ? "正在下载、校验并安装…" : "下载、安装并重启"}
+            </button>
+            <p className="update-security">安装前会校验 GitHub Release 的 SHA-256、Bundle ID、版本号和应用签名；需要写入“应用程序”时，macOS 会请求管理员授权。</p>
+          </section>
+        </div>
+      )}
       {settings && (
         <div className="overlay" onClick={() => setSettings(false)}>
           <section

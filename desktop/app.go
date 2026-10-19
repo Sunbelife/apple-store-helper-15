@@ -51,22 +51,30 @@ type savedSettings struct {
 	Bark  string   `json:"bark"`
 }
 type Desktop struct {
-	onStock      func(context.Context, uint64, Target)
-	query        func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error)
-	mu           sync.Mutex
-	ctx          context.Context
-	cancel       context.CancelFunc
-	generation   uint64
-	state        State
-	bark         string
-	settingsPath string
-	reported     string
-	catalogMu    sync.Mutex
-	catalog      map[string]Catalog
+	onStock          func(context.Context, uint64, Target)
+	query            func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error)
+	queryErrorStatus func(error) string
+	updater          *githubUpdater
+	mu               sync.Mutex
+	ctx              context.Context
+	cancel           context.CancelFunc
+	generation       uint64
+	state            State
+	bark             string
+	settingsPath     string
+	reported         string
+	catalogMu        sync.Mutex
+	catalog          map[string]Catalog
 }
 
 func NewDesktop() *Desktop {
-	return &Desktop{query: services.QueryRetailPickup, state: State{Items: []Target{}, Logs: []Entry{}, Phase: "已暂停"}, catalog: map[string]Catalog{}}
+	return &Desktop{
+		query:            services.QueryRetailPickup,
+		queryErrorStatus: services.StockQueryErrorStatus,
+		updater:          newGitHubUpdater(),
+		state:            State{Items: []Target{}, Logs: []Entry{}, Phase: "已暂停"},
+		catalog:          map[string]Catalog{},
+	}
 }
 func (a *Desktop) startup(ctx context.Context) {
 	a.ctx = ctx
@@ -443,8 +451,18 @@ func (a *Desktop) update(id uint64, key, status, detail string) bool {
 	}
 	return false
 }
+
+type storeCooldown struct {
+	retryAt time.Time
+	backoff time.Duration
+}
+
+func monitorGroupKey(t Target) string {
+	return t.Area.ShortCode + ":" + t.Store.StoreNumber
+}
+
 func (a *Desktop) run(ctx context.Context, id uint64) {
-	backoff := time.Duration(0)
+	cooldowns := map[string]storeCooldown{}
 	for ctx.Err() == nil {
 		a.mu.Lock()
 		items := append([]Target{}, a.state.Items...)
@@ -458,7 +476,7 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		groups := map[string][]Target{}
 		keys := []string{}
 		for _, t := range items {
-			key := t.Area.ShortCode + ":" + t.Store.StoreNumber
+			key := monitorGroupKey(t)
 			if _, ok := groups[key]; !ok {
 				keys = append(keys, key)
 			}
@@ -466,11 +484,13 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		}
 		sort.Strings(keys)
 		known := map[string]bool{}
-		limited := false
 		requests := 0
 		for _, key := range keys {
 			if ctx.Err() != nil {
 				return
+			}
+			if cooldown, ok := cooldowns[key]; ok && time.Now().Before(cooldown.retryAt) {
+				continue
 			}
 			group := groups[key]
 			products := []model.Product{}
@@ -496,17 +516,23 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 				return
 			}
 			if err != nil {
-				status := services.StockQueryErrorStatus(err)
-				for _, t := range group {
-					a.update(id, t.ID, status, err.Error())
-				}
-				a.addLog(group[0].Store.CityStoreName + "：" + err.Error())
+				status := a.queryErrorStatus(err)
+				detail := err.Error()
 				if status == services.StatusLimited || status == services.StatusVerify {
-					limited = true
-					break
+					previous := cooldowns[key].backoff
+					delay := services.StockRetryBackoff(previous, true)
+					cooldowns[key] = storeCooldown{retryAt: time.Now().Add(delay), backoff: delay}
+					detail = fmt.Sprintf("%s；仅该门店冷却 %d 秒，其他门店继续监控", detail, int(delay.Seconds()))
 				}
+				for _, t := range group {
+					a.update(id, t.ID, status, detail)
+				}
+				a.addLog(group[0].Store.CityStoreName + "：" + detail)
 				continue
 			}
+			// A valid response clears this store's own risk-control backoff, even if
+			// Apple omitted one of the requested SKUs from the payload.
+			delete(cooldowns, key)
 			var found *Target
 			for _, t := range items {
 				if t.Area.ShortCode != group[0].Area.ShortCode {
@@ -516,6 +542,9 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 				if !exists {
 					continue
 				}
+				// Postal-code responses can cover nearby monitored stores. Treat an
+				// explicit result as a successful lookup for that store as well.
+				delete(cooldowns, monitorGroupKey(t))
 				known[t.ID] = available
 				status := services.StatusOutStock
 				if available {
@@ -544,10 +573,27 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		if ctx.Err() != nil {
 			return
 		}
-		backoff = services.StockRetryBackoff(backoff, limited)
 		delay := 30 * time.Second
-		if backoff > 0 {
-			delay = backoff
+		now := time.Now()
+		cooling := 0
+		var earliestRetry time.Time
+		for _, key := range keys {
+			cooldown, ok := cooldowns[key]
+			if !ok || !now.Before(cooldown.retryAt) {
+				continue
+			}
+			cooling++
+			if earliestRetry.IsZero() || cooldown.retryAt.Before(earliestRetry) {
+				earliestRetry = cooldown.retryAt
+			}
+		}
+		// When every store is cooling, sleep until the first store is eligible.
+		// Otherwise healthy stores retain the normal 30-second polling cadence.
+		if cooling == len(keys) && !earliestRetry.IsZero() {
+			delay = time.Until(earliestRetry)
+			if delay < 0 {
+				delay = 0
+			}
 		}
 		a.mu.Lock()
 		if id != a.generation {
@@ -556,10 +602,16 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		}
 		a.state.NextAt = time.Now().Add(delay).UnixMilli()
 		a.state.Phase = "等待下一轮"
-		if limited {
+		if cooling == len(keys) && cooling > 0 {
 			a.state.Phase = services.StatusLimited
+		} else if cooling > 0 {
+			a.state.Phase = "部分门店冷却中，其他门店继续监控"
 		}
-		a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 秒后重试", requests, int(delay.Seconds())))
+		if cooling > 0 {
+			a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 个门店单独冷却，%d 秒后继续", requests, cooling, int(delay.Seconds())))
+		} else {
+			a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 秒后重试", requests, int(delay.Seconds())))
+		}
 		a.mu.Unlock()
 		if !sleepContext(ctx, delay) {
 			return

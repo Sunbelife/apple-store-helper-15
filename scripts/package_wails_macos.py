@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '2.0.14'
+VERSION = re.search(r'AppVersion\s*=\s*"([^"]+)"', (ROOT / 'desktop/version.go').read_text()).group(1)
 
 def run(args, **kwargs):
     subprocess.run(args, check=True, cwd=ROOT, **kwargs)
@@ -55,12 +55,14 @@ def main():
                 name = f'icon_{size}x{size}' + ('@2x' if scale == 2 else '') + '.png'
                 run(['sips', '-z', str(size * scale), str(size * scale), str(ROOT / 'desktop/branding/store-logo.png'), '--out', str(iconset / name)], stdout=subprocess.DEVNULL)
         run(['iconutil', '-c', 'icns', str(iconset), '-o', str(resources / 'AppIcon.icns')])
-        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='老孙抢你妹 2026', CFBundleDisplayName='老孙抢你妹 2026', CFBundleShortVersionString=VERSION, CFBundleVersion='214', CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='12.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
+        major, minor, patch = map(int, VERSION.split('.'))
+        build_version = str(major * 10000 + minor * 100 + patch)
+        plist = dict(CFBundleExecutable='qiangnimei2', CFBundleIdentifier='com.sunbelife.qiangnimei2', CFBundleName='老孙抢你妹 2026', CFBundleDisplayName='老孙抢你妹 2026', CFBundleShortVersionString=VERSION, CFBundleVersion=build_version, CFBundlePackageType='APPL', CFBundleIconFile='AppIcon', NSHighResolutionCapable=True, LSMinimumSystemVersion='12.0', NSAppTransportSecurity={'NSAllowsLocalNetworking': True})
         (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(plist))
         run(['xattr', '-cr', str(app)])
         run(['codesign', '--force', '--deep', '--sign', '-', str(app)])
         run(['codesign', '--verify', '--deep', '--strict', str(app)])
-        archive = out / f'laosun-qiangnimei-2026-v{VERSION}-macos-{args.arch}-local.zip'
+        archive = out / f'laosun-qiangnimei-2026-v{VERSION}-macos-{args.arch}.zip'
         staged = stage / archive.name
         run(['ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', str(app), str(staged)])
         shutil.copyfile(staged, archive)

@@ -1,7 +1,8 @@
 name: Build
 on:
   push:
-    branches: ['master']
+    branches: ['master', 'feature/wails-react-desktop']
+    tags: ['v2.*']
   pull_request:
   release:
     types: [published]
@@ -17,22 +18,36 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.25.x'
-      - name: Test desktop and inventory server
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/frontend/package-lock.json
+      - name: Test desktop, updater and inventory server
         run: |
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            APP_VERSION=$(python3 -c 'import pathlib,re; print(re.search(r"AppVersion\s*=\s*\"([^\"]+)\"", pathlib.Path("desktop/version.go").read_text()).group(1))')
+            test "$GITHUB_REF_NAME" = "v$APP_VERSION"
+          fi
+          npm --prefix desktop/frontend ci --no-audit --no-fund
+          npm --prefix desktop/frontend run build
           go test ./...
+          go test -race ./desktop
           python3 -m unittest discover -s server/stock-log -p 'test_*.py'
       - name: Package universal Mac app
-        run: python3 scripts/package_macos.py
+        run: python3 scripts/package_wails_macos.py --output dist
       - uses: actions/upload-artifact@v4
         with:
-          name: qiangnimei18-macos-universal
+          name: laosun-qiangnimei-2026-macos-universal
           path: |
             dist/*.zip
             dist/*.sha256
       - name: Publish release assets
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v2.')
         uses: softprops/action-gh-release@v2
         with:
+          generate_release_notes: true
+          make_latest: true
           files: |
             dist/*.zip
             dist/*.sha256

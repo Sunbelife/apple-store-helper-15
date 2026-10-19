@@ -50,6 +50,18 @@ summary:focus-visible {
   --wails-draggable: drag;
   user-select: none;
 }
+.title-update {
+  border: 0;
+  background: transparent;
+  color: #a4a4a4;
+  font-size: 11px;
+  padding: 6px 0;
+  --wails-draggable: no-drag;
+}
+.title-update:hover:not(:disabled),
+.title-update.available {
+  color: var(--accent);
+}
 .app-header {
   display: flex;
   align-items: center;
@@ -733,6 +745,36 @@ td:first-child {
   letter-spacing: -0.6px;
   font-weight: 600;
   margin: 0 0 12px;
+}
+.update-dialog {
+  width: min(500px, 100%);
+}
+.update-icon {
+  color: var(--accent);
+  background: #fff1ed;
+}
+.update-notes {
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 8px 0 20px;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.update-install {
+  width: 100%;
+}
+.dialog .update-security {
+  color: #aaa;
+  font-size: 10px;
+  line-height: 1.7;
+  margin: 13px 0 0;
 }
 .dialog > p,
 .import p {
