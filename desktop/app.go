@@ -160,6 +160,14 @@ func (a *Desktop) GetCatalog(code string) (Catalog, error) {
 		return Catalog{}, err
 	}
 	c := Catalog{Areas: model.Areas, Stores: services.Store.ByArea(area), Products: []model.ProductInfo{}}
+	if a.settingsPath != "" {
+		if cached, readErr := os.ReadFile(filepath.Join(filepath.Dir(a.settingsPath), "catalogs", code+"-stores.json")); readErr == nil {
+			var saved []model.Store
+			if json.Unmarshal(cached, &saved) == nil {
+				c.Stores = mergeStores(c.Stores, saved)
+			}
+		}
+	}
 	for _, products := range data.Products {
 		for _, p := range products {
 			p.Color = services.NormalizeProductColor(p.Color)
@@ -179,34 +187,9 @@ func (a *Desktop) RefreshCatalog(code string) (Catalog, error) {
 	if running {
 		return Catalog{}, fmt.Errorf("请先暂停监控，再更新目录")
 	}
-	data, err := services.FetchProductData(code)
-	if err != nil {
-		return Catalog{}, err
-	}
-	// Keep refreshed catalogs in the application support directory, outside the signed app.
-	if a.settingsPath != "" {
-		dir := filepath.Join(filepath.Dir(a.settingsPath), "catalogs")
-		if err = os.MkdirAll(dir, 0700); err != nil {
-			return Catalog{}, err
-		}
-		b, _ := json.Marshal(data)
-		if err = os.WriteFile(filepath.Join(dir, code+".json"), b, 0600); err != nil {
-			return Catalog{}, err
-		}
-	}
-	area, _ := areaFor(code)
-	a.catalogMu.Lock()
-	defer a.catalogMu.Unlock()
-	c := Catalog{Areas: model.Areas, Stores: services.Store.ByArea(area), Products: []model.ProductInfo{}}
-	for _, ps := range data.Products {
-		for _, p := range ps {
-			p.Color = services.NormalizeProductColor(p.Color)
-			c.Products = append(c.Products, p)
-		}
-	}
-	a.catalog[code] = c
-	return c, nil
+	return a.refreshCatalog(code)
 }
+
 func (a *Desktop) saveLocked() error {
 	if a.settingsPath == "" {
 		return fmt.Errorf("配置目录不可用")

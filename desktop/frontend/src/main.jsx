@@ -78,9 +78,7 @@ function App() {
     [now, setNow] = useState(Date.now());
   const audio = useRef(null),
     request = useRef(0),
-    refreshedAreas = useRef(new Set()),
-    selection = useRef(null);
-  selection.current = { model, cap, sku };
+    refreshedAreas = useRef(new Set());
   const locked = busy || s.running;
   const message = (text, error = false) => setToast({ text, error });
   async function sync() {
@@ -181,42 +179,36 @@ function App() {
     let id = ++request.current;
     setLoading(true);
     setCatalogRefreshing(false);
-    call("GetCatalog", area)
-      .then((c) => {
+    (async () => {
+      try {
+        const cached = await call("GetCatalog", area);
         if (id !== request.current) return;
-        apply(c);
-        setLoading(false);
+        apply(cached);
         if (refreshedAreas.current.has(area)) return;
-        refreshedAreas.current.add(area);
         setCatalogRefreshing(true);
-        // Use cached choices immediately; refreshing never edits monitoring targets.
-        call("RefreshCatalog", area)
-          .then((fresh) => {
-            if (id !== request.current) return;
-            const old = selection.current;
-            const selected = fresh.products.find((p) => p.Code === old.sku)
-              || fresh.products.find((p) => p.Model === old.model && p.Capacity === old.cap)
-              || fresh.products.find((p) => p.Model === old.model)
-              || fresh.products[0];
-            setC(fresh);
-            setModel(selected?.Model || "");
-            setCap(selected?.Capacity || "");
-            setSku(selected?.Code || "");
-            message("产品目录已自动更新");
-          })
-          .catch(() => {
-            if (id === request.current) message("目录自动更新未成功，继续使用本地目录，可稍后手动更新");
-          })
-          .finally(() => {
-            if (id === request.current) setCatalogRefreshing(false);
-          });
-      })
-      .catch((e) => {
+        try {
+          const fresh = await call("RefreshCatalog", area);
+          if (id !== request.current) return;
+          refreshedAreas.current.add(area);
+          setC(fresh);
+        } catch (e) {
+          if (id === request.current) {
+            const merged = await call("GetCatalog", area);
+            if (id === request.current) {
+              setC(merged);
+              message(`更新未全部完成，已保留本地目录：${e}`, true);
+            }
+          }
+        }
+      } catch (e) {
         if (id === request.current) message(String(e), true);
-      })
-      .finally(() => {
-        if (id === request.current) setLoading(false);
-      });
+      } finally {
+        if (id === request.current) {
+          setCatalogRefreshing(false);
+          setLoading(false);
+        }
+      }
+    })();
   }, [area]);
   useEffect(() => {
     if (!toast) return;
@@ -321,6 +313,11 @@ function App() {
   );
   return (
     <>
+      {loading && <div className="catalog-loading" role="status" aria-live="polite">
+        <RefreshCw size={24} className="spin" />
+        <strong>正在更新产品和门店信息…</strong>
+        <span>增量合并，保留已有目录与监控；网络异常时使用本地数据</span>
+      </div>}
       <div className="titlebar">
         <span aria-hidden="true" />
         <button
@@ -365,15 +362,18 @@ function App() {
             <h2>添加监控</h2>
             <button
               className="text-button catalog-refresh"
-              aria-label="更新产品目录"
-              title="从苹果官网更新型号、容量和颜色目录，不刷新库存"
+              aria-label="更新产品和门店信息"
+              title="从苹果官网增量更新产品和门店信息，保留已有监控"
               disabled={locked || loading || catalogRefreshing}
               onClick={() =>
                 action(async () => {
                   setLoading(true);
                   try {
-                    apply(await call("RefreshCatalog", area));
-                    message("产品目录已更新");
+                    setC(await call("RefreshCatalog", area));
+                    message("产品和门店信息已增量更新");
+                  } catch (e) {
+                    setC(await call("GetCatalog", area));
+                    throw e;
                   } finally {
                     setLoading(false);
                   }
@@ -479,10 +479,10 @@ function App() {
             <div>
               <div className="eyebrow">库存监控</div>
               <div className="monitor-title-row">
+                <h2>关注的门店<span>{s.items.length}</span></h2>
                 <button className="alarm-trigger" aria-label="到货提醒配置" title="到货提醒配置" onClick={() => setReminderOpen(true)}>
                   <AlarmClock size={17} strokeWidth={1.6} />
                 </button>
-                <h2>关注的门店<span>{s.items.length}</span></h2>
               </div>
             </div>
             <button
