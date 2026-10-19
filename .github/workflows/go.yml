@@ -51,3 +51,35 @@ jobs:
           files: |
             dist/*.zip
             dist/*.sha256
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Package Windows x64 portable app
+        run: python scripts/package_wails_windows.py --output dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: laosun-qiangnimei-2026-windows-amd64
+          path: |
+            dist/*windows*.zip
+            dist/*windows*.sha256
+      - name: Publish release assets
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v2.')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*windows*.zip
+            dist/*windows*.sha256

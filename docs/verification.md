@@ -1,5 +1,11 @@
 # 2.0 本地验证记录
 
+## 2.0.29 官网双平台下载（2026-10-19）
+
+新增Windows x64便携打包脚本及CI，嵌入原图标、版本和GUI manifest。Windows更新入口打开官网，禁止下载macOS更新包。桌面Go测试、前端构建、双平台ZIP和SHA256检查通过；Windows PE为x64 GUI且含资源，尚无实机验证，官网标测试版。Mac最终解压包双架构minos12.0、plist12.0和签名验证通过。
+
+腾讯云sunbelife_blog（ins-e9jzp6nd）于北京时间2026-10-19 12:00:05完成首页入口、独立页面及两个下载包上线；HTTPS下载文件哈希与本地一致。页面https://sunbelife.com/projects/qiangnimei/ ，回滚首页备份/var/backups/sunblog-qiangnimei-20261019-115904/index.html。无Caddy或服务配置变化。
+
 ## 2.0.28 表头分隔线与Windows可行性（2026-10-19）
 
 移除标题底部分隔线，保留表头与数据行的原边界。Windows amd64通过GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -tags desktop,production ./desktop交叉编译；未进行Windows实机测试。目前更新资产名称固定macOS，非darwin安装更新返回不支持，正式Windows交付仍需单独打包、更新适配和WebView2运行环境验证。

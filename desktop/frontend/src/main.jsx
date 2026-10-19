@@ -314,9 +314,9 @@ function App() {
         <button
           className={"title-update " + (update?.available ? "available" : "")}
           disabled={checkingUpdate}
-          onClick={() => update?.available ? setShowUpdate(true) : checkUpdate(true)}
+          onClick={() => appInfo.platform === "windows" ? call("OpenDownloads") : update?.available ? setShowUpdate(true) : checkUpdate(true)}
         >
-          {checkingUpdate
+          {appInfo.platform === "windows" ? `v${appInfo.version} · 下载更新` : checkingUpdate
             ? "正在检查更新…"
             : update?.available
               ? `v${update.latestVersion} 可更新`

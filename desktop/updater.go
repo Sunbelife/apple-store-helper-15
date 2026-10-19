@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -26,6 +27,7 @@ const (
 )
 
 type AppInfo struct {
+	Platform   string `json:"platform"`
 	Version    string `json:"version"`
 	Repository string `json:"repository"`
 }
@@ -84,10 +86,17 @@ func newGitHubUpdater() *githubUpdater {
 }
 
 func (a *Desktop) GetAppInfo() AppInfo {
-	return AppInfo{Version: AppVersion, Repository: updateRepository}
+	return AppInfo{Version: AppVersion, Repository: updateRepository, Platform: runtime.GOOS}
+}
+
+func (a *Desktop) OpenDownloads() {
+	wruntime.BrowserOpenURL(a.ctx, "https://sunbelife.com/projects/qiangnimei/")
 }
 
 func (a *Desktop) CheckForUpdates() (UpdateInfo, error) {
+	if runtime.GOOS != "darwin" {
+		return UpdateInfo{CurrentVersion: AppVersion, LatestVersion: AppVersion}, nil
+	}
 	ctx := a.ctx
 	if ctx == nil {
 		ctx = context.Background()
@@ -100,6 +109,9 @@ func (a *Desktop) CheckForUpdates() (UpdateInfo, error) {
 }
 
 func (a *Desktop) InstallUpdate() error {
+	if runtime.GOOS != "darwin" {
+		return fmt.Errorf("请到官网下载新版 Windows 安装包")
+	}
 	u := a.updater
 	u.mu.Lock()
 	if u.installing {

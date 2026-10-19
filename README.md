@@ -155,3 +155,8 @@ macOS 配置位于 `~/Library/Application Support/Sunbelife/Qiangnimei2/settings
 App 顶部「库存统计」向所有用户展示博客已收到的库存检测汇总，支持北京时间日期、地区、型号、颜色、容量筛选，当日累计／最近一小时、小时分布、机型／颜色／容量汇总及城市排行；各城市显示对应机型、门店、记录数和最近时间，点击城市可筛选。每 5 分钟刷新，也可手动刷新。未检测到的城市、未上报的设备均不在统计范围内；检测记录数不等于库存数量或放货批次，历史记录不代表实时有货。
 
 公开只读接口为 `/iphone-stock/api/stats`；原始事件列表 `/iphone-stock/api/events` 仍需管理员登录。统计接口不返回逐条事件或管理员凭据。
+
+
+### 官网下载与 Windows 测试版
+
+介绍及双平台下载：https://sunbelife.com/projects/qiangnimei/ 。Windows x64 免安装包通过 `python3 scripts/package_wails_windows.py --output dist` 生成，包含原图标、GUI manifest、PE版本信息、使用说明及SHA-256；运行需要Windows 10/11与WebView2。Windows更新按钮打开官网下载页，不使用macOS安装更新流程。首版未经Windows实机验证，发布为测试版。GitHub Actions已增加Windows打包产物。
