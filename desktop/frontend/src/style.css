@@ -284,9 +284,8 @@ select:hover:not(:disabled) {
 .reminder-dialog .reminder-bark label { width: 100%; }
 .reminder-dialog .reminder-bark input { min-width: 180px; height: 36px; }
 .reminder-dialog .reminder-status-text { font-size: 11px; color: #999; line-height: 1.8; }
-.monitor-heading h2 > span {
+.monitor-count {
   font-weight: 400;
-  margin-left: 10px;
   font-size: 17px;
   color: #bfbfbf;
 }

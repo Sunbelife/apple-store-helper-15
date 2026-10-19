@@ -479,10 +479,11 @@ function App() {
             <div>
               <div className="eyebrow">库存监控</div>
               <div className="monitor-title-row">
-                <h2>关注的门店<span>{s.items.length}</span></h2>
+                <h2>关注的门店</h2>
                 <button className="alarm-trigger" aria-label="到货提醒配置" title="到货提醒配置" onClick={() => setReminderOpen(true)}>
                   <AlarmClock size={17} strokeWidth={1.6} />
                 </button>
+                <span className="monitor-count">{s.items.length}</span>
               </div>
             </div>
             <button
