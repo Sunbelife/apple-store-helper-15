@@ -32,6 +32,8 @@ class StockLogTests(unittest.TestCase):
         result = server.statistics({'date':[day]})
         self.assertEqual(result['total'],2)
         self.assertEqual(sum(result['hourly']),2)
+        self.assertEqual(sum(p['count'] for hour in result['hourly_products'] for p in hour),2)
+        self.assertTrue(any(hour and hour[0]['capacity']=='512GB' for hour in result['hourly_products']))
         self.assertEqual(result['cities'][0]['stores'],2)
         self.assertNotIn('events',result)
         self.assertEqual(result['products'][0]['model'],'iPhone Duo')

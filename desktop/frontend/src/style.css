@@ -1385,8 +1385,8 @@ input:focus-visible {
 .stats-metrics p { margin-left: auto; }
 .stats-chart { height: 115px; display: flex; align-items: flex-end; gap: 5px; border-bottom: 1px solid #eee; margin-bottom: 25px; }
 .stats-hour { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
-.stats-hour > div { background: linear-gradient(#fe6043,#ffc1a7); border-radius: 4px 4px 0 0; min-height: 1px; }
-.stats-hour span { font-size: 9px; color: #aaa; height: 20px; padding-top: 5px; }
+.stats-hour-bar { background: linear-gradient(#fe6043,#ffc1a7); border-radius: 4px 4px 0 0; min-height: 1px; }
+.stats-hour-label { font-size: 9px; color: #aaa; height: 20px; padding-top: 5px; }
 .stats-ranking-title h3 { font-size: 16px; }
 .stats-ranking-title > span { color: #aaa; font-size: 11px; }
 .stats-city { display: flex; align-items: center; gap: 16px; width: 100%; padding: 16px 0; border: 0; border-bottom: 1px solid #f1f1f1; background: white; text-align: left; cursor: pointer; color: #333; }
@@ -1406,3 +1406,16 @@ input:focus-visible {
 .stats-product b { margin-left: auto; color: var(--accent); font-size: 12px; font-weight: 500; }
 .stats-city-product { display: block; margin-top: 12px; }
 .stats-city-product strong { font-size: 12px; font-weight: 500; color: #555; }
+
+.stats-hour { position: relative; border: 0; background: transparent; padding: 0; min-width: 0; text-align: left; cursor: default; font: inherit; }
+.stats-hour:hover .stats-hour-bar, .stats-hour:focus .stats-hour-bar { filter: saturate(1.3) brightness(.96); }
+.stats-hour-preview { display: none; position: absolute; z-index: 5; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 340px; max-height: 230px; overflow: auto; padding: 13px 15px; border: 1px solid #eee; border-radius: 12px; background: #fff; color: #555; box-shadow: 0 8px 30px #0002; font-size: 12px; line-height: 1.6; }
+.stats-hour:hover .stats-hour-preview, .stats-hour:focus .stats-hour-preview { display: flex; flex-direction: column; gap: 8px; }
+.stats-hour.tooltip-left .stats-hour-preview { left: 0; transform: none; }
+.stats-hour.tooltip-right .stats-hour-preview { left: auto; right: 0; transform: none; }
+.stats-hour-preview > strong { color: #333; }
+.stats-preview-product { display: flex; flex-direction: column; border-top: 1px solid #f2f2f2; padding-top: 7px; }
+.stats-preview-product b { font-weight: 500; }
+.stats-preview-product > span { color: #999; font-size: 11px; }
+
+.monitor-toggle-sidebar { width: 100%; justify-content: center; margin-top: 8px; flex-shrink: 0; }

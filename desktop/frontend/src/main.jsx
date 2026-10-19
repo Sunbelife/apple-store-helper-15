@@ -463,6 +463,24 @@ function App() {
             <Plus size={17} />
             添加到监控列表
           </button>
+              <button
+                className={"button monitor-toggle monitor-toggle-sidebar " + (s.running ? "secondary" : "primary")}
+                disabled={busy || (!s.running && !s.items.length)}
+                onClick={() => {
+                  readyAudio();
+                  action(() => call(s.running ? "Pause" : "Start"));
+                }}
+              >
+                {s.running ? <Pause size={16} /> : <Play size={16} />}
+                <span className="monitor-toggle-copy">
+                  <strong>{s.running ? "暂停监控" : "开始监控"}</strong>
+                  <small title={s.phase}>
+                    {s.phase}{s.running && s.nextAt > 0
+                      ? ` · ${Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后重试`
+                      : ""}
+                  </small>
+                </span>
+              </button>
           <p className="form-note">
             同一产品、同一门店会自动去重。
             <br />
@@ -488,24 +506,7 @@ function App() {
                 <span>有货 <b>{available}</b></span>
                 <span className={abnormal ? "warn" : ""}>异常 <b>{abnormal}</b></span>
               </div>
-              <button
-                className={"button monitor-toggle " + (s.running ? "secondary" : "primary")}
-                disabled={busy || (!s.running && !s.items.length)}
-                onClick={() => {
-                  readyAudio();
-                  action(() => call(s.running ? "Pause" : "Start"));
-                }}
-              >
-                {s.running ? <Pause size={16} /> : <Play size={16} />}
-                <span className="monitor-toggle-copy">
-                  <strong>{s.running ? "暂停监控" : "开始监控"}</strong>
-                  <small title={s.phase}>
-                    {s.phase}{s.running && s.nextAt > 0
-                      ? ` · ${Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后重试`
-                      : ""}
-                  </small>
-                </span>
-              </button>
+
             </div>
           </div>
           {abnormal > 0 && (

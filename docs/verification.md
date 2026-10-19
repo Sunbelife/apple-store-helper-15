@@ -1,5 +1,9 @@
 # 2.0 本地验证记录
 
+## 2.0.24 小时柱状图预览（2026-10-19）
+
+开始／暂停监控按钮移到左侧添加监控按钮下方，右侧标题只保留有货／异常计数。将原 title 提示改为立即显示的悬浮预览，支持 hover／键盘聚焦，显示小时区间、记录数、型号、颜色和容量。零记录小时也可预览，左右边缘气泡向内对齐。统计接口增加每小时机型聚合，测试验证各小时明细计数总和等于总记录数。腾讯云 sunbelife_blog / ins-e9jzp6nd 于北京时间11:31:36上线并验证管理接口仍401，备份 /opt/iphone-stock/server.py.before-statistics-hover。前端、Python测试及Universal双架构macOS12.0和签名检查通过。
+
 ## 2.0.23 机型明细（2026-10-19）
 
 库存统计增加型号／颜色／容量汇总，每个城市附对应机型、门店、记录数和最近时间，保持公开聚合而非开放管理日志。Python 测试、前端构建、Universal 双架构 macOS12.0 与签名验证通过。腾讯云 sunbelife_blog / ins-e9jzp6nd 于北京时间 11:26:51 验证新版统计接口，昨天仍为13条3城，匿名管理接口仍401。服务文件及数据库备份后更新单个 server.py，回滚文件 /opt/iphone-stock/server.py.before-statistics-products。
