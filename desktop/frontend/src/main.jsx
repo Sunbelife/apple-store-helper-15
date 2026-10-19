@@ -479,9 +479,8 @@ function App() {
             <div>
               <div className="eyebrow">库存监控</div>
               <div className="monitor-title-row">
-                <button className="alarm-trigger" aria-label="到货提醒配置" title={(s.barkConfigured || systemNotifications) ? "额外提醒已配置，点击修改" : "仅本地响铃，点击配置通知"} onClick={() => setReminderOpen(true)}>
-                  <AlarmClock size={24} strokeWidth={1.6} />
-                  <span className={"alarm-status " + ((s.barkConfigured || systemNotifications) ? "ready" : "local")} />
+                <button className="alarm-trigger" aria-label="到货提醒配置" title="到货提醒配置" onClick={() => setReminderOpen(true)}>
+                  <AlarmClock size={17} strokeWidth={1.6} />
                 </button>
                 <h2>关注的门店<span>{s.items.length}</span></h2>
               </div>
@@ -705,7 +704,7 @@ function App() {
               {s.barkConfigured && <button className="text-button" disabled={busy} onClick={() => action(() => call("SaveBark", ""))}>停用</button>}
             </div>
           </div>
-            <p className="reminder-status-text">{s.barkConfigured ? "Bark 手机推送已配置。" : "Bark 手机推送未配置。"}{systemNotifications ? "系统通知已允许。" : "系统通知未允许或暂不可用。"}状态灯只表示提醒配置，不表示监控已开始或通知一定送达。</p>
+            <p className="reminder-status-text">{s.barkConfigured ? "Bark 手机推送已配置。" : "Bark 手机推送未配置。"}{systemNotifications ? "系统通知已允许。" : "系统通知未允许或暂不可用。"}请另行点击「开始监控」开始监控。</p>
           </section>
         </div>
       )}

@@ -263,8 +263,8 @@ select:hover:not(:disabled) {
   position: relative;
   display: grid;
   place-items: center;
-  width: 37px;
-  height: 37px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
   border: 0;
   border-radius: 10px;
@@ -276,17 +276,6 @@ select:hover:not(:disabled) {
   background: #fff1ef;
   color: var(--accent);
 }
-.alarm-status {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  outline: 2px solid #fff;
-}
-.alarm-status.ready { background: #42a56a; }
-.alarm-status.local { background: #dca052; }
 .dialog.reminder-dialog { width: min(500px, 100%); }
 .reminder-dialog .monitor-reminders { padding: 15px 0; border: 0; }
 .reminder-dialog .reminder-title { display: none; }
