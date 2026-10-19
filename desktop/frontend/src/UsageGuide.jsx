@@ -57,7 +57,7 @@ export default function UsageGuide({ onClose, onArticle }) {
         <div className="eyebrow">开始之前</div>
         <h2 id="usage-title">使用说明</h2>
         <p className="guide-intro">提前加入购物袋 → 电脑监控门店 → 有货后手动取货下单</p>
-        <p className="guide-extra">每次打开会自动尝试更新产品目录，失败时仍可使用本地目录；也可手动点击「更新目录」。不能使用或需要更新？点击主界面顶部「问题反馈」，到微博联系老孙。</p>
+        <p className="guide-extra">每次打开会自动尝试更新产品目录，失败时仍可使用本地目录；也可手动点击「更新目录」。不能使用或需要更新？点击主界面顶部「问题反馈」，进入问题反馈页。可先在监控列表底部「导出反馈日志」，再在反馈页检查并上传；后续在同一浏览器的「我的反馈」查看回复。</p>
         <ol className="guide-steps">
           {steps.map((step) => <li key={step.title}><h3>{step.title}</h3><p>{step.text}</p></li>)}
         </ol>

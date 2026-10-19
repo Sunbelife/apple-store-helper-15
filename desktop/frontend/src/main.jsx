@@ -336,7 +336,7 @@ function App() {
           </div>
         </div>
         <div className="header-actions">
-        <button className="button secondary feedback-button" onClick={() => action(() => call("OpenFeedback"))} title="不能使用或需要更新？到微博联系 Sunbelife">问题反馈 <ArrowUpRight size={14} /></button>
+        <button className="button secondary feedback-button" onClick={() => action(() => call("OpenFeedback"))} title="提交问题、附加日志，并查看老孙的回复">问题反馈 <ArrowUpRight size={14} /></button>
         <button className="text-button guide-trigger" onClick={() => setShowStatistics(true)}>库存统计</button>
         <button className="text-button guide-trigger" onClick={() => setShowGuide(true)}>使用说明</button>
         <button
@@ -594,6 +594,9 @@ function App() {
               {logs ? "收起" : "查看"}运行日志
               <ChevronDown size={13} />
             </button>
+            <button className="text-button" onClick={() => action(async () => {
+              if (await call("ExportFeedbackLog")) message("日志已导出，请在问题反馈页检查后上传");
+            })} title="导出最近运行日志，上传前请检查内容"><Download size={13} />导出反馈日志</button>
             <span>库存随时变化，以苹果结算页为准</span>
           </div>
           {logs && (

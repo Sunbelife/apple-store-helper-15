@@ -693,7 +693,7 @@ func (a *Desktop) OpenUsageArticle() {
 	wruntime.BrowserOpenURL(a.ctx, "https://mp.weixin.qq.com/s/PCVWj6xmK13lBM_BbBokiA")
 }
 func (a *Desktop) OpenFeedback() {
-	wruntime.BrowserOpenURL(a.ctx, "https://weibo.com/x1nyang")
+	wruntime.BrowserOpenURL(a.ctx, feedbackURL())
 }
 func sendBark(endpoint, message, purchase string) {
 	u, err := url.Parse(endpoint)
