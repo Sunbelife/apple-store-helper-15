@@ -1422,3 +1422,9 @@ input:focus-visible {
 
 .button.add-neutral { background: #f1f1f1; color: #666; border-color: transparent; }
 .button.add-neutral:hover:not(:disabled) { background: #e8e8e8; color: #333; }
+
+.configuration { display: flex; flex-direction: column; overflow: hidden; }
+.configuration-fields { min-height: 0; overflow: auto; }
+.configuration-actions { margin-top: auto; padding-top: 18px; flex-shrink: 0; }
+.configuration-actions .add { margin-top: 0; }
+.configuration-fields > .field { margin-top: 10px; }

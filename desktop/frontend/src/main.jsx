@@ -350,6 +350,7 @@ function App() {
       </header>
       <main className="workspace">
         <aside className="configuration">
+          <div className="configuration-fields">
           <div className="section-heading">
             <h2>添加监控</h2>
             <button
@@ -402,16 +403,9 @@ function App() {
           )}
           </div>
           <div className="field-pair">
-            <Select label="省市 / 州" value={province ? `${province}|${city}` : ""} disabled={locked || loading} onChange={(value) => {
-              const [p = "", c = ""] = value.split("|");
-              setProvince(p); setCity(c); setStore("");
-            }}>
-              <option value="">全部省市</option>
-              {provinces.map(p => <optgroup key={p} label={p}>
-                <option value={`${p}|`}>{p} · 全部</option>
-                {unique(c.stores.filter(x => x.Province === p).map(x => x.City)).map(city => <option key={city} value={`${p}|${city}`}>{p} · {city}</option>)}
-              </optgroup>)}
-            </Select>
+            {dropdown("省份 / 州", province, (v) => { setProvince(v); setCity(""); setStore(""); }, provinces, "全部省份")}
+            {dropdown("城市", city, (v) => { setCity(v); setStore(""); }, unique(c.stores.filter(x => !province || x.Province === province).map(x => x.City)), "全部城市")}
+          </div>
           {dropdown(
             "零售店",
             store,
@@ -423,6 +417,7 @@ function App() {
             `全部门店 · ${stores.length}`,
           )}
           </div>
+          <div className="configuration-actions">
           <button
             className="button secondary add add-neutral"
             disabled={locked || loading || !sku || !stores.length}
@@ -461,7 +456,7 @@ function App() {
                   </small>}
                 </span>
               </button>
-
+          </div>
         </aside>
         <section className="monitor">
           <div className="monitor-heading">
