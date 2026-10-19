@@ -1419,3 +1419,6 @@ input:focus-visible {
 .stats-preview-product > span { color: #999; font-size: 11px; }
 
 .monitor-toggle-sidebar { width: 100%; justify-content: center; margin-top: 8px; flex-shrink: 0; }
+
+.button.add-neutral { background: #f1f1f1; color: #666; border-color: transparent; }
+.button.add-neutral:hover:not(:disabled) { background: #e8e8e8; color: #333; }

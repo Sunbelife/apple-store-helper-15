@@ -256,11 +256,6 @@ function App() {
       (p) => p.Model === model && p.Capacity === cap,
     );
   const provinces = unique(c.stores.map((x) => x.Province)),
-    cities = unique(
-      c.stores
-        .filter((x) => !province || x.Province === province)
-        .map((x) => x.City),
-    ),
     stores = c.stores.filter(
       (x) =>
         (!province || x.Province === province) && (!city || x.City === city),
@@ -381,6 +376,7 @@ function App() {
               {catalogRefreshing ? "更新中" : "更新目录"}
             </button>
           </div>
+          <div className="field-pair">
           {dropdown(
             "地区",
             area,
@@ -389,10 +385,8 @@ function App() {
               ? c.areas.map((x) => ({ value: x.ShortCode, label: x.Title }))
               : [{ value: "cn", label: "中国大陆" }],
           )}
-          <div className="form-divider">
-            <span>产品</span>
-          </div>
           {dropdown("型号", model, changeModel, models)}
+          </div>
           <div className="field-pair">
           {dropdown(
             model.includes("Watch") ? "尺寸" : "容量",
@@ -407,32 +401,17 @@ function App() {
             products.map((p) => ({ value: p.Code, label: p.Color })),
           )}
           </div>
-          <div className="form-divider">
-            <span>门店</span>
-          </div>
           <div className="field-pair">
-            {dropdown(
-              "省份 / 州",
-              province,
-              (v) => {
-                setProvince(v);
-                setCity("");
-                setStore("");
-              },
-              provinces,
-              "全部省份",
-            )}
-            {dropdown(
-              "城市",
-              city,
-              (v) => {
-                setCity(v);
-                setStore("");
-              },
-              cities,
-              "全部城市",
-            )}
-          </div>
+            <Select label="省市 / 州" value={province ? `${province}|${city}` : ""} disabled={locked || loading} onChange={(value) => {
+              const [p = "", c = ""] = value.split("|");
+              setProvince(p); setCity(c); setStore("");
+            }}>
+              <option value="">全部省市</option>
+              {provinces.map(p => <optgroup key={p} label={p}>
+                <option value={`${p}|`}>{p} · 全部</option>
+                {unique(c.stores.filter(x => x.Province === p).map(x => x.City)).map(city => <option key={city} value={`${p}|${city}`}>{p} · {city}</option>)}
+              </optgroup>)}
+            </Select>
           {dropdown(
             "零售店",
             store,
@@ -441,10 +420,11 @@ function App() {
               value: x.StoreNumber,
               label: x.CityStoreName,
             })),
-            `全部门店（${stores.length} 家）`,
+            `全部门店 · ${stores.length}`,
           )}
+          </div>
           <button
-            className="button primary add"
+            className="button secondary add add-neutral"
             disabled={locked || loading || !sku || !stores.length}
             onClick={() =>
               action(async () => {
@@ -474,20 +454,14 @@ function App() {
                 {s.running ? <Pause size={16} /> : <Play size={16} />}
                 <span className="monitor-toggle-copy">
                   <strong>{s.running ? "暂停监控" : "开始监控"}</strong>
-                  <small title={s.phase}>
+                  {s.running && <small title={s.phase}>
                     {s.phase}{s.running && s.nextAt > 0
                       ? ` · ${Math.max(0, Math.ceil((s.nextAt - now) / 1000))} 秒后重试`
                       : ""}
-                  </small>
+                  </small>}
                 </span>
               </button>
-          <p className="form-note">
-            同一产品、同一门店会自动去重。
-            <br />
-            {s.running
-              ? "暂停后可以修改监控配置。"
-              : "「全部门店」可一次加入当前省市门店。"}
-          </p>
+
         </aside>
         <section className="monitor">
           <div className="monitor-heading">
