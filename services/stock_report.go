@@ -73,20 +73,21 @@ func sendStockObservation(ctx context.Context, client *http.Client, endpoint str
 }
 
 // Called asynchronously after the stock alert is shown; reporting cannot delay the alert.
-func reportStockObservation(observation StockObservation) {
+func reportStockObservation(observation StockObservation) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()
 	client := &http.Client{Timeout: 3 * time.Second, CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}
 	for attempt := 0; attempt < 2; attempt++ {
 		if sendStockObservation(ctx, client, stockReportEndpoint, observation) == nil {
-			return
+			return true
 		}
 		if attempt == 0 {
 			select {
 			case <-time.After(time.Second):
 			case <-ctx.Done():
-				return
+				return false
 			}
 		}
 	}
+	return false
 }

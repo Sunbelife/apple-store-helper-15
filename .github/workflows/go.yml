@@ -31,6 +31,7 @@ jobs:
           fi
           npm --prefix desktop/frontend ci --no-audit --no-fund
           npm --prefix desktop/frontend run build
+          node --test desktop/frontend/src/i18n.test.js desktop/frontend/src/usage.test.js browser-extension/shared.test.js
           go test ./...
           go test -race ./desktop
           python3 -m unittest discover -s server/stock-log -p 'test_*.py'

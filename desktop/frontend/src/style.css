@@ -1450,3 +1450,7 @@ html[lang="en-US"] .stock-label { max-width: 125px; white-space: normal; line-he
 .computer-configuration .select svg { top: 7px; }
 
 .pickup-quote { display: block; max-width: 200px; margin-top: 3px; font-size: 10px; line-height: 1.3; color: #806333; }
+
+.usage-consent { border-bottom: 1px solid #eee; padding: 14px 0; margin-bottom: 18px; font-size: 12px; line-height: 1.7; color: #666; }
+.usage-consent p { margin: 6px 0; }
+.usage-consent small { color: #888; }

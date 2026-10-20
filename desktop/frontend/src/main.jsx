@@ -23,6 +23,7 @@ import ShopRail from "./ShopRail.jsx";
 import profileAvatar from "./assets/weibo-avatar.jpg";
 import UsageGuide from "./UsageGuide.jsx";
 import StockStatistics from "./StockStatistics.jsx";
+import { trackUsage } from "./usage.js";
 const COOLDOWN_STATUS = "触发风控，冷却中，稍后再尝试";
 const call = (n, ...a) =>
   window.go?.main?.Desktop?.[n](...a) ??
@@ -48,6 +49,7 @@ function Select({ label, value, onChange, children, disabled, title }) {
   );
 }
 function App() {
+  useEffect(() => { trackUsage("app_open"); trackUsage("page_monitor"); }, []);
   const [languageMode, setLanguageMode, language] = useLanguage();
   useEffect(() => {
     call("SetUILanguage", language).catch(() => {});
@@ -618,7 +620,7 @@ function App() {
               disabled={busy || (!s.running && !s.items.length)}
               onClick={() => {
                 readyAudio();
-                action(() => call(s.running ? "Pause" : "Start"));
+                action(async () => { await call(s.running ? "Pause" : "Start"); if (!s.running) trackUsage("monitor_start"); });
               }}
             >
               {tr(s.running ? <Pause size={16} /> : <Play size={16} />)}

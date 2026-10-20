@@ -315,5 +315,14 @@
   "该地区 Apple 官网未开放门店取货查询": "Apple does not offer retail pickup queries in this region.",
   "Apple TV 为实验支持，本轮尚未验证到有效的门店库存响应。": "Apple TV support is experimental. Valid store inventory has not yet been verified.",
   "可预约取货": "Scheduled pickup",
-  "Apple TV 支持预约取货状态；预约日期不代表当天现货。": "Apple TV supports scheduled pickup. A pickup date does not mean stock is available today."
+  "Apple TV 支持预约取货状态；预约日期不代表当天现货。": "Apple TV supports scheduled pickup. A pickup date does not mean stock is available today.",
+  "匿名使用统计": "Anonymous usage statistics",
+  "同意参与匿名统计": "Agree to anonymous usage statistics",
+  "退出并删除我的统计": "Leave and delete my statistics",
+  "所选日期 · 匿名安装 UV": "Selected date · Opted-in installations (UV)",
+  "监控 UV": "Monitoring UV",
+  "贡献 UV": "Contributor UV",
+  "成功上报": "Successful reports",
+  "使用统计仅按日期汇总，不受地区或产品筛选影响；PV 仅含监控页与库存统计页。": "Usage totals are filtered by date only. PV counts visits to the monitor and stock statistics pages.",
+  "自愿参与后，使用本机随机标识统计启动、监控页与统计页访问、开始监控和成功库存上报，并发送版本及系统类型至 sunbelife.com。无需账号，不采集硬件序列号、Bark 地址或日志，不保存 IP 地址。记录最多保留 30 天；UV 指参与统计的安装数，不代表全部用户或真实人数。": "After you agree, a random local identifier counts launches, monitor/statistics page visits, monitoring starts and successful stock reports, with app version and operating system sent to sunbelife.com. No account, hardware serial number, Bark address or logs are collected; IP addresses are not stored. Records are kept for up to 30 days. UV measures opted-in installations, not all users or unique people."
 }

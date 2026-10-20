@@ -1,6 +1,6 @@
 # 老孙抢你妹 2026
 
-Apple Store 门店取货库存监控。**正式版 v2.0.35 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
+Apple Store 门店取货库存监控。**正式版 v2.0.36 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
 
 ## 2.0 做了什么
 
@@ -199,3 +199,11 @@ Tests sample real retail stores and regional SKUs; they do not guarantee every c
 ## v2.0.35 更新
 
 暂时移除 Apple TV 产品选择、内置目录及自动目录抓取。已有本地缓存中的 Apple TV 也不会重新出现在产品列表。Mac、iPhone 和 Apple Watch 保留。
+
+## v2.0.36 匿名使用统计
+
+「库存统计」页面增加匿名统计说明与「同意参与匿名统计」按钮，没有设置开关。用户主动参与后才生成随机安装标识，上报启动、监控页／统计页访问、成功开始监控及成功库存上报请求，并附 App 版本与系统类型。支持「退出并删除我的统计」；删除失败时停止采集并允许重试。
+
+UV 为所选北京时间日期内发生统计事件的参与安装数，不是全部用户人数。PV 只统计监控页与库存统计页打开次数，不包含自动刷新或筛选。监控 UV 和贡献 UV 分别按成功开始监控、成功库存上报的安装标识去重。成功上报请求次数不等于库存记录数。统计不回填历史用户，也不保证网络丢失时完整计数。
+
+服务端仅存随机标识的摘要，不保存 IP、硬件序列号、Bark 配置或日志；使用事件保留约 30 天。公开接口仅返回汇总。详见 [统计实现及验证](workdoc/匿名使用统计.md)。

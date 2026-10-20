@@ -1,6 +1,7 @@
 import { t as tr, locale } from "./i18n.js";
 import React, { useEffect, useState } from "react";
 import { X, RefreshCw } from "lucide-react";
+import { hasConsentRecord, acceptUsage, withdrawUsage, trackUsage } from "./usage.js";
 const today = () =>
   new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Shanghai",
@@ -37,6 +38,10 @@ const areaNames = {
   nl: "荷兰",
 };
 export default function StockStatistics({ onClose, load }) {
+  const [joined, setJoined] = useState(hasConsentRecord);
+  const [usageError, setUsageError] = useState("");
+  const [usageBusy, setUsageBusy] = useState(false);
+  useEffect(() => { trackUsage("page_stats"); }, []);
   const [filters, setFilters] = useState({
     date: today(),
     area: "",
@@ -126,6 +131,14 @@ export default function StockStatistics({ onClose, load }) {
               <X size={20} />
             </button>
           </div>
+        </div>
+        <div className="usage-consent">
+          <strong>{tr("匿名使用统计")}</strong>
+          <p>{tr("自愿参与后，使用本机随机标识统计启动、监控页与统计页访问、开始监控和成功库存上报，并发送版本及系统类型至 sunbelife.com。无需账号，不采集硬件序列号、Bark 地址或日志，不保存 IP 地址。记录最多保留 30 天；UV 指参与统计的安装数，不代表全部用户或真实人数。")}</p>
+          <button className="text-button" disabled={usageBusy} onClick={async () => {setUsageBusy(true); setUsageError(""); try { if(joined) {await withdrawUsage();setJoined(false);} else {await acceptUsage();setJoined(true);} setRefresh(x=>x+1); } catch(e) {setUsageError(String(e));} finally{setUsageBusy(false);} }}>{tr(joined ? "退出并删除我的统计" : "同意参与匿名统计")}</button>
+          {usageError && <p role="alert">{usageError}</p>}
+          {data?.usage && <p>{tr("所选日期 · 匿名安装 UV")}: {data.usage.uv} · PV: {data.usage.pv} · {tr("监控 UV")}: {data.usage.monitor_uv} · {tr("贡献 UV")}: {data.usage.contributor_uv} · {tr("成功上报")}: {data.usage.reports}</p>}
+          <small>{tr("使用统计仅按日期汇总，不受地区或产品筛选影响；PV 仅含监控页与库存统计页。")}</small>
         </div>
         <div className="stats-filters">
           <label>

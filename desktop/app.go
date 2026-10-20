@@ -61,6 +61,8 @@ type Desktop struct {
 	generation       uint64
 	state            State
 	bark             string
+	usageMu          sync.Mutex
+	usageIdentity    string
 	uiLanguage       string
 	settingsPath     string
 	reported         string
@@ -683,7 +685,11 @@ func (a *Desktop) AlertShown(id string) {
 	a.reported = t.ID + t.CheckedAt
 	a.mu.Unlock()
 	detected, _ := time.Parse(time.RFC3339, t.CheckedAt)
-	go services.ReportPublicStock(t.Area.ShortCode, t.Store, t.Product, detected)
+	go func() {
+		if services.ReportPublicStock(t.Area.ShortCode, t.Store, t.Product, detected) {
+			_ = a.TrackUsage("stock_report")
+		}
+	}()
 }
 func (a *Desktop) DismissAlert() { a.mu.Lock(); defer a.mu.Unlock(); a.state.Alert = nil }
 func (a *Desktop) OpenBag(id string) error {

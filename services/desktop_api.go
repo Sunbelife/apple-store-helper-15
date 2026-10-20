@@ -55,8 +55,8 @@ func StockRetryBackoff(previous time.Duration, limited bool) time.Duration {
 	return nextStockRetryBackoff(previous, limited)
 }
 func NormalizeProductColor(color string) string { return translateColor(color) }
-func ReportPublicStock(area string, store model.Store, product model.Product, detectedAt time.Time) {
-	reportStockObservation(newStockObservation(area, store, product, detectedAt))
+func ReportPublicStock(area string, store model.Store, product model.Product, detectedAt time.Time) bool {
+	return reportStockObservation(newStockObservation(area, store, product, detectedAt))
 }
 
 // PickupSchedule carries explicit future pickup quotes alongside any current stock.

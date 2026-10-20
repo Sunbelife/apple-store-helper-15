@@ -5,6 +5,7 @@ import html
 import time
 import threading
 import auth
+import analytics
 import os
 import sqlite3
 from datetime import datetime, timezone, timedelta
@@ -28,6 +29,7 @@ def initialize():
     Path(DB).parent.mkdir(parents=True, exist_ok=True)
     with connect() as db:
         db.execute('PRAGMA journal_mode=WAL')
+        analytics.initialize(db)
         db.execute('''CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY, area TEXT NOT NULL, province TEXT NOT NULL,
             city TEXT NOT NULL, store_number TEXT NOT NULL, store_name TEXT NOT NULL,
@@ -44,7 +46,7 @@ def validate(payload):
             raise ValueError('invalid field')
         if key != 'province' and not value.strip():
             raise ValueError('missing field')
-    if payload['area'] not in ('cn', 'hk', 'jp', 'sg', 'us', 'uk', 'au'):
+    if payload['area'] not in ('cn', 'hk', 'jp', 'sg', 'us', 'uk', 'au', 'tw', 'kr', 'my', 'th', 'ca', 'de', 'fr', 'it', 'es'):
         raise ValueError('invalid area')
     dt = datetime.fromisoformat(payload['detected_at'].replace('Z', '+00:00'))
     now = datetime.now(timezone.utc)
@@ -85,6 +87,7 @@ def statistics(params):
         rows = db.execute('SELECT area,city,store_number,store_name,model,capacity,color,detected_at FROM events WHERE '+' AND '.join(clauses),values).fetchall()
         options = {k:[r[0] for r in db.execute('SELECT DISTINCT '+k+' FROM events ORDER BY '+k) if r[0]] for k in ('area','model','capacity','color')}
         latest = db.execute('SELECT max(detected_at) FROM events').fetchone()[0]
+        usage = analytics.summary(db, day)
     hourly = [0]*24
     hourly_products = [{} for _ in range(24)]
     cities = {}
@@ -111,7 +114,7 @@ def statistics(params):
     for city in cities.values():
         city['stores'] = len(city['stores']); city['products'] = product_rows(city['products']); ranking.append(city)
     ranking.sort(key=lambda c:(-c['count'],c['city']))
-    return dict(date=day, timezone='Asia/Shanghai', total=len(rows), city_count=len(ranking), hourly=hourly, hourly_products=[product_rows(groups) for groups in hourly_products], cities=ranking, products=product_rows(products), options=options, latest_at=latest, updated_at=now.isoformat(timespec='seconds'))
+    return dict(usage=usage, date=day, timezone='Asia/Shanghai', total=len(rows), city_count=len(ranking), hourly=hourly, hourly_products=[product_rows(groups) for groups in hourly_products], cities=ranking, products=product_rows(products), options=options, latest_at=latest, updated_at=now.isoformat(timespec='seconds'))
 
 class Handler(BaseHTTPRequestHandler):
     server_version = 'StockLog'
@@ -163,6 +166,17 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header('Set-Cookie',auth.COOKIE_NAME+'='+auth.cookie_value(AUTH_CONFIG,int(now))+'; Path=/iphone-stock; Max-Age='+str(auth.SESSION_SECONDS)+'; HttpOnly; Secure; SameSite=Strict')
             self.end_headers()
             return
+        if self.path in ('/api/iphone-stock/usage/events', '/api/iphone-stock/usage/erase'):
+            try:
+                length=int(self.headers.get('Content-Length','0'))
+                if not 0 < length <= 1024: return self.reply(413, {'error':'invalid size'})
+                if self.headers.get_content_type() != 'application/json': return self.reply(415, {'error':'JSON required'})
+                payload=json.loads(self.rfile.read(length))
+                with connect() as db:
+                    value=analytics.erase(db,payload) if self.path.endswith('/erase') else analytics.record(db,payload)
+                return self.reply(200, {'ok':True})
+            except (ValueError,TypeError,KeyError): return self.reply(400, {'error':'invalid usage event'})
+            except sqlite3.Error: return self.reply(503, {'error':'temporarily unavailable'})
         if self.path != '/api/iphone-stock/events':
             return self.reply(404, {'error':'not found'})
         try:
@@ -213,6 +227,15 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     AUTH_CONFIG = auth.load_config(os.environ.get('STOCK_AUTH_CONFIG','/etc/iphone-stock-auth.json'))
     initialize()
+    def purge_usage():
+        while True:
+            try:
+                with connect() as db:
+                    db.execute('DELETE FROM usage_events WHERE received < ?', (int(time.time())-30*86400,))
+            except sqlite3.Error:
+                pass
+            time.sleep(3600)
+    threading.Thread(target=purge_usage, daemon=True).start()
     server = ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('PORT','18774'))), Handler)
     server.timeout = 10
     server.serve_forever()
