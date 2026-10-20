@@ -8,7 +8,15 @@ export const AREAS = [
   { code: "au", title: "澳大利亚" }
 ];
 
-export const CHECK_INTERVAL_MINUTES = 0.5;
+export const CHECK_INTERVAL_MIN_SECONDS = 20;
+export const CHECK_INTERVAL_MAX_SECONDS = 60;
+
+export function randomCheckDelayMs(randomValue = Math.random()) {
+  const bounded = Math.min(Math.max(Number(randomValue) || 0, 0), 0.999999999999);
+  const seconds = CHECK_INTERVAL_MIN_SECONDS +
+    Math.floor(bounded * (CHECK_INTERVAL_MAX_SECONDS - CHECK_INTERVAL_MIN_SECONDS + 1));
+  return seconds * 1000;
+}
 
 const WATCH_PATHS = {
   watchs12: "/shop/buy-watch/apple-watch",

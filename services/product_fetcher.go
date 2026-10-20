@@ -83,6 +83,22 @@ func FetchProductData(areaCode string) (*ProductData, error) {
 			productData.Products[s.name] = products
 		}
 	}
+	verifiedProducts := map[string]model.ProductInfo{}
+	if cached, e := LoadProductData(areaCode); e == nil {
+		for _, ps := range cached.Products {
+			for _, p := range ps {
+				verifiedProducts[p.Code] = p
+			}
+		}
+	}
+	for _, series := range additionalProductSeries {
+		products, err := fetchComputerProducts(baseURL, series.Path, series.Name, series.Type, verifiedProducts)
+		if err != nil {
+			log.Printf("Failed to fetch %s: %v", series.Name, err)
+			continue
+		}
+		productData.Products[series.Name] = products
+	}
 	if len(productData.Products) == 0 {
 		return nil, fmt.Errorf("no current products found for area %s", areaCode)
 	}
@@ -107,13 +123,13 @@ func fetchWatchProducts(url string, modelName string, modelType string) ([]model
 	return parseWatchProducts(body, modelName, modelType)
 }
 
-func fetchProductPage(url string) (string, error) {
+func fetchProductPage(pageURL string) (string, error) {
 	resp, body, errs := gorequest.New().
 		Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36").
 		Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").
 		Set("Accept-Language", "zh-CN,zh;q=0.9").
 		Timeout(time.Second * 10).
-		Get(url).
+		Get(pageURL).
 		End()
 
 	if len(errs) > 0 {
@@ -124,6 +140,14 @@ func fetchProductPage(url string) (string, error) {
 		return "", fmt.Errorf("status code: %d", resp.StatusCode)
 	}
 
+	requested, _ := url.Parse(pageURL)
+	if requested != nil && resp.Request != nil {
+		root := strings.Split(requested.Path, "/shop/")[0]
+		final := resp.Request.URL
+		if final.Host != requested.Host || !strings.HasPrefix(final.Path, root+"/shop/") {
+			return "", fmt.Errorf("product page redirected outside requested storefront")
+		}
+	}
 	return body, nil
 }
 
@@ -526,6 +550,7 @@ func translateColor(color string) string {
 	// Apple 官方颜色翻译映射表
 	colorMap := map[string]string{
 		// iPhone 基础颜色
+		"Sky Blue":    "天蓝色",
 		"Black":       "黑色",
 		"White":       "白色",
 		"Silver":      "银色",

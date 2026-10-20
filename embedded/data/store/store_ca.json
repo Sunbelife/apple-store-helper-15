@@ -1,5 +1,5 @@
 {
-  "update_time": "2025-01-27 12:00:00",
+  "update_time": "2026-10-20T14:26:28+08:00",
   "area_code": "ca",
   "stores": [
     {
@@ -35,7 +35,7 @@
       "CityStoreName": "Montreal-Sainte-Catherine",
       "Province": "Quebec",
       "City": "Montreal",
-      "District": "H3G 1P7"
+      "District": "H3G 1P3"
     },
     {
       "StoreNumber": "R207",

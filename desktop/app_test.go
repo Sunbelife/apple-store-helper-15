@@ -50,6 +50,21 @@ func TestPostalResponseReusesNearbyMonitoredStores(t *testing.T) {
 		}
 	}
 }
+
+func TestNextPollDelayStaysWithinRandomRange(t *testing.T) {
+	for range 200 {
+		delay := nextPollDelay()
+		if delay < minPollDelay || delay > maxPollDelay {
+			t.Fatalf("poll delay %s outside [%s, %s]", delay, minPollDelay, maxPollDelay)
+		}
+	}
+	if got := pollDelayFor(0); got != 20*time.Second {
+		t.Fatalf("lower bound = %s, want 20s", got)
+	}
+	if got := pollDelayFor(40); got != 60*time.Second {
+		t.Fatalf("upper bound = %s, want 60s", got)
+	}
+}
 func TestPauseCancelsInFlightRequest(t *testing.T) {
 	a := NewDesktop()
 	a.ctx = context.Background()
@@ -140,5 +155,29 @@ func TestLimitedStoreDoesNotStopOtherStores(t *testing.T) {
 	}
 	if detail := s.Items[0].Detail; !strings.Contains(detail, "仅该门店冷却") {
 		t.Fatalf("limited store detail does not explain isolation: %q", detail)
+	}
+}
+
+func TestScheduledPickupDoesNotTriggerStockAlert(t *testing.T) {
+	a := NewDesktop()
+	a.ctx = context.Background()
+	a.state.Items = []Target{testTarget("R428")}
+	a.query = func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error) {
+		return map[string]bool{}, &services.PickupSchedule{Quotes: map[string]string{"R428.MK2P4CH/A": "Nov 13 at Apple ifc mall"}}
+	}
+	alerts := make(chan struct{}, 1)
+	a.onStock = func(context.Context, uint64, Target) { alerts <- struct{}{} }
+	if e := a.Start(); e != nil {
+		t.Fatal(e)
+	}
+	defer a.Pause()
+	s := awaitState(t, a, func(s State) bool { return s.Items[0].Status == "可预约取货" })
+	if s.Items[0].Detail != "Nov 13 at Apple ifc mall" || !s.Running {
+		t.Fatalf("wrong scheduled state: %+v", s)
+	}
+	select {
+	case <-alerts:
+		t.Fatal("scheduled pickup triggered stock alert")
+	default:
 	}
 }

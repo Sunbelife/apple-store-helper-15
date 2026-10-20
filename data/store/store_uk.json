@@ -1,5 +1,5 @@
 {
-  "update_time": "2025-01-27 12:00:00",
+  "update_time": "2026-10-20T14:24:55+08:00",
   "area_code": "uk",
   "stores": [
     {
@@ -120,13 +120,6 @@
       "Province": "Hampshire",
       "City": "Basingstoke",
       "District": "RG21 7BE"
-    },
-    {
-      "StoreNumber": "R252",
-      "CityStoreName": "Bristol-Bristol",
-      "Province": "Bristol",
-      "City": "Bristol",
-      "District": "BS1 3BZ"
     },
     {
       "StoreNumber": "R393",

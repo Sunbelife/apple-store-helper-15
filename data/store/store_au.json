@@ -1,5 +1,5 @@
 {
-  "update_time": "2025-01-27 12:00:00",
+  "update_time": "2026-10-20T14:25:03+08:00",
   "area_code": "au",
   "stores": [
     {
@@ -8,13 +8,6 @@
       "Province": "New South Wales",
       "City": "Penrith",
       "District": "2750"
-    },
-    {
-      "StoreNumber": "R458",
-      "CityStoreName": "Hornsby-Hornsby",
-      "Province": "New South Wales",
-      "City": "Hornsby",
-      "District": "2077"
     },
     {
       "StoreNumber": "R606",

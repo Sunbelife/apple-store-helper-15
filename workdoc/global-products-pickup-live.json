@@ -1,0 +1,1386 @@
+[
+  {
+    "area": "cn",
+    "family": "Apple TV 4K",
+    "sku": "",
+    "store": "",
+    "status": "当地目录无可验证标准配置",
+    "checked_at": "2026-10-20T14:32:12+08:00"
+  },
+  {
+    "area": "cn",
+    "family": "MacBook Air",
+    "sku": "MDHE4CH/A",
+    "store": "R557",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:12+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4ZP/A",
+    "store": "R673",
+    "status": "未返回目标门店库存",
+    "checked_at": "2026-10-20T14:32:12+08:00"
+  },
+  {
+    "area": "cn",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4CH/A",
+    "store": "R557",
+    "status": "无货",
+    "checked_at": "2026-10-20T14:32:13+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "MacBook Air",
+    "sku": "MDHE4ZP/A",
+    "store": "R673",
+    "status": "无货",
+    "checked_at": "2026-10-20T14:32:14+08:00"
+  },
+  {
+    "area": "cn",
+    "family": "Mac mini",
+    "sku": "MHQK4CH/A",
+    "store": "R557",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:14+08:00"
+  },
+  {
+    "area": "cn",
+    "family": "iMac",
+    "sku": "MWV43CH/A",
+    "store": "R557",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:15+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "MacBook Pro",
+    "sku": "MGDU4ZP/A",
+    "store": "R673",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:15+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4J/A",
+    "store": "R718",
+    "status": "未返回目标门店库存",
+    "checked_at": "2026-10-20T14:32:12+08:00"
+  },
+  {
+    "area": "cn",
+    "family": "Mac Studio",
+    "sku": "MHL64CH/A",
+    "store": "R557",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:16+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "Mac mini",
+    "sku": "MHQK4ZP/A",
+    "store": "R673",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:16+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "MacBook Air",
+    "sku": "MDH74J/A",
+    "store": "R718",
+    "status": "无货",
+    "checked_at": "2026-10-20T14:32:16+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "iMac",
+    "sku": "MWV43ZP/A",
+    "store": "R673",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:17+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "MacBook Pro",
+    "sku": "MDE14J/A",
+    "store": "R718",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:18+08:00"
+  },
+  {
+    "area": "hk",
+    "family": "Mac Studio",
+    "sku": "MHL64ZP/A",
+    "store": "R673",
+    "status": "无货",
+    "checked_at": "2026-10-20T14:32:19+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4ZP/A",
+    "store": "R736",
+    "status": "未返回目标门店库存",
+    "checked_at": "2026-10-20T14:32:17+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "Mac mini",
+    "sku": "MHQK4J/A",
+    "store": "R718",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:20+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "MacBook Air",
+    "sku": "MDHE4ZP/A",
+    "store": "R736",
+    "status": "有货",
+    "checked_at": "2026-10-20T14:32:20+08:00"
+  },
+  {
+    "area": "us",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4LL/A",
+    "store": "R225",
+    "status": "未返回目标门店库存",
+    "checked_at": "2026-10-20T14:32:20+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "iMac",
+    "sku": "MWUC3J/A",
+    "store": "R718",
+    "status": "无货",
+    "checked_at": "2026-10-20T14:32:22+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4ZP/A",
+    "store": "R736",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:22+08:00"
+  },
+  {
+    "area": "jp",
+    "family": "Mac Studio",
+    "sku": "MHL64J/A",
+    "store": "R718",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:23+08:00"
+  },
+  {
+    "area": "us",
+    "family": "MacBook Air",
+    "sku": "MDHE4LL/A",
+    "store": "R225",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:23+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "Mac mini",
+    "sku": "MHQK4ZP/A",
+    "store": "R736",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:25+08:00"
+  },
+  {
+    "area": "us",
+    "family": "MacBook Pro",
+    "sku": "MGDU4LL/A",
+    "store": "R225",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:26+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:25+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "iMac",
+    "sku": "MWV43ZP/A",
+    "store": "R736",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:27+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "MacBook Air",
+    "sku": "MDHE4B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:29+08:00"
+  },
+  {
+    "area": "us",
+    "family": "Mac mini",
+    "sku": "MHQK4LL/A",
+    "store": "R225",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:29+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:32+08:00"
+  },
+  {
+    "area": "sg",
+    "family": "Mac Studio",
+    "sku": "MHL64ZP/A",
+    "store": "R736",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:30+08:00"
+  },
+  {
+    "area": "us",
+    "family": "iMac",
+    "sku": "MWV83LL/A",
+    "store": "R225",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:32+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "Mac mini",
+    "sku": "MHQK4B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:34+08:00"
+  },
+  {
+    "area": "us",
+    "family": "Mac Studio",
+    "sku": "MHL64LL/A",
+    "store": "R225",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:35+08:00"
+  },
+  {
+    "area": "au",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:34+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "iMac",
+    "sku": "MWV43B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:37+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:38+08:00"
+  },
+  {
+    "area": "uk",
+    "family": "Mac Studio",
+    "sku": "MHL64B/A",
+    "store": "R363",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:40+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "MacBook Air",
+    "sku": "MDH74TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:41+08:00"
+  },
+  {
+    "area": "au",
+    "family": "MacBook Air",
+    "sku": "MDHE4X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:39+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "MacBook Pro",
+    "sku": "MDE14TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:43+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:42+08:00"
+  },
+  {
+    "area": "au",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:43+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "Mac mini",
+    "sku": "MHQK4TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:45+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "MacBook Air",
+    "sku": "MDH74KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:45+08:00"
+  },
+  {
+    "area": "au",
+    "family": "Mac mini",
+    "sku": "MHQK4X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:46+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "MacBook Pro",
+    "sku": "MDE14KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:48+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "iMac",
+    "sku": "MWUC3TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:48+08:00"
+  },
+  {
+    "area": "au",
+    "family": "iMac",
+    "sku": "MWV43X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:49+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "Mac mini",
+    "sku": "MHQK4KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:50+08:00"
+  },
+  {
+    "area": "tw",
+    "family": "Mac Studio",
+    "sku": "MHL64TA/A",
+    "store": "R694",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:50+08:00"
+  },
+  {
+    "area": "au",
+    "family": "Mac Studio",
+    "sku": "MHL64X/A",
+    "store": "R440",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:52+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "iMac",
+    "sku": "MWUC3KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:52+08:00"
+  },
+  {
+    "area": "kr",
+    "family": "Mac Studio",
+    "sku": "MHL64KH/A",
+    "store": "R770",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:54+08:00"
+  },
+  {
+    "area": "my",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:53+08:00"
+  },
+  {
+    "area": "my",
+    "family": "MacBook Air",
+    "sku": "MDHE4ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:57+08:00"
+  },
+  {
+    "area": "th",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:53+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4VC/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:32:57+08:00"
+  },
+  {
+    "area": "my",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:00+08:00"
+  },
+  {
+    "area": "th",
+    "family": "MacBook Air",
+    "sku": "MDH74TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:00+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "MacBook Air",
+    "sku": "MDHE4LL/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:01+08:00"
+  },
+  {
+    "area": "my",
+    "family": "Mac mini",
+    "sku": "MHQK4ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:02+08:00"
+  },
+  {
+    "area": "th",
+    "family": "MacBook Pro",
+    "sku": "MDE14TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:02+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "MacBook Pro",
+    "sku": "MGDU4LL/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:03+08:00"
+  },
+  {
+    "area": "my",
+    "family": "iMac",
+    "sku": "MWV43ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:04+08:00"
+  },
+  {
+    "area": "th",
+    "family": "Mac mini",
+    "sku": "MHQK4TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:04+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "Mac mini",
+    "sku": "MHQK4VC/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:06+08:00"
+  },
+  {
+    "area": "my",
+    "family": "Mac Studio",
+    "sku": "MHL64ZP/A",
+    "store": "R742",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:06+08:00"
+  },
+  {
+    "area": "th",
+    "family": "iMac",
+    "sku": "MWUC3TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:07+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "iMac",
+    "sku": "MWV43LL/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:09+08:00"
+  },
+  {
+    "area": "th",
+    "family": "Mac Studio",
+    "sku": "MHL64TH/A",
+    "store": "R733",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:10+08:00"
+  },
+  {
+    "area": "de",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:09+08:00"
+  },
+  {
+    "area": "ca",
+    "family": "Mac Studio",
+    "sku": "MHL64VC/A",
+    "store": "R369",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:12+08:00"
+  },
+  {
+    "area": "de",
+    "family": "MacBook Air",
+    "sku": "MDH74D/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:14+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:12+08:00"
+  },
+  {
+    "area": "it",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4T/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:15+08:00"
+  },
+  {
+    "area": "de",
+    "family": "MacBook Pro",
+    "sku": "MDE14D/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:18+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "MacBook Air",
+    "sku": "MDH74FN/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:18+08:00"
+  },
+  {
+    "area": "it",
+    "family": "MacBook Air",
+    "sku": "MDH74T/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:18+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "MacBook Pro",
+    "sku": "MDE14FN/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:21+08:00"
+  },
+  {
+    "area": "de",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:20+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:23+08:00"
+  },
+  {
+    "area": "it",
+    "family": "MacBook Pro",
+    "sku": "MDE14T/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:23+08:00"
+  },
+  {
+    "area": "de",
+    "family": "iMac",
+    "sku": "MWUC3D/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:23+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "iMac",
+    "sku": "MWUC3FN/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:25+08:00"
+  },
+  {
+    "area": "it",
+    "family": "Mac mini",
+    "sku": "MHQK4TY/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:26+08:00"
+  },
+  {
+    "area": "fr",
+    "family": "Mac Studio",
+    "sku": "MHL64ZD/A",
+    "store": "R438",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:27+08:00"
+  },
+  {
+    "area": "de",
+    "family": "Mac Studio",
+    "sku": "MHL64ZD/A",
+    "store": "R430",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:27+08:00"
+  },
+  {
+    "area": "it",
+    "family": "iMac",
+    "sku": "MWUC3T/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:29+08:00"
+  },
+  {
+    "area": "in",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:30+08:00"
+  },
+  {
+    "area": "it",
+    "family": "Mac Studio",
+    "sku": "MHL64T/A",
+    "store": "R441",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:33+08:00"
+  },
+  {
+    "area": "es",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4HY/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:30+08:00"
+  },
+  {
+    "area": "in",
+    "family": "MacBook Air",
+    "sku": "MDHE4HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:36+08:00"
+  },
+  {
+    "area": "es",
+    "family": "MacBook Air",
+    "sku": "MDH74Y/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:38+08:00"
+  },
+  {
+    "area": "in",
+    "family": "MacBook Pro",
+    "sku": "MGDU4HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:39+08:00"
+  },
+  {
+    "area": "es",
+    "family": "MacBook Pro",
+    "sku": "MDE14Y/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:40+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:36+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "MacBook Air",
+    "sku": "MDH74SM/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:44+08:00"
+  },
+  {
+    "area": "in",
+    "family": "Mac mini",
+    "sku": "MHQK4HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:44+08:00"
+  },
+  {
+    "area": "es",
+    "family": "Mac mini",
+    "sku": "MHQK4TY/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:44+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "MacBook Pro",
+    "sku": "MDE14SM/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:47+08:00"
+  },
+  {
+    "area": "es",
+    "family": "iMac",
+    "sku": "MWUC3Y/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:48+08:00"
+  },
+  {
+    "area": "in",
+    "family": "iMac",
+    "sku": "MWV43HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:47+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:50+08:00"
+  },
+  {
+    "area": "in",
+    "family": "Mac Studio",
+    "sku": "MHL64HN/A",
+    "store": "R787",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:51+08:00"
+  },
+  {
+    "area": "es",
+    "family": "Mac Studio",
+    "sku": "MHL64GR/A",
+    "store": "R368",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:51+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "iMac",
+    "sku": "MWUC3SM/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:53+08:00"
+  },
+  {
+    "area": "ch",
+    "family": "Mac Studio",
+    "sku": "MHL64SM/A",
+    "store": "R159",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:56+08:00"
+  },
+  {
+    "area": "br",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:54+08:00"
+  },
+  {
+    "area": "at",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:54+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4TZ/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:58+08:00"
+  },
+  {
+    "area": "at",
+    "family": "MacBook Air",
+    "sku": "MDH74D/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:59+08:00"
+  },
+  {
+    "area": "br",
+    "family": "MacBook Air",
+    "sku": "MDH74BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:33:59+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "MacBook Air",
+    "sku": "MDH74TU/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:02+08:00"
+  },
+  {
+    "area": "at",
+    "family": "MacBook Pro",
+    "sku": "MDE14D/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:02+08:00"
+  },
+  {
+    "area": "br",
+    "family": "MacBook Pro",
+    "sku": "MDE14BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:02+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "MacBook Pro",
+    "sku": "MDE14TU/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:05+08:00"
+  },
+  {
+    "area": "br",
+    "family": "Mac mini",
+    "sku": "MHQK4BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:05+08:00"
+  },
+  {
+    "area": "at",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:05+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "Mac mini",
+    "sku": "MHQK4TU/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:08+08:00"
+  },
+  {
+    "area": "br",
+    "family": "iMac",
+    "sku": "MWUC3BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:08+08:00"
+  },
+  {
+    "area": "at",
+    "family": "iMac",
+    "sku": "MWUC3D/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:09+08:00"
+  },
+  {
+    "area": "at",
+    "family": "Mac Studio",
+    "sku": "MHL64ZD/A",
+    "store": "R687",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:12+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "iMac",
+    "sku": "MWUC3TU/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:10+08:00"
+  },
+  {
+    "area": "br",
+    "family": "Mac Studio",
+    "sku": "MHL64BZ/A",
+    "store": "R567",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:11+08:00"
+  },
+  {
+    "area": "tr",
+    "family": "Mac Studio",
+    "sku": "MHL64TU/A",
+    "store": "R588",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:14+08:00"
+  },
+  {
+    "area": "se",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4HY/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:14+08:00"
+  },
+  {
+    "area": "be",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:14+08:00"
+  },
+  {
+    "area": "se",
+    "family": "MacBook Air",
+    "sku": "MDH74KS/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:18+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4B/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:17+08:00"
+  },
+  {
+    "area": "se",
+    "family": "MacBook Pro",
+    "sku": "MDE14KS/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:21+08:00"
+  },
+  {
+    "area": "be",
+    "family": "MacBook Air",
+    "sku": "MDH74FN/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:19+08:00"
+  },
+  {
+    "area": "se",
+    "family": "Mac mini",
+    "sku": "MHQK4KS/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:23+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "MacBook Air",
+    "sku": "MDHE4AB/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:23+08:00"
+  },
+  {
+    "area": "be",
+    "family": "MacBook Pro",
+    "sku": "MDE14FN/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:24+08:00"
+  },
+  {
+    "area": "se",
+    "family": "iMac",
+    "sku": "MWUC3KS/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:26+08:00"
+  },
+  {
+    "area": "be",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:27+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "MacBook Pro",
+    "sku": "MEQJ4AB/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:26+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "Mac mini",
+    "sku": "MHQK4AB/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:30+08:00"
+  },
+  {
+    "area": "be",
+    "family": "iMac",
+    "sku": "MWUC3FN/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:29+08:00"
+  },
+  {
+    "area": "se",
+    "family": "Mac Studio",
+    "sku": "MHL64FS/A",
+    "store": "R626",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:29+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "iMac",
+    "sku": "MWV43AB/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:32+08:00"
+  },
+  {
+    "area": "ae",
+    "family": "Mac Studio",
+    "sku": "MHL64AB/A",
+    "store": "R596",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:34+08:00"
+  },
+  {
+    "area": "be",
+    "family": "Mac Studio",
+    "sku": "MHL64ZD/A",
+    "store": "R486",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:32+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4FD/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:35+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "Apple TV 4K",
+    "sku": "MLFF4E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:32+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "MacBook Air",
+    "sku": "MDH74N/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:40+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "MacBook Air",
+    "sku": "MDH74E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:41+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "MacBook Pro",
+    "sku": "MDE14N/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:43+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "MacBook Pro",
+    "sku": "MDE14E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:44+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "Mac mini",
+    "sku": "MHQK4ZD/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:45+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "iMac",
+    "sku": "MWUC3N/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:47+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "Mac mini",
+    "sku": "MHQK4E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:47+08:00"
+  },
+  {
+    "area": "nl",
+    "family": "Mac Studio",
+    "sku": "MHL64ZD/A",
+    "store": "R540",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:50+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "iMac",
+    "sku": "MWUC3E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:51+08:00"
+  },
+  {
+    "area": "mx",
+    "family": "Mac Studio",
+    "sku": "MHL64E/A",
+    "store": "R740",
+    "status": "触发风控，冷却中，稍后再尝试",
+    "detail": "HTTP 541: Apple 库存接口暂不可用或受限，打开商品页不能解除该状态",
+    "checked_at": "2026-10-20T14:34:54+08:00"
+  }
+]

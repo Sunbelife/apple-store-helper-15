@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
+	"math/rand/v2"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -61,6 +61,7 @@ type Desktop struct {
 	generation       uint64
 	state            State
 	bark             string
+	uiLanguage       string
 	settingsPath     string
 	reported         string
 	catalogMu        sync.Mutex
@@ -214,6 +215,9 @@ func (a *Desktop) AddTargets(code string, storeIDs []string, sku string) (int, e
 		return 0, err
 	}
 	area, _ := areaFor(code)
+	if area.PickupUnsupported {
+		return 0, fmt.Errorf("该地区 Apple 官网未开放门店取货查询")
+	}
 	var product model.Product
 	for _, p := range c.Products {
 		if p.Code == sku {
@@ -297,7 +301,7 @@ func (a *Desktop) SaveBark(value string) error {
 	value = strings.TrimSpace(value)
 	if value != "" {
 		u, err := url.Parse(value)
-		if err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil {
+		if err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Fragment != "" {
 			return fmt.Errorf("请输入 Bark 提供的 HTTPS 推送地址")
 		}
 	}
@@ -440,6 +444,20 @@ type storeCooldown struct {
 	backoff time.Duration
 }
 
+const (
+	minPollDelay = 20 * time.Second
+	maxPollDelay = 60 * time.Second
+)
+
+func nextPollDelay() time.Duration {
+	spanSeconds := int((maxPollDelay - minPollDelay) / time.Second)
+	return pollDelayFor(rand.IntN(spanSeconds + 1))
+}
+
+func pollDelayFor(randomSecond int) time.Duration {
+	return minPollDelay + time.Duration(randomSecond)*time.Second
+}
+
 func monitorGroupKey(t Target) string {
 	return t.Area.ShortCode + ":" + t.Store.StoreNumber
 }
@@ -495,6 +513,10 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 			}
 			result, err := a.query(ctx, group[0].Area, group[0].Store, products)
 			requests++
+			var scheduled *services.PickupSchedule
+			if errors.As(err, &scheduled) {
+				err = nil
+			}
 			if ctx.Err() != nil {
 				return
 			}
@@ -520,6 +542,13 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 			for _, t := range items {
 				if t.Area.ShortCode != group[0].Area.ShortCode {
 					continue
+				}
+				if scheduled != nil {
+					if quote, ok := scheduled.Quotes[t.Store.StoreNumber+"."+t.Product.Code]; ok {
+						known[t.ID] = false
+						a.update(id, t.ID, "可预约取货", quote)
+						continue
+					}
 				}
 				available, exists := result[t.Store.StoreNumber+"."+t.Product.Code]
 				if !exists {
@@ -556,7 +585,7 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		if ctx.Err() != nil {
 			return
 		}
-		delay := 30 * time.Second
+		delay := nextPollDelay()
 		now := time.Now()
 		cooling := 0
 		var earliestRetry time.Time
@@ -571,7 +600,7 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 			}
 		}
 		// When every store is cooling, sleep until the first store is eligible.
-		// Otherwise healthy stores retain the normal 30-second polling cadence.
+		// Otherwise healthy stores use a fresh random 20-60 second delay each round.
 		if cooling == len(keys) && !earliestRetry.IsZero() {
 			delay = time.Until(earliestRetry)
 			if delay < 0 {
@@ -622,16 +651,20 @@ func (a *Desktop) stockFound(ctx context.Context, id uint64, t Target) {
 	a.state.Phase = "发现有货，已暂停"
 	a.reported = ""
 	bark := a.bark
+	title := "有货提醒"
+	if a.uiLanguage == "en" {
+		title = "Stock alert"
+	}
 	a.logLocked(t.Store.CityStoreName + " " + t.Product.Title + " 有货")
 	a.mu.Unlock()
 	wruntime.BrowserOpenURL(a.ctx, purchase)
 	if allowed, err := wruntime.CheckNotificationAuthorization(a.ctx); err == nil && allowed {
 		if err := wruntime.InitializeNotifications(a.ctx); err == nil {
-			_ = wruntime.SendNotification(a.ctx, wruntime.NotificationOptions{ID: t.ID, Title: "有货提醒", Body: t.Store.CityStoreName + " " + t.Product.Title})
+			_ = wruntime.SendNotification(a.ctx, wruntime.NotificationOptions{ID: t.ID, Title: title, Body: t.Store.CityStoreName + " " + t.Product.Title})
 		}
 	}
 	if bark != "" {
-		go sendBark(bark, t.Store.CityStoreName+" "+t.Product.Title, purchase)
+		go sendBarkRequest(context.Background(), barkClient(), bark, title, t.Store.CityStoreName+" "+t.Product.Title, purchase)
 	}
 }
 
@@ -696,19 +729,7 @@ func (a *Desktop) OpenFeedback() {
 	wruntime.BrowserOpenURL(a.ctx, feedbackURL())
 }
 func sendBark(endpoint, message, purchase string) {
-	u, err := url.Parse(endpoint)
-	if err != nil || u.Scheme != "https" || u.Host == "" {
-		return
-	}
-	q := u.Query()
-	q.Set("title", "有货提醒")
-	q.Set("body", message)
-	q.Set("url", purchase)
-	u.RawQuery = q.Encode()
-	client := http.Client{Timeout: 8 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	if r, err := client.Get(u.String()); err == nil {
-		r.Body.Close()
-	}
+	_ = sendBarkRequest(context.Background(), barkClient(), endpoint, "有货提醒", message, purchase)
 }
 
 // EnableSystemNotifications is invoked only by the user's settings action.
@@ -721,4 +742,15 @@ func (a *Desktop) EnableSystemNotifications() (bool, error) {
 		return false, err
 	}
 	return wruntime.RequestNotificationAuthorization(a.ctx)
+}
+
+// The frontend resolves automatic language from the system WebView preferences.
+func (a *Desktop) SetUILanguage(language string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if language == "en" {
+		a.uiLanguage = "en"
+	} else {
+		a.uiLanguage = "zh"
+	}
 }

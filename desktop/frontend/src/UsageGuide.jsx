@@ -1,6 +1,6 @@
+import { t as tr, locale } from "./i18n.js";
 import React, { useEffect, useRef } from "react";
 import { X, ArrowUpRight } from "lucide-react";
-
 const steps = [
   {
     title: "先准备苹果购物袋",
@@ -27,7 +27,6 @@ const steps = [
     text: "购物袋为空时，先检查是否用了同一浏览器和用户配置；也可以点击有货弹窗里的商品页入口重新选购。官网无货时可以关闭提醒并停止响铃，再手动开始监控。关闭有货弹窗不会自动恢复监控。",
   },
 ];
-
 export default function UsageGuide({ onClose, onArticle }) {
   const closeButton = useRef(null);
   const close = useRef(onClose);
@@ -38,10 +37,18 @@ export default function UsageGuide({ onClose, onArticle }) {
     const keydown = (event) => {
       if (event.key === "Escape") close.current();
       if (event.key === "Tab") {
-        const buttons = closeButton.current?.closest("section")?.querySelectorAll("button");
-        const first = buttons?.[0], last = buttons?.[buttons.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+        const buttons = closeButton.current
+          ?.closest("section")
+          ?.querySelectorAll("button");
+        const first = buttons?.[0],
+          last = buttons?.[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
       }
     };
     document.addEventListener("keydown", keydown);
@@ -52,21 +59,61 @@ export default function UsageGuide({ onClose, onArticle }) {
   }, []);
   return (
     <div className="overlay" onClick={onClose}>
-      <section className="dialog usage-guide" role="dialog" aria-modal="true" aria-labelledby="usage-title" onClick={(event) => event.stopPropagation()}>
-        <button ref={closeButton} className="icon-button dialog-close" aria-label="关闭使用说明" onClick={onClose}><X size={18} /></button>
-        <div className="eyebrow">开始之前</div>
-        <h2 id="usage-title">使用说明</h2>
-        <p className="guide-intro">提前加入购物袋 → 电脑监控门店 → 有货后手动取货下单</p>
-        <p className="guide-extra">每次打开会自动尝试更新产品目录，失败时仍可使用本地目录；也可手动点击「更新目录」。不能使用或需要更新？点击主界面顶部「问题反馈」，进入问题反馈页。可先在监控列表底部「导出反馈日志」，再在反馈页检查并上传；后续在同一浏览器的「我的反馈」查看回复。</p>
+      <section
+        className="dialog usage-guide"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="usage-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          ref={closeButton}
+          className="icon-button dialog-close"
+          aria-label={tr("关闭使用说明")}
+          onClick={onClose}
+        >
+          <X size={18} />
+        </button>
+        <div className="eyebrow">{tr("开始之前")}</div>
+        <h2 id="usage-title">{tr("使用说明")}</h2>
+        <p className="guide-intro">
+          {tr("提前加入购物袋 → 电脑监控门店 → 有货后手动取货下单")}
+        </p>
+        <p className="guide-extra">
+          {tr(
+            "每次打开会自动尝试更新产品目录，失败时仍可使用本地目录；也可手动点击「更新目录」。不能使用或需要更新？点击主界面顶部「问题反馈」，进入问题反馈页。可先在监控列表底部「导出反馈日志」，再在反馈页检查并上传；后续在同一浏览器的「我的反馈」查看回复。",
+          )}
+        </p>
+        <p className="guide-extra">
+          {tr(
+            "仅覆盖苹果官方在线商店及直营店取货市场；各地区销售产品不同，不包含经销商库存。Mac 仅支持有独立零件号的标准配置，不支持定制配置。",
+          )}
+        </p>
         <ol className="guide-steps">
-          {steps.map((step) => <li key={step.title}><h3>{step.title}</h3><p>{step.text}</p></li>)}
+          {steps.map((step) => (
+            <li key={step.title}>
+              <h3>{tr(step.title)}</h3>
+              <p>{tr(step.text)}</p>
+            </li>
+          ))}
         </ol>
         <div className="guide-note">
-          <strong>提醒不等于锁定库存</strong>
-          <p>程序不自动加购、选店、下单或付款。库存会随时变化，以苹果结账页为准。我们保留购物袋入口：结账直达链接依赖会过期的浏览器会话，不能保证直接进入取货页。</p>
+          <strong>{tr("提醒不等于锁定库存")}</strong>
+          <p>
+            {tr(
+              "程序不自动加购、选店、下单或付款。库存会随时变化，以苹果结账页为准。我们保留购物袋入口：结账直达链接依赖会过期的浏览器会话，不能保证直接进入取货页。",
+            )}
+          </p>
         </div>
-        <p className="guide-extra">可在「关注的门店」后的闹钟按钮中测试提示音、开启系统通知，或配置 Bark。当前版本尚未接入微信绑定和微信到货通知。</p>
-        <button className="text-button" onClick={onArticle}>查看老孙公众号原文 <ArrowUpRight size={13} /></button>
+        <p className="guide-extra">
+          {tr(
+            "可在「关注的门店」后的闹钟按钮中测试提示音、开启系统通知，或配置 Bark。当前版本尚未接入微信绑定和微信到货通知。",
+          )}
+        </p>
+        <button className="text-button" onClick={onArticle}>
+          {tr("查看老孙公众号原文")}
+          <ArrowUpRight size={13} />
+        </button>
       </section>
     </div>
   );

@@ -1,5 +1,5 @@
 {
-  "update_time": "2025-01-27 12:00:00",
+  "update_time": "2026-10-20T14:29:49+08:00",
   "area_code": "ae",
   "stores": [
     {
@@ -14,6 +14,13 @@
       "CityStoreName": "Dubai-Dubai Mall",
       "Province": "Dubai",
       "City": "Dubai",
+      "District": ""
+    },
+    {
+      "StoreNumber": "R785",
+      "CityStoreName": "Al Ain-Al Jimi Mall",
+      "Province": "Abu Dhabi",
+      "City": "Al Ain",
       "District": ""
     },
     {

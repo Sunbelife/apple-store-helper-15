@@ -8,6 +8,7 @@ type Product struct {
 }
 
 var TypeCode = map[string]string{
+	"appletv4k": "A", "macbookair": "A", "macbookpro": "A", "macmini": "A", "imac": "A", "macstudio": "A",
 	"iphoneduo":      "A",
 	"iphone18pro":    "A",
 	"iphone18promax": "A",

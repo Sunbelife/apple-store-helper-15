@@ -195,3 +195,45 @@ func TestStockBackoff(t *testing.T) {
 		t.Fatal("successful round must clear backoff")
 	}
 }
+
+func TestNotYetOpenPickupIsDistinctFromNoStockAndRiskControl(t *testing.T) {
+	body := []byte(`{"body":{"stores":[{"storeNumber":"R369","partsAvailability":{"REGIONAL/A":{"pickupDisplay":"default","messageTypes":{"regular":{"storeSelectionEnabled":false}}}}}]}}`)
+	stock, err := parseStockResponse(body, "")
+	if !errors.Is(err, errPickupNotOpen) || StockQueryErrorStatus(err) != StatusNotOpen || len(stock) != 0 {
+		t.Fatalf("not-open state lost: %v %v", stock, err)
+	}
+	// Unknown/default without an explicit disabled selector must stay unknown.
+	stock, err = parseStockResponse([]byte(`{"body":{"stores":[{"storeNumber":"R369","partsAvailability":{"REGIONAL/A":{"pickupDisplay":"default"}}}]}}`), "")
+	if err != nil || len(stock) != 0 {
+		t.Fatal("unknown pickup must not be classified without evidence")
+	}
+	// An available SKU is never hidden by another product awaiting its release.
+	stock, err = parseStockResponse([]byte(`{"body":{"stores":[{"storeNumber":"R369","partsAvailability":{"REGIONAL/A":{"pickupDisplay":"default","messageTypes":{"regular":{"storeSelectionEnabled":false}}},"OTHER/A":{"pickupDisplay":"available"}}}]}}`), "")
+	if err != nil || !stock["R369.OTHER/A"] {
+		t.Fatal("partial available stock lost")
+	}
+}
+
+func TestHongKongAppleTVScheduledPickup(t *testing.T) {
+	body := []byte(`{"body":{"stores":[{"storeNumber":"R428","partsAvailability":{"MLFF4ZP/A":{"storePickEligible":true,"pickupDisplay":"default","pickupSearchQuote":"Available Nov 13","messageTypes":{"regular":{"storeSelectionEnabled":true,"storePickupQuote":"Nov 13 at Apple ifc mall"}}},"OTHER/A":{"pickupDisplay":"available"}}}]}}`)
+	stock, err := parseStockResponse(body, "")
+	var scheduled *PickupSchedule
+	if !errors.As(err, &scheduled) || scheduled.Quotes["R428.MLFF4ZP/A"] != "Nov 13 at Apple ifc mall" {
+		t.Fatalf("lost pickup date: %v", err)
+	}
+	if _, exists := stock["R428.MLFF4ZP/A"]; exists {
+		t.Fatal("scheduled pickup was classified as current inventory")
+	}
+	if !stock["R428.OTHER/A"] {
+		t.Fatal("mixed current stock lost")
+	}
+	for _, b := range []string{
+		`{"body":{"stores":[{"storeNumber":"R428","partsAvailability":{"MLFF4ZP/A":{"pickupDisplay":"default","storePickEligible":true,"messageTypes":{"regular":{"storeSelectionEnabled":true}}}}}]}}`,
+		`{"body":{"stores":[{"storeNumber":"R428","partsAvailability":{"MLFF4ZP/A":{"pickupDisplay":"default","pickupSearchQuote":"Available Nov 13","storePickEligible":false,"messageTypes":{"regular":{"storeSelectionEnabled":true}}}}}]}}`,
+	} {
+		_, e := parseStockResponse([]byte(b), "")
+		if errors.As(e, &scheduled) {
+			t.Fatal("incomplete evidence treated as scheduled pickup")
+		}
+	}
+}

@@ -1,9 +1,9 @@
 import {
-  CHECK_INTERVAL_MINUTES,
   appleBaseURL,
   buildFulfillmentPath,
   parseStockResponse,
-  productPurchaseURL
+  productPurchaseURL,
+  randomCheckDelayMs
 } from "./shared.js";
 
 const ALARM_NAME = "qiangnimei18-stock-check";
@@ -22,7 +22,9 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) {
-    runStockCheck();
+    runStockCheck()
+      .catch(() => {})
+      .finally(scheduleNextStockCheck);
   }
 });
 
@@ -63,9 +65,9 @@ async function handleMessage(message) {
         monitoring: true,
         monitorState
       });
-      chrome.alarms.create(ALARM_NAME, { periodInMinutes: CHECK_INTERVAL_MINUTES });
       await openMonitorTabs(tasks);
       await runStockCheck();
+      await scheduleNextStockCheck();
       return { ok: true };
     }
     case "stop-monitor":
@@ -88,6 +90,15 @@ async function handleMessage(message) {
     default:
       return { ok: false, error: "未知操作" };
   }
+}
+
+async function scheduleNextStockCheck() {
+  const { monitoring = false } = await chrome.storage.local.get("monitoring");
+  if (!monitoring) {
+    await chrome.alarms.clear(ALARM_NAME);
+    return;
+  }
+  chrome.alarms.create(ALARM_NAME, { when: Date.now() + randomCheckDelayMs() });
 }
 
 function createInitialState(tasks) {

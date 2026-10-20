@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.apple.com/br/shop/buy-iphone/iphone-duo",
+    "pickup_enabled": [
+      "false"
+    ]
+  },
+  {
+    "url": "https://www.apple.com/br/shop/buy-mac/macbook-air",
+    "pickup_enabled": [
+      "false"
+    ]
+  },
+  {
+    "url": "https://www.apple.com/br/shop/buy-tv/apple-tv-4k",
+    "pickup_enabled": [
+      "false"
+    ]
+  }
+]

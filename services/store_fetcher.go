@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -61,7 +62,18 @@ func FetchStoresForArea(areaCode string, location string) ([]model.Store, error)
 		apiURL = fmt.Sprintf("https://www.apple.com/au/shop/retail/pickup-message?fae=true&pl=true&mts.0=regular&parts.0=%s&location=%s",
 			sampleProduct, url.QueryEscape(location))
 	default:
-		return nil, fmt.Errorf("unsupported area code: %s", areaCode)
+		data, err := LoadProductData(areaCode)
+		if err != nil {
+			return nil, err
+		}
+		products := data.Products["iPhone Duo"]
+		if len(products) == 0 {
+			return nil, fmt.Errorf("missing regional products: %s", areaCode)
+		}
+		apiURL, err = pickupMessagesURL(areaCode, "pl=true&mts.0=regular&parts.0="+url.QueryEscape(products[0].Code)+"&location="+url.QueryEscape(location))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// 创建HTTP请求
@@ -305,46 +317,20 @@ func UpdateStoresForAllAreas() error {
 
 // getAcceptLanguage 根据地区返回Accept-Language
 func getAcceptLanguage(areaCode string) string {
-	switch areaCode {
-	case "cn":
-		return "zh-CN,zh;q=0.9,en;q=0.8"
-	case "hk":
-		return "zh-HK,zh;q=0.9,en;q=0.8"
-	case "jp":
-		return "ja-JP,ja;q=0.9,en;q=0.8"
-	case "sg":
-		return "en-SG,en;q=0.9,zh;q=0.8"
-	case "us":
-		return "en-US,en;q=0.9"
-	case "uk":
-		return "en-GB,en;q=0.9"
-	case "au":
-		return "en-AU,en;q=0.9"
-	default:
-		return "en-US,en;q=0.9"
+	for _, area := range model.Areas {
+		if area.ShortCode == areaCode {
+			language := strings.ReplaceAll(area.Locale, "_", "-")
+			return language + ",en;q=0.8"
+		}
 	}
+	return "en-US,en;q=0.9"
 }
-
-// getReferer 根据地区返回Referer
 func getReferer(areaCode string) string {
-	switch areaCode {
-	case "cn":
-		return "https://www.apple.com.cn/shop/buy-iphone/iphone-16"
-	case "hk":
-		return "https://www.apple.com/hk/shop/buy-iphone/iphone-16"
-	case "jp":
-		return "https://www.apple.com/jp/shop/buy-iphone/iphone-16"
-	case "sg":
-		return "https://www.apple.com/sg/shop/buy-iphone/iphone-16"
-	case "us":
-		return "https://www.apple.com/shop/buy-iphone/iphone-16"
-	case "uk":
-		return "https://www.apple.com/uk/shop/buy-iphone/iphone-16"
-	case "au":
-		return "https://www.apple.com/au/shop/buy-iphone/iphone-16"
-	default:
-		return "https://www.apple.com/shop/buy-iphone/iphone-16"
+	base, err := appleStoreBaseURL(areaCode)
+	if err != nil {
+		return "https://www.apple.com/shop"
 	}
+	return base + "/shop/buy-iphone/iphone-duo"
 }
 
 // getPostalCodeForLocation 将城市名称转换为邮编

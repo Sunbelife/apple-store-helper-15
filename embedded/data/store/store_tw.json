@@ -1,19 +1,19 @@
 {
-  "update_time": "2025-01-27 12:00:00",
+  "update_time": "2026-10-20T14:26:02+08:00",
   "area_code": "tw",
   "stores": [
     {
       "StoreNumber": "R694",
-      "CityStoreName": "台北市-信義 A13",
-      "Province": "台北市",
-      "City": "台北市",
+      "CityStoreName": "Taipei-Xinyi A13",
+      "Province": "Taipei",
+      "City": "Taipei",
       "District": "11051"
     },
     {
       "StoreNumber": "R713",
-      "CityStoreName": "台北市-台北 101",
-      "Province": "台北市",
-      "City": "台北市",
+      "CityStoreName": "Taipei-Taipei 101",
+      "Province": "Taipei",
+      "City": "Taipei",
       "District": "110"
     }
   ]

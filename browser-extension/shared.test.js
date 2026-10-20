@@ -5,7 +5,8 @@ import {
   buildFulfillmentPath,
   groupProductsByModel,
   parseStockResponse,
-  productPurchaseURL
+  productPurchaseURL,
+  randomCheckDelayMs
 } from "./shared.js";
 
 const task = {
@@ -61,4 +62,10 @@ test("separates products by their real model name", () => {
   });
   assert.deepEqual(Object.keys(products), ["iPhone 18 Pro Max", "iPhone 18 Pro"]);
   assert.equal(products["iPhone 18 Pro"][0].Code, "PRO");
+});
+
+test("uses a fresh 20-60 second polling delay", () => {
+  assert.equal(randomCheckDelayMs(0), 20_000);
+  assert.equal(randomCheckDelayMs(0.5), 40_000);
+  assert.equal(randomCheckDelayMs(0.999999), 60_000);
 });

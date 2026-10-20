@@ -1,6 +1,7 @@
 package services
 
 import (
+	"apple-store-helper/model"
 	"fmt"
 	"net/url"
 	"strings"
@@ -10,11 +11,19 @@ func appleStoreBaseURL(areaCode string) (string, error) {
 	switch areaCode {
 	case "cn":
 		return "https://www.apple.com.cn", nil
+	case "ch":
+		return "https://www.apple.com/ch-fr", nil
+	case "be":
+		return "https://www.apple.com/be-fr", nil
 	case "us":
 		return "https://www.apple.com", nil
-	case "hk", "jp", "sg", "uk", "au":
-		return "https://www.apple.com/" + areaCode, nil
+
 	default:
+		for _, area := range model.Areas {
+			if area.ShortCode == areaCode {
+				return "https://www.apple.com/" + areaCode, nil
+			}
+		}
 		return "", fmt.Errorf("unsupported area code: %s", areaCode)
 	}
 }
@@ -47,7 +56,8 @@ func ProductPurchaseURL(areaCode string, productType string, partNumber string, 
 	switch productType {
 	case "iphoneduo", "iphone18promax", "iphone18pro",
 		"iphone16promax", "iphone16pro", "iphone16plus", "iphone16",
-		"watchs12", "watchse3", "watchultra4":
+		"watchs12", "watchse3", "watchultra4",
+		"appletv4k", "macbookair", "macbookpro", "macmini", "imac", "macstudio":
 	default:
 		return "", fmt.Errorf("unsupported product type: %s", productType)
 	}

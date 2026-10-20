@@ -1,0 +1,187 @@
+[
+  {
+    "code": "tw",
+    "name": "中国台湾",
+    "stores": 2,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R694",
+    "sku": "MK2H4ZP/A",
+    "stock": "无货",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:19+08:00"
+  },
+  {
+    "code": "ca",
+    "name": "加拿大",
+    "stores": 28,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R369",
+    "sku": "MK284VC/A",
+    "stock": "暂未开放取货",
+    "stock_error": "Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:20+08:00"
+  },
+  {
+    "code": "my",
+    "name": "马来西亚",
+    "stores": 1,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R742",
+    "sku": "MK2H4X/A",
+    "stock": "无货",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:22+08:00"
+  },
+  {
+    "code": "de",
+    "name": "德国",
+    "stores": 16,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R430",
+    "sku": "MK2H4ZD/A",
+    "stock": "暂未开放取货",
+    "stock_error": "Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:24+08:00"
+  },
+  {
+    "code": "th",
+    "name": "泰国",
+    "stores": 2,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R733",
+    "sku": "MK2H4ZP/A",
+    "stock": "无货",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:25+08:00"
+  },
+  {
+    "code": "es",
+    "name": "西班牙",
+    "stores": 12,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R368",
+    "sku": "MK2H4QL/A",
+    "stock": "暂未开放取货",
+    "stock_error": "Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:27+08:00"
+  },
+  {
+    "code": "it",
+    "name": "意大利",
+    "stores": 17,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R441",
+    "sku": "MK2H4QL/A",
+    "stock": "暂未开放取货",
+    "stock_error": "Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:28+08:00"
+  },
+  {
+    "code": "fr",
+    "name": "法国",
+    "stores": 20,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R438",
+    "sku": "MK2H4F/A",
+    "stock": "暂未开放取货",
+    "stock_error": "Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:31+08:00"
+  },
+  {
+    "code": "kr",
+    "name": "韩国",
+    "stores": 7,
+    "products": 79,
+    "series": {
+      "Apple Watch SE 3": 8,
+      "Apple Watch Series 12": 24,
+      "Apple Watch Ultra 4": 2,
+      "iPhone 16": 5,
+      "iPhone 18 Pro": 32,
+      "iPhone Duo": 8
+    },
+    "store": "R770",
+    "sku": "MK2H4KH/A",
+    "stock": "无货",
+    "bag_http": 200,
+    "product_http": 200,
+    "checked_at": "2026-10-20T13:56:32+08:00"
+  }
+]

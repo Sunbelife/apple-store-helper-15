@@ -89,7 +89,10 @@ func parseStoreDirectory(body []byte, locale string) ([]model.Store, error) {
 				StoreList []struct {
 					Locale string
 					State  []struct{ Store []directoryStore }
-					States []directoryStore
+					States []struct {
+						directoryStore
+						Store []directoryStore
+					}
 				}
 			}
 		}
@@ -100,10 +103,19 @@ func parseStoreDirectory(body []byte, locale string) ([]model.Store, error) {
 	}
 	var stores []model.Store
 	for _, region := range data.Props.PageProps.StoreList {
-		if region.Locale != locale {
+		if region.Locale != locale && !strings.HasSuffix(region.Locale, "_"+strings.Split(locale, "_")[len(strings.Split(locale, "_"))-1]) {
 			continue
 		}
-		entries := append([]directoryStore{}, region.States...)
+		var entries []directoryStore
+		if len(region.State) == 0 {
+			for _, entry := range region.States {
+				if len(entry.Store) > 0 {
+					entries = append(entries, entry.Store...)
+				} else {
+					entries = append(entries, entry.directoryStore)
+				}
+			}
+		}
 		for _, state := range region.State {
 			entries = append(entries, state.Store...)
 		}
@@ -120,11 +132,11 @@ func parseStoreDirectory(body []byte, locale string) ([]model.Store, error) {
 	return stores, nil
 }
 func fetchStoreDirectory(code string) ([]model.Store, error) {
-	locales := map[string]string{"cn": "zh_CN", "hk": "zh_HK", "jp": "ja_JP", "sg": "en_SG", "us": "en_US", "uk": "en_GB", "au": "en_AU"}
-	locale, ok := locales[code]
-	if !ok {
-		return nil, fmt.Errorf("不支持的地区")
+	area, err := areaFor(code)
+	if err != nil {
+		return nil, err
 	}
+	locale := area.Locale
 	// The official retail directory includes every region, independent of stock APIs.
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Get("https://www.apple.com.cn/retail/storelist/")

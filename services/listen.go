@@ -34,6 +34,7 @@ const (
 	StatusWait     = "等待"
 	StatusQuerying = "查询中"
 	StatusUnknown  = "未返回库存"
+	StatusNotOpen  = "暂未开放取货"
 	StatusVerify   = "需官网验证"
 	StatusLimited  = "触发风控，冷却中，稍后再尝试"
 	StatusError    = "查询失败"
@@ -366,7 +367,7 @@ func (s *listenService) Run() {
 				}
 
 				fyne.Do(s.UpdateLogStr)
-				retryAfter := 30 * time.Second
+				retryAfter := time.Duration(20+rand.Intn(41)) * time.Second
 				s.retryBackoff = nextStockRetryBackoff(s.retryBackoff, s.lookupLimited)
 				if s.retryBackoff > 0 {
 					retryAfter = s.retryBackoff
@@ -723,6 +724,35 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 		}
 	}
 
+	scheduled := &PickupSchedule{Quotes: map[string]string{}}
+	for _, path := range []string{"body.stores", "body.content.pickupMessage.stores"} {
+		for _, store := range gjson.GetBytes(body, path).Array() {
+			for code, part := range store.Get("partsAvailability").Map() {
+				quote := strings.TrimSpace(part.Get("messageTypes.regular.storePickupQuote").String())
+				if quote == "" {
+					quote = strings.TrimSpace(part.Get("pickupSearchQuote").String())
+				}
+				if store.Get("storeNumber").String() != "" && part.Get("pickupDisplay").String() == "default" && part.Get("storePickEligible").Bool() && part.Get("messageTypes.regular.storeSelectionEnabled").Bool() && quote != "" {
+					scheduled.Quotes[store.Get("storeNumber").String()+"."+code] = quote
+				}
+			}
+		}
+	}
+	if len(scheduled.Quotes) > 0 {
+		return skus, scheduled
+	}
+	if len(skus) == 0 {
+		for _, path := range []string{"body.stores", "body.content.pickupMessage.stores"} {
+			for _, store := range gjson.GetBytes(body, path).Array() {
+				for _, part := range store.Get("partsAvailability").Map() {
+					enabled := part.Get("messageTypes.regular.storeSelectionEnabled")
+					if part.Get("pickupDisplay").String() == "default" && enabled.Exists() && !enabled.Bool() {
+						return skus, errPickupNotOpen
+					}
+				}
+			}
+		}
+	}
 	return skus, nil
 }
 

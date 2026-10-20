@@ -1,47 +1,47 @@
 {
-  "update_time": "2025-09-10 22:05:05",
+  "update_time": "2026-10-20T14:24:13+08:00",
   "area_code": "hk",
   "stores": [
     {
-      "StoreNumber": "R428",
-      "CityStoreName": "ifc mall",
-      "Province": "",
-      "City": "Central",
-      "District": ""
-    },
-    {
-      "StoreNumber": "R499",
-      "CityStoreName": "Canton Road",
-      "Province": "",
-      "City": "Tsim Sha Tsui",
-      "District": ""
-    },
-    {
-      "StoreNumber": "R409",
-      "CityStoreName": "Causeway Bay",
-      "Province": "",
-      "City": "Causeway Bay",
-      "District": ""
-    },
-    {
-      "StoreNumber": "R485",
-      "CityStoreName": "Festival Walk",
-      "Province": "",
-      "City": "Kowloon Tong",
-      "District": ""
-    },
-    {
       "StoreNumber": "R673",
-      "CityStoreName": "apm Hong Kong",
-      "Province": "",
+      "CityStoreName": "Kwun Tong-apm Hong Kong",
+      "Province": "Hong Kong",
       "City": "Kwun Tong",
       "District": ""
     },
     {
+      "StoreNumber": "R409",
+      "CityStoreName": "Causeway Bay-Causeway Bay",
+      "Province": "Hong Kong",
+      "City": "Causeway Bay",
+      "District": ""
+    },
+    {
+      "StoreNumber": "R499",
+      "CityStoreName": "Tsim Sha Tsui-Canton Road",
+      "Province": "Hong Kong",
+      "City": "Tsim Sha Tsui",
+      "District": ""
+    },
+    {
       "StoreNumber": "R610",
-      "CityStoreName": "New Town Plaza",
-      "Province": "",
+      "CityStoreName": "Sha Tin-New Town Plaza",
+      "Province": "Hong Kong",
       "City": "Sha Tin",
+      "District": ""
+    },
+    {
+      "StoreNumber": "R485",
+      "CityStoreName": "Kowloon Tong-Festival Walk",
+      "Province": "Hong Kong",
+      "City": "Kowloon Tong",
+      "District": ""
+    },
+    {
+      "StoreNumber": "R428",
+      "CityStoreName": "Central-ifc mall",
+      "Province": "Hong Kong",
+      "City": "Central",
       "District": ""
     }
   ]

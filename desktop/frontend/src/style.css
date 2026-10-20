@@ -1424,3 +1424,29 @@ input:focus-visible {
 .configuration-fields > .field { margin-top: 10px; }
 
 .monitor-heading { padding: 17px 25px; gap: 16px; flex-shrink: 0; }
+
+.reminder-bark .bark-address-field { display:flex; align-items:center; width:100%; border:1px solid #ddd; border-radius:8px; background:#fff; padding-right:6px; gap:4px; }
+.reminder-bark .bark-address-field input { flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none; font-size:12px; }
+.bark-address-field:focus-within { border-color:#999; }
+.bark-actions { display:flex; align-items:center; gap:18px; width:100%; }
+.reminder-bark .bark-test-result { width:100%; margin:0; font-size:11px; line-height:1.7; overflow-wrap:anywhere; }
+.bark-test-result.success { color:#53764b; }
+.bark-test-result.failure { color:#b44e3b; }
+
+.language-field { margin: 18px 0; }
+.language-field select { font: inherit; padding: 10px 12px; border: 1px solid var(--line, #d6d6d6); border-radius: 8px; background: white; }
+html[lang="en-US"] .header-actions { gap: 12px; }
+html[lang="en-US"] .brand h1 { font-size: 22px; }
+html[lang="en-US"] .configuration .button { font-size: 12px; }
+html[lang="en-US"] .stock-label { max-width: 125px; white-space: normal; line-height: 1.2; }
+.computer-fields { grid-template-columns: 1fr; gap: 10px; }
+.computer-fields .select select { font-size: 11px; }
+.monitor-counts b { margin-left: 4px; }
+.market-note { margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: #9a6b2c; }
+.computer-configuration .field { gap: 2px; margin-bottom: 4px; }
+.computer-configuration .section-heading { margin-bottom: 14px; }
+.computer-configuration .computer-fields { gap: 0; }
+.computer-configuration select { height: 28px; font-size: 10.5px; }
+.computer-configuration .select svg { top: 7px; }
+
+.pickup-quote { display: block; max-width: 200px; margin-top: 3px; font-size: 10px; line-height: 1.3; color: #806333; }
