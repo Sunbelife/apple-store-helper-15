@@ -13,7 +13,6 @@ import (
 )
 
 var additionalProductSeries = []struct{ Name, Path, Type string }{
-	{"Apple TV 4K", "/shop/buy-tv/apple-tv-4k", "appletv4k"},
 	{"MacBook Air", "/shop/buy-mac/macbook-air", "macbookair"},
 	{"MacBook Pro", "/shop/buy-mac/macbook-pro", "macbookpro"},
 	{"Mac mini", "/shop/buy-mac/mac-mini", "macmini"},

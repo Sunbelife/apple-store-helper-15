@@ -582,11 +582,6 @@ function App() {
               `全部门店 · ${stores.length}`,
             )}
           </div>
-          {model.includes("Apple TV") && !pickupUnsupported && (
-            <p className="market-note">
-              {tr("Apple TV 支持预约取货状态；预约日期不代表当天现货。")}
-            </p>
-          )}
           {pickupUnsupported && (
             <p className="market-note">
               {tr("该地区官网暂未提供门店取货查询，仅可浏览产品目录。")}

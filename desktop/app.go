@@ -171,6 +171,9 @@ func (a *Desktop) GetCatalog(code string) (Catalog, error) {
 	}
 	for _, products := range data.Products {
 		for _, p := range products {
+			if p.Type == "appletv4k" || strings.HasPrefix(p.Model, "Apple TV") {
+				continue
+			}
 			p.Color = services.NormalizeProductColor(p.Color)
 			c.Products = append(c.Products, p)
 		}

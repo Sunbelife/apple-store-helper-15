@@ -1,6 +1,6 @@
 # 老孙抢你妹 2026
 
-Apple Store 门店取货库存监控。**正式版 v2.0.34 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
+Apple Store 门店取货库存监控。**正式版 v2.0.35 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
 
 ## 2.0 做了什么
 
@@ -169,7 +169,7 @@ App 顶部「库存统计」向所有用户展示博客已收到的库存检测�
 
 “全球”指覆盖官方商店可用的直营店取货查询，不包含经销商库存，也不代表所有国家都有 Apple 直营店。澳门入口未验证可用，暂不列入。瑞士使用 `/ch-fr`、比利时使用 `/be-fr` 的当地商店，购物袋与商品链接保持市场一致。
 
-除现有 iPhone 和 Apple Watch，新增 Apple TV 4K、MacBook Air、MacBook Pro、Mac mini、iMac 和 Mac Studio。Mac 只收录官网提供独立零件号的标准配置，区分芯片、尺寸、内存、硬盘和 CPU/GPU 核数；不把 CTO 定制容器当作库存 SKU。当地未销售或没有可验证标准配置的产品不跨区补齐。中国大陆目录没有 Apple TV 4K。Apple TV 已验证香港 ifc mall 返回预约取货日期，App 区分「可预约取货」与当前现货；其他市场仍需逐一验证。
+除现有 iPhone 和 Apple Watch，新增 MacBook Air、MacBook Pro、Mac mini、iMac 和 Mac Studio。Mac 只收录官网提供独立零件号的标准配置，区分芯片、尺寸、内存、硬盘和 CPU/GPU 核数；不把 CTO 定制容器当作库存 SKU。当地未销售或没有可验证标准配置的产品不跨区补齐。中国大陆目录没有 Apple TV 4K。Apple TV 已在 v2.0.35 中移除，暂不提供监控。
 
 目录按 SKU 和门店 ID 增量合并，保留已有监控与本地数据。已验证的固定 Mac SKU 配置可复用；新 SKU 才需请求商品详情。
 
@@ -195,3 +195,7 @@ Tests sample real retail stores and regional SKUs; they do not guarantee every c
 - 移除辅助下单实验，保持默认浏览器购物袋流程。
 - macOS 通用包支持 Intel 与 Apple Silicon，最低 macOS 12；Windows x64 包仍未实机验证。
 - 541 风控、暂未开放取货、未返回目标门店库存均不等同于无货。Apple TV 已修复预约取货日期识别，香港已实测；其他市场及新增市场的博客统计上报尚未全部联调。
+
+## v2.0.35 更新
+
+暂时移除 Apple TV 产品选择、内置目录及自动目录抓取。已有本地缓存中的 Apple TV 也不会重新出现在产品列表。Mac、iPhone 和 Apple Watch 保留。
