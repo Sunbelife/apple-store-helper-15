@@ -1,6 +1,6 @@
 # 老孙抢你妹 2026
 
-Apple Store 门店取货库存监控。**正式版 v2.0.36 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
+Apple Store 门店取货库存监控。**正式版 v2.0.37 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
 
 ## 2.0 做了什么
 
@@ -10,7 +10,7 @@ Apple Store 门店取货库存监控。**正式版 v2.0.36 使用 Wails 2 + Reac
 - 查询中和下一轮倒计时可见；暂停可取消正在进行的请求。
 - 启动时自动检查 GitHub Releases；也可点击窗口右上角手动检查，下载后校验 SHA-256、Bundle ID、版本号和应用签名，再原位更新并重启。
 - 有货时自动打开对应地区的苹果购物袋，弹窗、持续提示音，可选 Bark 手机推送，然后暂停监控。提醒弹窗另提供商品页入口。
-- 配置保存在系统应用配置目录，支持通过设置页导入 1.x 的 `user_settings.json`。
+- 配置保存在系统应用配置目录，升级时保留当前监控和提醒配置。
 - 使用老孙的店当前图标、灰白底和橙色主题，底部展示九款店铺商品，土豆片、土豆子 2 号机和科技织物壳优先展示。
 - 商品使用后台生成的专属分销渠道链接，微信扫码进入对应商品的小程序页面；Mac 浏览器无法直接打开小程序时，可复制链接或手机扫码。
 - 保留公开库存上报。受限时显示「触发风控，冷却中，稍后再尝试」和自动重试倒计时。
@@ -128,7 +128,7 @@ APPLE_STOCK_LIVE=1 go test ./services -run TestLivePostalPickupGuangdong -v -cou
 
 macOS 配置位于 `~/Library/Application Support/Sunbelife/Qiangnimei2/settings.json`，用文件权限 0600 保存，可能包含 Bark 凭据。不要分享或提交该文件。刷新后的产品目录保存在同目录的 `catalogs` 下；首次运行回退到内置目录。
 
-旧版配置可在设置页选择「导入旧版配置」。导入不会修改旧版文件。每次启动都会清除旧查询状态，恢复为等待；库存状态不会被当作实时数据永久保存。
+v2.0.37 起移除旧版配置导入入口。每次启动都会清除旧查询状态，恢复为等待；库存状态不会被当作实时数据永久保存。
 
 有货弹窗显示后，应用异步向 `https://sunbelife.com/api/iphone-stock/events` 提交公开库存事实：地区、省市、门店、型号、容量、颜色、SKU、发现时间。不发送用户身份、设备标识、Bark 地址或监控列表。管理员历史列表位于 `https://sunbelife.com/iphone-stock`；历史报告不代表实时库存。
 
@@ -175,7 +175,7 @@ App 顶部「库存统计」向所有用户展示博客已收到的库存检测�
 
 ### 界面语言
 
-默认跟随系统 WebView 的首选语言：中文系统显示中文，其他语言显示英文。在「配置与迁移 → 语言」可切换「跟随系统／简体中文／English」，选择会保存在本机。界面、提醒配置、使用说明、统计与产品颜色支持英文；苹果提供的当地城市、门店专名和原始诊断信息保留来源写法。语言切换不修改监控标识、SKU 或购物链接。
+默认跟随系统 WebView 的首选语言：中文系统显示中文，其他语言显示英文。在「设置 → 语言」可切换「跟随系统／简体中文／English」，选择会保存在本机。界面、提醒配置、使用说明、统计与产品颜色支持英文；苹果提供的当地城市、门店专名和原始诊断信息保留来源写法。语言切换不修改监控标识、SKU 或购物链接。
 
 ### English quick start
 
@@ -183,7 +183,7 @@ App 顶部「库存统计」向所有用户展示博客已收到的库存检测�
 2. Choose a region, product and stores, then select **Add to monitors** and **Start monitoring**.
 3. Keep the computer awake and online. Errors and cooldown do not mean sold out.
 4. When stock is found, monitoring pauses and the regional shopping bag opens. Select pickup and complete checkout yourself. Alerts do not reserve stock.
-5. Use **Settings & migration → Language** to follow the system language or choose Chinese/English.
+5. Use **Settings → Language** to follow the system language or choose Chinese/English.
 
 Tests sample real retail stores and regional SKUs; they do not guarantee every configuration or continuous API availability. See `workdoc/global-regions-live.json` and `workdoc/global-products-pickup-live.json` for the exact observed results.
 
@@ -207,3 +207,7 @@ Tests sample real retail stores and regional SKUs; they do not guarantee every c
 UV 为所选北京时间日期内发生统计事件的参与安装数，不是全部用户人数。PV 只统计监控页与库存统计页打开次数，不包含自动刷新或筛选。监控 UV 和贡献 UV 分别按成功开始监控、成功库存上报的安装标识去重。成功上报请求次数不等于库存记录数。统计不回填历史用户，也不保证网络丢失时完整计数。
 
 服务端仅存随机标识的摘要，不保存 IP、硬件序列号、Bark 配置或日志；使用事件保留约 30 天。公开接口仅返回汇总。详见 [统计实现及验证](workdoc/匿名使用统计.md)。
+
+## v2.0.37 更新
+
+移除旧版 1.x 配置导入入口和导入接口，设置面板保留语言选项与购买提示。现有监控、提醒配置和匿名统计参与状态不变。

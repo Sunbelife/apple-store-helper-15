@@ -321,63 +321,6 @@ func (a *Desktop) SaveBark(value string) error {
 	a.state.BarkConfigured = value != ""
 	return nil
 }
-func (a *Desktop) ImportLegacy() (int, error) {
-	path, err := wruntime.OpenFileDialog(a.ctx, wruntime.OpenDialogOptions{Title: "选择旧版 user_settings.json", Filters: []wruntime.FileFilter{{DisplayName: "旧版监控配置", Pattern: "*.json"}}})
-	if err != nil || path == "" {
-		return 0, err
-	}
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return 0, err
-	}
-	var saved services.UserSettings
-	if err = json.Unmarshal(data, &saved); err != nil {
-		return 0, err
-	}
-	area, err := areaFor("cn")
-	if err != nil {
-		return 0, err
-	}
-	for _, ar := range model.Areas {
-		if ar.Title == saved.SelectedArea {
-			area = ar
-		}
-	}
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if a.state.Running {
-		return 0, fmt.Errorf("请先暂停监控")
-	}
-	before := a.state.Items
-	barkBefore := a.bark
-	items := append([]Target{}, before...)
-	exists := map[string]bool{}
-	for _, i := range items {
-		exists[i.ID] = true
-	}
-	n := 0
-	for _, i := range saved.ListenItems {
-		if i.Store.StoreNumber == "" || i.Product.Code == "" {
-			continue
-		}
-		id := targetID(area.ShortCode, i.Store.StoreNumber, i.Product.Code)
-		if exists[id] {
-			continue
-		}
-		exists[id] = true
-		items = append(items, Target{ID: id, Area: area, Store: i.Store, Product: i.Product, Status: services.StatusWait})
-		n++
-	}
-	a.state.Items = items
-	a.bark = saved.BarkNotifyUrl
-	if err = a.saveLocked(); err != nil {
-		a.state.Items = before
-		a.bark = barkBefore
-		return 0, err
-	}
-	a.state.BarkConfigured = a.bark != ""
-	return n, nil
-}
 func (a *Desktop) Start() error {
 	a.mu.Lock()
 	defer a.mu.Unlock()

@@ -25,7 +25,6 @@
   "问题反馈": "Feedback",
   "库存统计": "Stock history",
   "使用说明": "How to use",
-  "配置与迁移": "Settings & migration",
   "添加监控": "Add a monitor",
   "更新产品和门店信息": "Update products and stores",
   "从苹果官网增量更新产品和门店信息，保留已有监控": "Merge products and stores from Apple, preserving existing monitors",
@@ -128,10 +127,6 @@
   "安装前会校验 GitHub Release 的 SHA-256、Bundle ID、版本号和应用签名；需要写入“应用程序”时，macOS 会请求管理员授权。": "The update's SHA-256, bundle ID, version and signature are verified. macOS may request administrator permission to write to Applications.",
   "关闭设置": "Close settings",
   "请先在默认浏览器的苹果官网把目标型号、容量和颜色加入购物袋。有货时自动打开该地区购物袋并持续响铃，监控随后暂停；取货门店需手动选择。": "Add the exact product to your Apple shopping bag in your default browser first. When stock is found, the regional bag opens and a sound plays. Monitoring pauses; choose the pickup store yourself.",
-  "从 1.x 迁移": "Migrate from 1.x",
-  "选择旧应用中的 user_settings.json，导入门店、产品和 Bark 配置。": "Choose user_settings.json from the old app to import stores, products and Bark settings.",
-  "已导入 ": "Imported ",
-  "导入旧版配置": "Import old settings",
   "有货提醒": "Stock alert",
   "发现门店库存": "Pickup stock found",
   "已打开苹果购物袋，监控已暂停。": "Apple shopping bag opened. Monitoring paused.",
@@ -324,5 +319,6 @@
   "贡献 UV": "Contributor UV",
   "成功上报": "Successful reports",
   "使用统计仅按日期汇总，不受地区或产品筛选影响；PV 仅含监控页与库存统计页。": "Usage totals are filtered by date only. PV counts visits to the monitor and stock statistics pages.",
-  "自愿参与后，使用本机随机标识统计启动、监控页与统计页访问、开始监控和成功库存上报，并发送版本及系统类型至 sunbelife.com。无需账号，不采集硬件序列号、Bark 地址或日志，不保存 IP 地址。记录最多保留 30 天；UV 指参与统计的安装数，不代表全部用户或真实人数。": "After you agree, a random local identifier counts launches, monitor/statistics page visits, monitoring starts and successful stock reports, with app version and operating system sent to sunbelife.com. No account, hardware serial number, Bark address or logs are collected; IP addresses are not stored. Records are kept for up to 30 days. UV measures opted-in installations, not all users or unique people."
+  "自愿参与后，使用本机随机标识统计启动、监控页与统计页访问、开始监控和成功库存上报，并发送版本及系统类型至 sunbelife.com。无需账号，不采集硬件序列号、Bark 地址或日志，不保存 IP 地址。记录最多保留 30 天；UV 指参与统计的安装数，不代表全部用户或真实人数。": "After you agree, a random local identifier counts launches, monitor/statistics page visits, monitoring starts and successful stock reports, with app version and operating system sent to sunbelife.com. No account, hardware serial number, Bark address or logs are collected; IP addresses are not stored. Records are kept for up to 30 days. UV measures opted-in installations, not all users or unique people.",
+  "设置": "Settings"
 }

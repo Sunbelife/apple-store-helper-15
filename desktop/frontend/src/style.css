@@ -742,8 +742,7 @@ td:first-child {
   line-height: 1.7;
   margin: 13px 0 0;
 }
-.dialog > p,
-.import p {
+.dialog > p {
   font-size: 12px;
   line-height: 1.9;
   color: #aaaaaa;
@@ -761,16 +760,6 @@ td:first-child {
 .dialog-actions {
   display: flex;
   gap: 15px;
-}
-.import {
-  border-top: 1px solid var(--line);
-  padding-top: 23px;
-  margin-top: 25px;
-}
-.import h3 {
-  font-size: 13px;
-  font-weight: 500;
-  margin: 0 0 8px;
 }
 .stock-dialog {
   display: flex;

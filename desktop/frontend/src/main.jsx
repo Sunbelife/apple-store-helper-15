@@ -438,8 +438,8 @@ function App() {
           </button>
           <button
             className="icon-button"
-            aria-label={tr("配置与迁移")}
-            title={tr("配置与迁移")}
+            aria-label={tr("设置")}
+            title={tr("设置")}
             onClick={() => setSettings(true)}
           >
             <Settings2 size={20} />
@@ -1145,7 +1145,7 @@ function App() {
             <span className="dialog-icon">
               <Bell size={24} />
             </span>
-            <h2 id="settings-title">{tr("配置与迁移")}</h2>
+            <h2 id="settings-title">{tr("设置")}</h2>
             <label className="field language-field">
               <span>{tr("语言")}</span>
               <select
@@ -1162,25 +1162,6 @@ function App() {
                 "请先在默认浏览器的苹果官网把目标型号、容量和颜色加入购物袋。有货时自动打开该地区购物袋并持续响铃，监控随后暂停；取货门店需手动选择。",
               )}
             </p>
-            <div className="import">
-              <h3>{tr("从 1.x 迁移")}</h3>
-              <p>
-                {tr(
-                  "选择旧应用中的 user_settings.json，导入门店、产品和 Bark 配置。",
-                )}
-              </p>
-              <button
-                className="button secondary"
-                disabled={locked}
-                onClick={() =>
-                  action(async () =>
-                    message(`已导入 ${await call("ImportLegacy")} 项监控`),
-                  )
-                }
-              >
-                {tr("导入旧版配置")}
-              </button>
-            </div>
           </section>
         </div>
       )}

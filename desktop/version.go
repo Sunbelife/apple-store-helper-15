@@ -1,6 +1,6 @@
 package main
 
-const AppVersion = "2.0.36"
+const AppVersion = "2.0.37"
 
 const (
 	updateRepository = "Sunbelife/apple-store-helper-15"
