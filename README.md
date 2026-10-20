@@ -1,6 +1,6 @@
 # 老孙抢你妹 2026
 
-Apple Store 门店取货库存监控。**正式版 v2.0.37 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [GitHub Releases](https://github.com/Sunbelife/apple-store-helper-15/releases/latest)。
+Apple Store 门店取货库存监控。**正式版 v2.0.38 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [官网下载页](https://sunbelife.com/projects/qiangnimei/)。
 
 ## 2.0 做了什么
 
@@ -65,12 +65,12 @@ macOS：Go **1.25+**、Node.js **22+** 和 Xcode Command Line Tools。当前依�
 
 ## GitHub OTA 更新
 
-应用通过 `https://api.github.com/repos/Sunbelife/apple-store-helper-15/releases/latest` 检查正式 Release。Release 标签使用 `vMAJOR.MINOR.PATCH`，并且必须同时上传以下两个同名资产：
+应用通过 `https://api.github.com/repos/Sunbelife/apple-store-helper-15/releases/latest` 检查正式 Release 的版本和更新日志；安装包从 `https://sunbelife.com/downloads/qiangnimei/vMAJOR.MINOR.PATCH/` 下载，并由官网重定向到阿里云 OSS。Release 标签使用 `vMAJOR.MINOR.PATCH`，GitHub Release 与 OSS 必须同时具备以下两个同名资产：
 
 - `laosun-qiangnimei-2026-vMAJOR.MINOR.PATCH-macos-universal.zip`
 - `laosun-qiangnimei-2026-vMAJOR.MINOR.PATCH-macos-universal.zip.sha256`
 
-版本号由 `desktop/version.go` 统一提供，打包脚本会同步写入应用的 `Info.plist` 和资产名称。应用只接受 GitHub HTTPS 下载地址；下载后先校验 SHA-256，再校验 Bundle ID、版本号和 `codesign`。安装时先保留旧 App，替换或签名验证失败会自动回滚。App 位于受保护的“应用程序”目录时，macOS 会请求管理员授权。当前包仍采用本地签名、未经 Apple 公证。
+版本号由 `desktop/version.go` 统一提供，打包脚本会同步写入应用的 `Info.plist` 和资产名称。应用只接受 `sunbelife.com` 官网入口及指定阿里云 OSS 的 HTTPS 重定向地址；下载后先校验 SHA-256，再校验 Bundle ID、版本号和 `codesign`。安装时先保留旧 App，替换或签名验证失败会自动回滚。App 位于受保护的“应用程序”目录时，macOS 会请求管理员授权。当前包仍采用本地签名、未经 Apple 公证。
 
 2.0.15 是 OTA 引导版本：已有的 2.0.14 及更早版本尚无更新器，需要手动安装 2.0.15 一次；从之后的 2.0.16 起即可在 App 内完成更新。
 
@@ -211,3 +211,9 @@ UV 为所选北京时间日期内发生统计事件的参与安装数，不是�
 ## v2.0.37 更新
 
 移除旧版 1.x 配置导入入口和导入接口，设置面板保留语言选项与购买提示。现有监控、提醒配置和匿名统计参与状态不变。
+
+## v2.0.38 OSS 更新下载
+
+OTA 继续从 GitHub Release 获取版本和更新说明，但安装包与 SHA-256 改从 `sunbelife.com` 官网地址开始下载，再由官网重定向到阿里云 OSS。更新器只允许官网与固定 OSS 存储桶两个 HTTPS 域名，下载后的 SHA-256、Bundle ID、版本号和应用签名校验保持不变。
+
+由于下载地址由客户端版本决定，v2.0.37 及更早版本升级到 v2.0.38 时仍会最后一次从 GitHub 下载；安装 v2.0.38 后，后续 OTA 安装包才会通过官网与 OSS 下载。

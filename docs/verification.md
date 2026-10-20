@@ -1,5 +1,11 @@
 # 2.0 本地验证记录
 
+## 2.0.38 OSS 更新下载（2026-10-20）
+
+OTA 的版本检查与更新日志继续读取 GitHub Release，安装包和 SHA-256 改从 `https://sunbelife.com/downloads/qiangnimei/v2.0.38/` 开始下载，并由官网重定向到阿里云 OSS `ibeta-vue` 存储桶。更新器只信任官网和该固定 OSS 域名，保留 SHA-256、Bundle ID、版本号与签名校验。
+
+本地完成桌面 Go 测试、竞态检测、前端与扩展脚本测试、ZIP 完整性、SHA-256、macOS 双架构、最低系统 12.0 和代码签名检查。四个版本化文件已在 2026-10-20 21:57（北京时间）上传 OSS，并通过 `sunbelife.com` 入口完成完整下载哈希验证。Mac ZIP SHA-256 为 `27f36147fbf1031e1513a8f1e8e3795a566db6cb561929de334cf160ae20aca7`，Windows ZIP 为 `550d8b3a0ed91677780d7ebbc5606d5041f7fcfb24d64aab0f30350ba2431cee`。
+
 ## 2.0.29 官网双平台下载（2026-10-19）
 
 新增Windows x64便携打包脚本及CI，嵌入原图标、版本和GUI manifest。Windows更新入口打开官网，禁止下载macOS更新包。桌面Go测试、前端构建、双平台ZIP和SHA256检查通过；Windows PE为x64 GUI且含资源，尚无实机验证，官网标测试版。Mac最终解压包双架构minos12.0、plist12.0和签名验证通过。

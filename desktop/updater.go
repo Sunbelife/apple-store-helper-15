@@ -69,6 +69,7 @@ type updateRelease struct {
 
 type githubUpdater struct {
 	apiURL        string
+	assetBaseURL  string
 	current       string
 	client        *http.Client
 	allowAssetURL func(*url.URL) bool
@@ -79,9 +80,10 @@ type githubUpdater struct {
 func newGitHubUpdater() *githubUpdater {
 	return &githubUpdater{
 		apiURL:        updateAPIURL,
+		assetBaseURL:  updateDownloadBaseURL,
 		current:       AppVersion,
 		client:        &http.Client{Timeout: 10 * time.Minute},
-		allowAssetURL: isTrustedGitHubAssetURL,
+		allowAssetURL: isTrustedUpdateAssetURL,
 	}
 }
 
@@ -209,22 +211,29 @@ func (u *githubUpdater) latest(ctx context.Context) (updateRelease, error) {
 		return result, nil
 	}
 	expected := fmt.Sprintf("laosun-qiangnimei-2026-v%s-macos-universal.zip", latest)
+	hasArchive, hasChecksum := false, false
 	for _, asset := range release.Assets {
 		switch asset.Name {
 		case expected:
 			result.archiveName = asset.Name
-			result.archiveURL = asset.BrowserDownloadURL
 			result.info.DownloadSize = asset.Size
+			hasArchive = true
 		case expected + ".sha256":
-			result.checksumURL = asset.BrowserDownloadURL
+			hasChecksum = true
 		}
 	}
-	if result.archiveURL == "" || result.checksumURL == "" {
+	if !hasArchive || !hasChecksum {
 		return updateRelease{}, fmt.Errorf("GitHub Release 缺少 macOS 通用更新包或 SHA-256 校验文件")
 	}
 	if result.info.DownloadSize <= 0 || result.info.DownloadSize > maxUpdateSize {
 		return updateRelease{}, fmt.Errorf("GitHub 更新包大小异常")
 	}
+	base := strings.TrimRight(u.assetBaseURL, "/")
+	if base == "" {
+		return updateRelease{}, fmt.Errorf("更新下载地址未配置")
+	}
+	result.archiveURL = base + "/v" + latest + "/" + expected
+	result.checksumURL = result.archiveURL + ".sha256"
 	for _, raw := range []string{result.archiveURL, result.checksumURL} {
 		parsed, parseErr := url.Parse(raw)
 		if parseErr != nil || !u.allowAssetURL(parsed) {
@@ -341,10 +350,10 @@ func compareVersions(left, right string) int {
 	return 0
 }
 
-func isTrustedGitHubAssetURL(value *url.URL) bool {
+func isTrustedUpdateAssetURL(value *url.URL) bool {
 	if value == nil || value.Scheme != "https" || value.User != nil {
 		return false
 	}
 	host := strings.ToLower(value.Hostname())
-	return host == "github.com" || host == "objects.githubusercontent.com" || strings.HasSuffix(host, ".githubusercontent.com")
+	return host == "sunbelife.com" || host == "ibeta-vue.oss-cn-hangzhou.aliyuncs.com"
 }

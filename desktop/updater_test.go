@@ -40,7 +40,7 @@ func TestUpdaterIgnoresOlderRelease(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(githubRelease{TagName: "v1.8.4", Name: "old"})
 	}))
 	defer server.Close()
-	u := &githubUpdater{apiURL: server.URL, current: "2.0.15", client: server.Client(), allowAssetURL: func(*url.URL) bool { return true }}
+	u := &githubUpdater{apiURL: server.URL, assetBaseURL: server.URL, current: "2.0.15", client: server.Client(), allowAssetURL: func(*url.URL) bool { return true }}
 	release, err := u.latest(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -62,20 +62,20 @@ func TestUpdaterDownloadsAndVerifiesRelease(t *testing.T) {
 				TagName: "v2.0.16",
 				Name:    "OTA test",
 				Assets: []githubReleaseAsset{
-					{Name: name, BrowserDownloadURL: server.URL + "/archive", Size: int64(len(archive))},
-					{Name: name + ".sha256", BrowserDownloadURL: server.URL + "/checksum", Size: 128},
+					{Name: name, BrowserDownloadURL: "https://github.com/ignored/archive", Size: int64(len(archive))},
+					{Name: name + ".sha256", BrowserDownloadURL: "https://github.com/ignored/checksum", Size: 128},
 				},
 			})
-		case "/archive":
+		case "/v2.0.16/" + name:
 			_, _ = w.Write(archive)
-		case "/checksum":
+		case "/v2.0.16/" + name + ".sha256":
 			_, _ = w.Write([]byte(hex.EncodeToString(digest[:]) + "  " + name + "\n"))
 		default:
 			http.NotFound(w, r)
 		}
 	}))
 	defer server.Close()
-	u := &githubUpdater{apiURL: server.URL + "/latest", current: "2.0.15", client: server.Client(), allowAssetURL: func(*url.URL) bool { return true }}
+	u := &githubUpdater{apiURL: server.URL + "/latest", assetBaseURL: server.URL, current: "2.0.15", client: server.Client(), allowAssetURL: func(*url.URL) bool { return true }}
 	release, err := u.latest(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -114,20 +114,19 @@ func TestUpdaterRejectsChecksumMismatch(t *testing.T) {
 	}
 }
 
-func TestTrustedGitHubAssetURL(t *testing.T) {
+func TestTrustedUpdateAssetURL(t *testing.T) {
 	for _, raw := range []string{
-		"https://github.com/Sunbelife/apple-store-helper-15/releases/download/v2.0.15/update.zip",
-		"https://objects.githubusercontent.com/example",
-		"https://release-assets.githubusercontent.com/example",
+		"https://sunbelife.com/downloads/qiangnimei/v2.0.38/update.zip",
+		"https://ibeta-vue.oss-cn-hangzhou.aliyuncs.com/downloads/qiangnimei/v2.0.38/update.zip",
 	} {
 		value, _ := url.Parse(raw)
-		if !isTrustedGitHubAssetURL(value) {
+		if !isTrustedUpdateAssetURL(value) {
 			t.Errorf("trusted URL rejected: %s", raw)
 		}
 	}
-	for _, raw := range []string{"http://github.com/update.zip", "https://github.com.evil.example/update.zip", "https://user@github.com/update.zip"} {
+	for _, raw := range []string{"http://sunbelife.com/update.zip", "https://sunbelife.com.evil.example/update.zip", "https://user@sunbelife.com/update.zip", "https://github.com/update.zip"} {
 		value, _ := url.Parse(raw)
-		if isTrustedGitHubAssetURL(value) {
+		if isTrustedUpdateAssetURL(value) {
 			t.Errorf("untrusted URL accepted: %s", raw)
 		}
 	}
