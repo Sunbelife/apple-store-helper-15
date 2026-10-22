@@ -8,7 +8,7 @@ Apple Store 门店取货库存监控。**正式版 v2.0.38 使用 Wails 2 + Reac
 - 地区、型号、容量、颜色、省市和门店筛选；「全部门店」一键加入，重复项跳过。
 - 库存按行显示状态、更新时间和错误原因，带搜索、单项移除和运行日志。
 - 查询中和下一轮倒计时可见；暂停可取消正在进行的请求。
-- 启动时自动检查 GitHub Releases；也可点击窗口右上角手动检查，下载后校验 SHA-256、Bundle ID、版本号和应用签名，再原位更新并重启。
+- 窗口右上角「检查更新」直接打开官网下载页，可选择 GitHub 或百度网盘下载；不在启动时自动检查或在 App 内下载安装更新。此行为为当前源码改动，已发布 v2.0.38 安装包仍保留原更新器。
 - 有货时自动打开对应地区的苹果购物袋，弹窗、持续提示音，可选 Bark 手机推送，然后暂停监控。提醒弹窗另提供商品页入口。
 - 配置保存在系统应用配置目录，升级时保留当前监控和提醒配置。
 - 使用老孙的店当前图标、灰白底和橙色主题，底部展示九款店铺商品，土豆片、土豆子 2 号机和科技织物壳优先展示。
@@ -63,16 +63,11 @@ macOS：Go **1.25+**、Node.js **22+** 和 Xcode Command Line Tools。当前依�
 
 2.0.15 通用安装包包含 Intel 和 Apple Silicon，最低系统版本为 macOS 12。修正了旧包意外继承本机 SDK 的 macOS 27 最低运行版本问题。Intel 与旧系统仍需实机验证。
 
-## GitHub OTA 更新
+## 更新入口与旧版 OTA 兼容
 
-应用通过 `https://api.github.com/repos/Sunbelife/apple-store-helper-15/releases/latest` 检查正式 Release 的版本和更新日志；安装包从 `https://sunbelife.com/downloads/qiangnimei/vMAJOR.MINOR.PATCH/` 下载，并由官网重定向到阿里云 OSS。Release 标签使用 `vMAJOR.MINOR.PATCH`，GitHub Release 与 OSS 必须同时具备以下两个同名资产：
+当前源码中，Mac 与 Windows 的「检查更新」均通过 `OpenDownloads` 打开 https://sunbelife.com/projects/qiangnimei/ ，由用户选择 GitHub Releases 或百度网盘下载。启动时不再自动检查版本，也不再展示内置安装更新弹窗。
 
-- `laosun-qiangnimei-2026-vMAJOR.MINOR.PATCH-macos-universal.zip`
-- `laosun-qiangnimei-2026-vMAJOR.MINOR.PATCH-macos-universal.zip.sha256`
-
-版本号由 `desktop/version.go` 统一提供，打包脚本会同步写入应用的 `Info.plist` 和资产名称。应用只接受 `sunbelife.com` 官网入口及指定阿里云 OSS 的 HTTPS 重定向地址；下载后先校验 SHA-256，再校验 Bundle ID、版本号和 `codesign`。安装时先保留旧 App，替换或签名验证失败会自动回滚。App 位于受保护的“应用程序”目录时，macOS 会请求管理员授权。当前包仍采用本地签名、未经 Apple 公证。
-
-2.0.15 是 OTA 引导版本：已有的 2.0.14 及更早版本尚无更新器，需要手动安装 2.0.15 一次；从之后的 2.0.16 起即可在 App 内完成更新。
+已发布的 v2.0.38 及旧版仍可能使用原 OTA 流程，官网保留其下载兼容线路。后端更新器与 SHA-256、Bundle ID、版本号、签名验证继续保留；源码中的备用下载基址恢复为本仓库 GitHub Releases，只允许精确仓库路径及 GitHub 的固定资产域名。没有发布新版本或替换已有 Release 附件。
 
 后续打包必须遵守 [macOS 打包要求](workdoc/macOS打包要求.md)，交付前核对两种架构的 Mach-O 最低版本与签名。
 

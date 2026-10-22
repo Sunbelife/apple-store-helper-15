@@ -118,13 +118,15 @@ func TestTrustedUpdateAssetURL(t *testing.T) {
 	for _, raw := range []string{
 		"https://sunbelife.com/downloads/qiangnimei/v2.0.38/update.zip",
 		"https://ibeta-vue.oss-cn-hangzhou.aliyuncs.com/downloads/qiangnimei/v2.0.38/update.zip",
+		"https://github.com/Sunbelife/apple-store-helper-15/releases/download/v2.0.38/update.zip",
+		"https://release-assets.githubusercontent.com/github-production-release-asset/update.zip",
 	} {
 		value, _ := url.Parse(raw)
 		if !isTrustedUpdateAssetURL(value) {
 			t.Errorf("trusted URL rejected: %s", raw)
 		}
 	}
-	for _, raw := range []string{"http://sunbelife.com/update.zip", "https://sunbelife.com.evil.example/update.zip", "https://user@sunbelife.com/update.zip", "https://github.com/update.zip"} {
+	for _, raw := range []string{"http://sunbelife.com/update.zip", "https://sunbelife.com.evil.example/update.zip", "https://user@sunbelife.com/update.zip", "https://github.com/update.zip", "https://github.com.evil.example/Sunbelife/apple-store-helper-15/releases/download/update.zip", "https://release-assets.githubusercontent.com.evil.example/update.zip", "https://dl.betahub.cn.evil.example/update.zip", "http://dl.betahub.cn/update.zip"} {
 		value, _ := url.Parse(raw)
 		if isTrustedUpdateAssetURL(value) {
 			t.Errorf("untrusted URL accepted: %s", raw)

@@ -355,5 +355,7 @@ func isTrustedUpdateAssetURL(value *url.URL) bool {
 		return false
 	}
 	host := strings.ToLower(value.Hostname())
-	return host == "sunbelife.com" || host == "ibeta-vue.oss-cn-hangzhou.aliyuncs.com"
+	return host == "sunbelife.com" || host == "ibeta-vue.oss-cn-hangzhou.aliyuncs.com" ||
+		(host == "github.com" && strings.HasPrefix(value.Path, "/"+updateRepository+"/releases/download/")) ||
+		host == "release-assets.githubusercontent.com"
 }

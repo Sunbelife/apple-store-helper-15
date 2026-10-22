@@ -91,10 +91,6 @@ function App() {
     [appInfo, setAppInfo] = useState({
       version: "",
     }),
-    [update, setUpdate] = useState(null),
-    [showUpdate, setShowUpdate] = useState(false),
-    [checkingUpdate, setCheckingUpdate] = useState(false),
-    [installingUpdate, setInstallingUpdate] = useState(false),
     [now, setNow] = useState(Date.now());
   const audio = useRef(null),
     request = useRef(0),
@@ -120,32 +116,6 @@ function App() {
       message(String(e), true);
     } finally {
       setBusy(false);
-    }
-  }
-  async function checkUpdate(notify = true) {
-    if (checkingUpdate) return;
-    setCheckingUpdate(true);
-    try {
-      const info = await call("CheckForUpdates");
-      setUpdate(info);
-      if (info.available) {
-        setShowUpdate(true);
-      } else if (notify) {
-        message(`当前 v${info.currentVersion} 已是最新版本`);
-      }
-    } catch (e) {
-      if (notify) message(String(e), true);
-    } finally {
-      setCheckingUpdate(false);
-    }
-  }
-  async function installUpdate() {
-    setInstallingUpdate(true);
-    try {
-      await call("InstallUpdate");
-    } catch (e) {
-      setInstallingUpdate(false);
-      message(String(e), true);
     }
   }
   function apply(c) {
@@ -232,7 +202,6 @@ function App() {
     call("GetAppInfo")
       .then(setAppInfo)
       .catch(() => {});
-    checkUpdate(false);
   }, []);
   useEffect(() => {
     let id = ++request.current;
@@ -382,25 +351,10 @@ function App() {
       <div className="titlebar">
         <span aria-hidden="true" />
         <button
-          className={"title-update " + (update?.available ? "available" : "")}
-          disabled={checkingUpdate}
-          onClick={() =>
-            appInfo.platform === "windows"
-              ? call("OpenDownloads")
-              : update?.available
-                ? setShowUpdate(true)
-                : checkUpdate(true)
-          }
+          className="title-update"
+          onClick={() => call("OpenDownloads").catch((e) => message(String(e), true))}
         >
-          {tr(
-            appInfo.platform === "windows"
-              ? `v${appInfo.version} · 下载更新`
-              : checkingUpdate
-                ? "正在检查更新…"
-                : update?.available
-                  ? `v${update.latestVersion} 可更新`
-                  : `${appInfo.version ? `v${appInfo.version} · ` : ""}检查更新`,
-          )}
+          {tr(`${appInfo.version ? `v${appInfo.version} · ` : ""}检查更新`)}
         </button>
       </div>
       <header className="app-header">
@@ -1067,64 +1021,6 @@ function App() {
           onClose={() => setShowGuide(false)}
           onArticle={() => action(() => call("OpenUsageArticle"))}
         />
-      )}
-      {showUpdate && update?.available && (
-        <div
-          className="overlay"
-          onClick={() => !installingUpdate && setShowUpdate(false)}
-        >
-          <section
-            className="dialog update-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="update-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="icon-button dialog-close"
-              aria-label={tr("稍后更新")}
-              disabled={installingUpdate}
-              onClick={() => setShowUpdate(false)}
-            >
-              <X size={18} />
-            </button>
-            <span className="dialog-icon update-icon">
-              <Download size={24} />
-            </span>
-            <div className="eyebrow">{tr("GitHub OTA 更新")}</div>
-            <h2 id="update-title">
-              {tr("发现 v")}
-              {tr(update.latestVersion)}
-            </h2>
-            <p>
-              {tr("当前版本 v")}
-              {tr(update.currentVersion)}
-              {tr("，更新包约")}
-              {tr(
-                Math.max(1, Math.ceil(update.downloadSize / 1024 / 1024)),
-              )}{" "}
-              MB。
-            </p>
-            <div className="update-notes">
-              {tr(update.notes || update.name || "包含功能改进和问题修复。")}
-            </div>
-            <button
-              className="button primary update-install"
-              disabled={installingUpdate}
-              onClick={installUpdate}
-            >
-              <Download size={16} />
-              {tr(
-                installingUpdate ? "正在下载、校验并安装…" : "下载、安装并重启",
-              )}
-            </button>
-            <p className="update-security">
-              {tr(
-                "安装前会校验 GitHub Release 的 SHA-256、Bundle ID、版本号和应用签名；需要写入“应用程序”时，macOS 会请求管理员授权。",
-              )}
-            </p>
-          </section>
-        </div>
       )}
       {settings && (
         <div className="overlay" onClick={() => setSettings(false)}>
