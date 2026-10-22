@@ -21,6 +21,7 @@ import {
 import "./style.css";
 import ShopRail from "./ShopRail.jsx";
 import profileAvatar from "./assets/weibo-avatar.jpg";
+import legacyAlertSound from "./assets/legacy-alert.mp3";
 import UsageGuide from "./UsageGuide.jsx";
 import StockStatistics from "./StockStatistics.jsx";
 import { trackUsage } from "./usage.js";
@@ -92,6 +93,9 @@ function App() {
       version: "",
     }),
     [now, setNow] = useState(Date.now());
+  const alertBuffer = useRef(null),
+    sounding = useRef(null),
+    soundRequest = useRef(0);
   const audio = useRef(null),
     request = useRef(0),
     refreshedAreas = useRef(new Set());
@@ -248,23 +252,41 @@ function App() {
       audio.current = new (window.AudioContext || window.webkitAudioContext)();
     audio.current.resume().catch(() => {});
   }
-  function beep() {
+  function stopSound() {
+    soundRequest.current += 1;
+    if (sounding.current) {
+      sounding.current.stop();
+      sounding.current = null;
+    }
+  }
+  async function beep() {
+    stopSound();
+    const requestID = soundRequest.current;
     try {
       readyAudio();
-      const a = audio.current;
-      [0, 0.22, 0.44].forEach((d) => {
-        const o = a.createOscillator(),
-          g = a.createGain();
-        o.frequency.value = 880;
-        g.gain.setValueAtTime(0, a.currentTime + d);
-        g.gain.linearRampToValueAtTime(0.1, a.currentTime + d + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + d + 0.18);
-        o.connect(g);
-        g.connect(a.destination);
-        o.start(a.currentTime + d);
-        o.stop(a.currentTime + d + 0.2);
-      });
+      const context = audio.current;
+      await context.resume();
+      if (!alertBuffer.current) {
+        alertBuffer.current = fetch(legacyAlertSound)
+          .then((response) => {
+            if (!response.ok) throw new Error("提示音加载失败");
+            return response.arrayBuffer();
+          })
+          .then((bytes) => context.decodeAudioData(bytes));
+      }
+      const buffer = await alertBuffer.current;
+      if (requestID !== soundRequest.current) return;
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.connect(context.destination);
+      sounding.current = source;
+      source.onended = () => {
+        source.disconnect();
+        if (sounding.current === source) sounding.current = null;
+      };
+      source.start();
     } catch (e) {
+      alertBuffer.current = null;
       message("提示音不可用：" + e, true);
     }
   }
@@ -274,7 +296,10 @@ function App() {
     beep();
     call("AlertShown", s.alert.id).catch((e) => message(String(e), true));
     const t = setInterval(beep, 5000);
-    return () => clearInterval(t);
+    return () => {
+      clearInterval(t);
+      stopSound();
+    };
   }, [alertKey]);
   const models = unique(c.products.map((p) => p.Model)),
     caps = unique(
@@ -383,6 +408,14 @@ function App() {
             onClick={() => setShowStatistics(true)}
           >
             {tr("库存统计")}
+          </button>
+          <button
+            className="text-button guide-trigger"
+            onClick={beep}
+            title={tr("试听有货提醒音")}
+          >
+            <Volume2 size={14} />
+            {tr("试听提示音")}
           </button>
           <button
             className="text-button guide-trigger"

@@ -1,6 +1,6 @@
 # 老孙抢你妹 2026
 
-Apple Store 门店取货库存监控。**正式版 v2.0.39 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [官网下载页](https://sunbelife.com/projects/qiangnimei/)。
+Apple Store 门店取货库存监控。**正式版 v2.0.40 使用 Wails 2 + React + Go。** 旧版 Fyne 使用说明见 [1.x 使用说明](docs/fyne-1.x.md)。最新安装包见 [官网下载页](https://sunbelife.com/projects/qiangnimei/)。
 
 ## 2.0 做了什么
 
@@ -216,3 +216,7 @@ OTA 继续从 GitHub Release 获取版本和更新说明，但安装包与 SHA-2
 ## v2.0.39 官网更新入口
 
 Mac 与 Windows 的「检查更新」统一打开官网下载页，提供 GitHub 和百度网盘下载选择。不再启动自动检查，也不再在 App 内下载安装更新。
+
+## v2.0.40 旧版提示音
+
+恢复旧版原始 MP3 到货提醒音，在「库存统计」右侧增加「试听提示音」。试听和实际到货提醒使用同一音源；关闭到货弹窗即停止提醒音，重复试听不会叠加播放。

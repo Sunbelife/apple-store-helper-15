@@ -320,5 +320,8 @@
   "成功上报": "Successful reports",
   "使用统计仅按日期汇总，不受地区或产品筛选影响；PV 仅含监控页与库存统计页。": "Usage totals are filtered by date only. PV counts visits to the monitor and stock statistics pages.",
   "自愿参与后，使用本机随机标识统计启动、监控页与统计页访问、开始监控和成功库存上报，并发送版本及系统类型至 sunbelife.com。无需账号，不采集硬件序列号、Bark 地址或日志，不保存 IP 地址。记录最多保留 30 天；UV 指参与统计的安装数，不代表全部用户或真实人数。": "After you agree, a random local identifier counts launches, monitor/statistics page visits, monitoring starts and successful stock reports, with app version and operating system sent to sunbelife.com. No account, hardware serial number, Bark address or logs are collected; IP addresses are not stored. Records are kept for up to 30 days. UV measures opted-in installations, not all users or unique people.",
-  "设置": "Settings"
+  "设置": "Settings",
+  "试听提示音": "Test alert sound",
+  "试听有货提醒音": "Preview the in-stock alert sound",
+  "提示音加载失败": "Failed to load alert sound"
 }
