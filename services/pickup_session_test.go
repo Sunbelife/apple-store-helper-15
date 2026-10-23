@@ -8,6 +8,7 @@ import (
 	"net/http/cookiejar"
 	"strings"
 	"testing"
+	"time"
 )
 
 type sessionRoundTrip func(*http.Request) (*http.Response, error)
@@ -45,36 +46,52 @@ func TestPickupSessionKeepsAnonymousCookiesAndReusesWarmup(t *testing.T) {
 		t.Fatalf("shop=%d pickup=%d, want one shared shop session", visits, queries)
 	}
 }
-func TestPickupSessionRefreshesAfterRejection(t *testing.T) {
-	jar, _ := cookiejar.New(nil)
+func TestPickupSessionIsolatesOneRejectionAndEscalatesTwo(t *testing.T) {
 	visits, queries := 0, 0
-	s := &pickupSession{client: &http.Client{Jar: jar, Transport: sessionRoundTrip(func(r *http.Request) (*http.Response, error) {
+	s := &pickupSession{client: &http.Client{Transport: sessionRoundTrip(func(r *http.Request) (*http.Response, error) {
 		if r.URL.Path == "/shop" {
 			visits++
 			return sessionResponse(r, 200, http.Header{}), nil
 		}
 		queries++
-		code := 200
-		if queries == 1 {
-			code = 541
+		status := 541
+		if queries >= 3 {
+			status = 200
 		}
-		return sessionResponse(r, code, http.Header{}), nil
+		return sessionResponse(r, status, http.Header{}), nil
 	})}}
-	r, err := s.do(context.Background(), "cn", "https://www.apple.com.cn/shop/retail/pickup-message")
-	if err != nil {
-		t.Fatal(err)
+	base := "https://www.apple.com.cn/shop/retail/pickup-message?store="
+	r, e := s.do(context.Background(), "cn", base+"A")
+	if e != nil {
+		t.Fatal(e)
 	}
 	r.Body.Close()
-	if !s.warmedAt.IsZero() {
-		t.Fatal("rejected session must be renewed next round")
+	if s.warmedAt.IsZero() || !s.retryAt.IsZero() {
+		t.Fatal("one rejection must not invalidate the entire region")
 	}
-	r, err = s.do(context.Background(), "cn", "https://www.apple.com.cn/shop/retail/pickup-message")
-	if err != nil {
-		t.Fatal(err)
+	if _, e = s.do(context.Background(), "cn", base+"A"); !errors.Is(e, errAppleStockLimited) || queries != 1 || visits != 1 {
+		t.Fatal("same query must cool without additional HTTP")
+	}
+	r, e = s.do(context.Background(), "cn", base+"B")
+	if e != nil {
+		t.Fatal(e)
 	}
 	r.Body.Close()
-	if visits != 2 {
-		t.Fatalf("warmup visits=%d, want 2", visits)
+	if !time.Now().Before(s.retryAt) || !s.warmedAt.IsZero() {
+		t.Fatal("two distinct failures must cool and renew the session")
+	}
+	if _, e = s.do(context.Background(), "cn", base+"C"); !errors.Is(e, errAppleStockLimited) || queries != 2 {
+		t.Fatal("region cooldown did not block network")
+	}
+	s.retryAt = time.Now().Add(-time.Second)
+	s.rejected = nil
+	r, e = s.do(context.Background(), "cn", base+"C")
+	if e != nil {
+		t.Fatal(e)
+	}
+	r.Body.Close()
+	if visits != 2 || queries != 3 {
+		t.Fatalf("expected session recovery after cooldown, visits=%d queries=%d", visits, queries)
 	}
 }
 func TestPickupWarmupRestrictionPreservesBackoffClassification(t *testing.T) {
@@ -94,5 +111,14 @@ func TestAppleSessionNeverAppliesToOtherHosts(t *testing.T) {
 	}
 	if !isApplePickupURL("cn", "https://www.apple.com.cn/shop/retail/pickup-message?store=R484") {
 		t.Fatal("official endpoint rejected")
+	}
+}
+
+func TestPickupSessionHonorsRetryAfter(t *testing.T) {
+	s := &pickupSession{}
+	before := time.Now()
+	s.coolDown(429, http.Header{"Retry-After": []string{"120"}})
+	if s.retryAt.Before(before.Add(120*time.Second)) || s.retryAt.After(before.Add(121*time.Second)) {
+		t.Fatalf("retry-after ignored: %v", s.retryAt)
 	}
 }

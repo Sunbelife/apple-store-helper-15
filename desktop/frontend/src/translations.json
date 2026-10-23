@@ -56,7 +56,6 @@
   "到货提醒配置": "Notification settings",
   "异常": "Errors",
   "清空列表": "Clear list",
-  "触发风控的门店会单独冷却；其他门店继续监控，不会被一起暂停。": "Rate-limited stores cool down individually. Other stores remain active.",
   "部分查询未获得有效库存，请查看该行原因。": "Some checks returned no valid inventory. See the reason in each row.",
   "冷却门店会在冷却期结束后自动重试；未查到不代表无货。": "Checks resume automatically after cooldown. A failed check does not mean sold out.",
   "从一家门店开始": "Start with a store",
@@ -76,7 +75,6 @@
   "正在查询": "Checking",
   "等待下一轮": "Waiting for next check",
   "发现有货，已暂停": "Stock found; paused",
-  "部分门店冷却中，其他门店继续监控": "Some stores cooling down; others remain active",
   "查看原因": "View reason",
   "移除 ": "Remove ",
   "没有匹配的监控项": "No matching monitors",
@@ -142,7 +140,6 @@
   "开始监控，留意更新时间": "Start and watch the check time",
   "点击「开始监控」，保持电脑运行、联网并避免休眠。列表第一列是更新时间，第二列是库存状态。等待或查询中不代表无货；「暂无库存」只代表该次检查的结果。需要修改配置时先暂停。": "Click Start monitoring. Keep your computer awake and online. The first column shows the check time, followed by availability. Waiting and Checking do not mean sold out. Out of stock applies only to that check. Pause before editing.",
   "触发风控时等待自动重试": "Wait during cooldown",
-  "看到「触发风控，冷却中，稍后再尝试」时，该门店会按 1、2、4、5 分钟单独冷却，其他门店继续监控；成功后恢复正常频率。查询失败、冷却中或未返回库存都不等于无货，不要反复重启来催促查询。": "Rate-limited stores cool down for 1, 2, 4 and then 5 minutes while others continue. A successful check restores the usual frequency. Errors and cooldown do not mean sold out. Restarting repeatedly does not speed up checks.",
   "有货后，在购物袋里选择取货": "Choose pickup at checkout",
   "发现有货后会响铃、弹窗，打开对应地区的苹果购物袋，并暂停监控。在浏览器点击「结账」，按官网提示登录或游客结账，选择「我要取货」，再手动选择提醒中的门店、可用时段并填写取货资料，核对后自行付款。": "When stock is found, a sound and dialog alert you, the regional bag opens and monitoring pauses. Click Check Out, sign in or use guest checkout, choose pickup and select the notified store and an available time. Complete pickup details, review and pay yourself.",
   "遇到空购物袋或库存变化": "Empty bag or changed stock",
@@ -323,5 +320,10 @@
   "设置": "Settings",
   "试听提示音": "Test alert sound",
   "试听有货提醒音": "Preview the in-stock alert sound",
-  "提示音加载失败": "Failed to load alert sound"
+  "提示音加载失败": "Failed to load alert sound",
+  "该地区全部门店暂停请求并冷却；其他地区继续监控。": "All stores in this region pause requests and cool down; other regions remain active.",
+  "看到「触发风控，冷却中，稍后再尝试」时，同地区门店会按 1、2、4、5 分钟统一冷却，其他地区继续监控；苹果要求更久等待时会延长冷却。成功后恢复正常频率。查询失败、冷却中或未返回库存都不等于无货，不要反复重启来催促查询。": "When rate limited, all stores in the same region cool down together for 1, 2, 4, then 5 minutes. Other regions remain active. Apple Retry-After can extend the wait. Successful requests restore normal polling. Errors, cooldown and missing inventory do not mean sold out. Repeated restarts do not speed up checks.",
+  "部分地区冷却中，其他地区继续监控": "Some regions cooling down; other regions remain active",
+  "单次异常只冷却该查询；多个查询连续受限时才冷却该地区。": "A single rejection cools only that query; multiple rejected queries trigger regional cooldown.",
+  "看到「触发风控，冷却中，稍后再尝试」时，首次仅冷却失败的查询，多个不同查询连续受限才升级为地区冷却；连续受限按 1、2、4、5 分钟退避；苹果要求更久等待时会延长冷却。成功后恢复正常频率。查询失败、冷却中或未返回库存都不等于无货，不要反复重启来催促查询。": "A single 541 cools only that query. Multiple distinct rejected queries or explicit rate limiting trigger regional cooldown. Repeated failures back off for 1, 2, 4 and then 5 minutes, extended by valid server Retry-After. A successful request restores normal polling. Errors do not mean sold out; repeated restarts do not speed up checks."
 }

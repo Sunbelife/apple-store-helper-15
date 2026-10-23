@@ -20,13 +20,15 @@ import (
 )
 
 type Target struct {
-	ID        string        `json:"id"`
-	Area      model.Area    `json:"area"`
-	Store     model.Store   `json:"store"`
-	Product   model.Product `json:"product"`
-	Status    string        `json:"status"`
-	CheckedAt string        `json:"checkedAt"`
-	Detail    string        `json:"detail"`
+	ID            string        `json:"id"`
+	Area          model.Area    `json:"area"`
+	Store         model.Store   `json:"store"`
+	Product       model.Product `json:"product"`
+	Status        string        `json:"status"`
+	CheckedAt     string        `json:"checkedAt"`
+	Detail        string        `json:"detail"`
+	LastStatus    string        `json:"lastStatus,omitempty"`
+	LastCheckedAt string        `json:"lastCheckedAt,omitempty"`
 }
 type Entry struct {
 	Time    string `json:"time"`
@@ -54,6 +56,7 @@ type Desktop struct {
 	onStock          func(context.Context, uint64, Target)
 	query            func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error)
 	queryErrorStatus func(error) string
+	regionCooling    func(string) bool
 	updater          *githubUpdater
 	mu               sync.Mutex
 	ctx              context.Context
@@ -376,6 +379,13 @@ func (a *Desktop) update(id uint64, key, status, detail string) bool {
 	}
 	for i := range a.state.Items {
 		if a.state.Items[i].ID == key {
+			item := &a.state.Items[i]
+			if status == services.StatusInStock || status == services.StatusOutStock {
+				item.LastStatus = status
+				item.LastCheckedAt = time.Now().Format(time.RFC3339)
+			} else if status != services.StatusQuerying && item.LastStatus != "" && detail != "" {
+				detail += fmt.Sprintf("；上次有效结果：%s（%s）", item.LastStatus, item.LastCheckedAt)
+			}
 			a.state.Items[i].Status = status
 			a.state.Items[i].Detail = detail
 			if status != services.StatusQuerying {
@@ -443,11 +453,15 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 			}
 			group := groups[key]
 			products := []model.Product{}
+			requestedSKUs := map[string]bool{}
 			complete := true
 			for _, t := range group {
-				products = append(products, t.Product)
 				if _, ok := known[t.ID]; !ok {
 					complete = false
+					if !requestedSKUs[t.Product.Code] {
+						products = append(products, t.Product)
+						requestedSKUs[t.Product.Code] = true
+					}
 				}
 			}
 			if complete {
@@ -474,8 +488,35 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 				if status == services.StatusLimited || status == services.StatusVerify {
 					previous := cooldowns[key].backoff
 					delay := services.StockRetryBackoff(previous, true)
-					cooldowns[key] = storeCooldown{retryAt: time.Now().Add(delay), backoff: delay}
-					detail = fmt.Sprintf("%s；仅该门店冷却 %d 秒，其他门店继续监控", detail, int(delay.Seconds()))
+					nextBackoff := delay
+					var pending *services.PickupCooldown
+					if errors.As(err, &pending) {
+						delay = time.Until(pending.Until)
+						if delay < 0 {
+							delay = 0
+						}
+						nextBackoff = previous
+					}
+
+					broad := services.PickupRegionCooling(group[0].Area.ShortCode)
+					if a.regionCooling != nil {
+						broad = a.regionCooling(group[0].Area.ShortCode)
+					}
+
+					cooldown := storeCooldown{retryAt: time.Now().Add(delay), backoff: nextBackoff}
+					if broad {
+						detail = fmt.Sprintf("%s；多个查询受限，该地区冷却 %d 秒", detail, int(delay.Seconds()))
+					} else {
+						detail = fmt.Sprintf("%s；本次查询冷却 %d 秒，其他门店继续监控", detail, int(delay.Seconds()))
+					}
+					for _, target := range items {
+						if target.Area.ShortCode == group[0].Area.ShortCode && (broad || monitorGroupKey(target) == key) {
+							cooldowns[monitorGroupKey(target)] = cooldown
+							if _, checked := known[target.ID]; !checked && monitorGroupKey(target) != key {
+								a.update(id, target.ID, status, detail)
+							}
+						}
+					}
 				}
 				for _, t := range group {
 					a.update(id, t.ID, status, detail)
@@ -565,10 +606,10 @@ func (a *Desktop) run(ctx context.Context, id uint64) {
 		if cooling == len(keys) && cooling > 0 {
 			a.state.Phase = services.StatusLimited
 		} else if cooling > 0 {
-			a.state.Phase = "部分门店冷却中，其他门店继续监控"
+			a.state.Phase = "部分地区冷却中，其他地区继续监控"
 		}
 		if cooling > 0 {
-			a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 个门店单独冷却，%d 秒后继续", requests, cooling, int(delay.Seconds())))
+			a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 个门店所在地区冷却，%d 秒后继续", requests, cooling, int(delay.Seconds())))
 		} else {
 			a.logLocked(fmt.Sprintf("本轮发送 %d 次请求，%d 秒后重试", requests, int(delay.Seconds())))
 		}

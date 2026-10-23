@@ -620,6 +620,34 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 		return skus, fmt.Errorf("stock endpoint returned invalid JSON")
 	}
 
+	// HTTP 200 can still contain a business error and no inventory at all.
+	// Do not turn an invalid location into out-of-stock or expose raw JSON.
+	if len(gjson.GetBytes(body, "body.stores").Array()) == 0 &&
+		len(gjson.GetBytes(body, "body.content.pickupMessage.stores").Array()) == 0 &&
+		!gjson.GetBytes(body, "body.content.pickupMessage.pickupEligibility").Exists() {
+		reason := ""
+		for _, path := range []string{"body.errorMessage", "body.content.pickupMessage.errorMessage", "errorMessage"} {
+			if candidate := strings.TrimSpace(gjson.GetBytes(body, path).String()); candidate != "" {
+				reason = candidate
+				break
+			}
+		}
+		if reason != "" {
+			lower := strings.ToLower(reason)
+			locationError := false
+			for _, term := range []string{"省/市", "邮政编码", "郵政編碼", "郵便番号", "우편", "postal code", "zip code", "code postal", "postleitzahl", "código postal", "codice postale"} {
+				if strings.Contains(lower, term) {
+					locationError = true
+					break
+				}
+			}
+			if locationError {
+				return skus, fmt.Errorf("%w：%s", errPickupLocationInvalid, reason)
+			}
+			return skus, fmt.Errorf("Apple 库存查询失败：%s", reason)
+		}
+	}
+
 	// 解析响应JSON
 	// 中国地区的响应格式: body.stores[].partsAvailability
 	// 其他地区的响应格式: body.content.pickupMessage.stores 或 body.content.pickupMessage.pickupEligibility
@@ -719,7 +747,7 @@ func parseStockResponse(body []byte, skUrl string) (map[string]bool, error) {
 				})
 			} else {
 				// 如果没有找到任何已知格式，打印响应预览帮助调试
-				return skus, fmt.Errorf("unknown stock response format: %s", body[:min(200, len(body))])
+				return skus, fmt.Errorf("Apple 返回的响应未包含可识别的门店库存，请稍后重试")
 			}
 		}
 	}

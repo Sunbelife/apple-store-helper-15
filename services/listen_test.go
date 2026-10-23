@@ -237,3 +237,35 @@ func TestHongKongAppleTVScheduledPickup(t *testing.T) {
 		}
 	}
 }
+
+func TestPickupLocationErrorIsNotInventory(t *testing.T) {
+	body := []byte(`{"head":{"status":"200"},"body":{"errorMessage":"请输入有效的省/市名称或邮政编码。"}}`)
+	stock, err := parseStockResponse(body, "https://www.apple.com.cn/shop/retail/pickup-message?location=610000")
+	if !errors.Is(err, errPickupLocationInvalid) || len(stock) != 0 {
+		t.Fatalf("invalid location must be an explicit error without inventory: stock=%v err=%v", stock, err)
+	}
+	if StockQueryErrorStatus(err) != StatusError {
+		t.Fatal("location error must not be classified as no stock or risk control")
+	}
+}
+
+func TestPickupBusinessErrorsAcrossRegions(t *testing.T) {
+	for _, body := range []string{
+		`{"body":{"errorMessage":"請輸入有效的郵政編碼"}}`,
+		`{"body":{"content":{"pickupMessage":{"errorMessage":"Enter a valid postal code"}}}}`,
+		`{"errorMessage":"有効な郵便番号を入力してください"}`,
+		`{"body":{"errorMessage":"Gib eine gültige Postleitzahl ein"}}`,
+	} {
+		stock, err := parseStockResponse([]byte(body), "https://www.apple.com/shop/retail/pickup-message")
+		if !errors.Is(err, errPickupLocationInvalid) || len(stock) != 0 {
+			t.Errorf("expected location error without stock: %v %v", stock, err)
+		}
+	}
+	stock, err := parseStockResponse([]byte(`{"body":{"errorMessage":"Enter a valid postal code","stores":[{"storeNumber":"R502","partsAvailability":{"SKU":{"pickupDisplay":"available"}}}]}}`), "")
+	if err != nil || !stock["R502.SKU"] {
+		t.Fatalf("valid store inventory must survive advisory error text: %v %v", stock, err)
+	}
+	if getPostalCodeForLocation("成都") != "610021" {
+		t.Fatal("directory refresh still queries rejected Chengdu location")
+	}
+}

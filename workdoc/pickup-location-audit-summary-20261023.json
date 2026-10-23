@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "mainland_store_total": 49,
+  "mainland_stores_with_successful_response": 25,
+  "successful_queries": 13,
+  "audit_complete": false,
+  "blocked_by": "Apple HTTP541; stopped live audit; untested locations not classified as invalid",
+  "source_changes": [
+    "correct known Chengdu request postal code",
+    "correct Chengdu directory-refresh postal code",
+    "trim location/store whitespace",
+    "avoid empty Japan location",
+    "classify localized location errors without stock/risk misclassification",
+    "replace unknown JSON dump with readable Chinese error"
+  ],
+  "release_published": false
+}

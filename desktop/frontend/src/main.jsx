@@ -673,7 +673,7 @@ function App() {
                   (t) =>
                     t.status === COOLDOWN_STATUS || t.status === "库存接口受限",
                 )
-                  ? "触发风控的门店会单独冷却；其他门店继续监控，不会被一起暂停。"
+                  ? "单次异常只冷却该查询；多个查询连续受限时才冷却该地区。"
                   : "部分查询未获得有效库存，请查看该行原因。",
               )}
               <span className="warning-detail">

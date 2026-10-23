@@ -116,45 +116,57 @@ func TestOneStoreErrorDoesNotOverwriteSuccessfulStore(t *testing.T) {
 	}
 }
 
-func TestLimitedStoreDoesNotStopOtherStores(t *testing.T) {
+func TestLimitedAreaStopsSameAreaButNotOtherAreas(t *testing.T) {
 	a := NewDesktop()
 	a.ctx = context.Background()
-	a.state.Items = []Target{testTarget("R484"), testTarget("R639")}
+	a.regionCooling = func(string) bool { return true }
+	foreign := testTarget("R428")
+	foreign.Area = model.Area{ShortCode: "hk", Title: "香港"}
+	foreign.ID = targetID("hk", "R428", foreign.Product.Code)
+	a.state.Items = []Target{testTarget("R484"), testTarget("R639"), foreign}
 	limitedErr := errors.New("test risk control")
-	a.queryErrorStatus = func(err error) string {
-		if errors.Is(err, limitedErr) {
-			return services.StatusLimited
-		}
-		return services.StatusError
-	}
-	requested := make(chan string, 2)
-	a.query = func(_ context.Context, _ model.Area, s model.Store, _ []model.Product) (map[string]bool, error) {
-		requested <- s.StoreNumber
-		if s.StoreNumber == "R484" {
+	a.queryErrorStatus = func(error) string { return services.StatusLimited }
+	requested := make(chan string, 3)
+	a.query = func(_ context.Context, area model.Area, store model.Store, _ []model.Product) (map[string]bool, error) {
+		requested <- area.ShortCode + ":" + store.StoreNumber
+		if area.ShortCode == "cn" {
 			return nil, limitedErr
 		}
-		return map[string]bool{"R639.MK2P4CH/A": false}, nil
+		return map[string]bool{"R428.MK2P4CH/A": false}, nil
 	}
 	if err := a.Start(); err != nil {
 		t.Fatal(err)
 	}
 	defer a.Pause()
-	s := awaitState(t, a, func(s State) bool {
-		return s.Items[0].Status == services.StatusLimited &&
-			s.Items[1].Status == services.StatusOutStock &&
-			s.Phase == "部分门店冷却中，其他门店继续监控"
+	state := awaitState(t, a, func(s State) bool {
+		return s.Items[2].Status == services.StatusOutStock && s.Phase == "部分地区冷却中，其他地区继续监控"
 	})
-	if s.Phase != "部分门店冷却中，其他门店继续监控" {
-		t.Fatalf("unexpected phase after partial risk control: %q", s.Phase)
+	if state.Items[0].Status != services.StatusLimited || state.Items[1].Status != services.StatusLimited {
+		t.Fatalf("same area not cooled: %+v", state.Items)
 	}
 	if len(requested) != 2 {
-		t.Fatalf("sent %d requests, want both stores queried", len(requested))
+		t.Fatalf("sent %d requests, want one per area", len(requested))
 	}
-	if first, second := <-requested, <-requested; first != "R484" || second != "R639" {
-		t.Fatalf("query order = %s, %s; want limited store followed by healthy store", first, second)
+	if first, second := <-requested, <-requested; first != "cn:R484" || second != "hk:R428" {
+		t.Fatalf("unexpected requests %s %s", first, second)
 	}
-	if detail := s.Items[0].Detail; !strings.Contains(detail, "仅该门店冷却") {
-		t.Fatalf("limited store detail does not explain isolation: %q", detail)
+	if !strings.Contains(state.Items[0].Detail, "该地区冷却") {
+		t.Fatal("missing area cooldown explanation")
+	}
+}
+
+func TestQueryFailureKeepsLastSuccessfulResult(t *testing.T) {
+	a := NewDesktop()
+	target := testTarget("R484")
+	a.state.Items = []Target{target}
+	a.state.Running = true
+	a.update(a.generation, target.ID, services.StatusOutStock, "")
+	saved := a.GetState().Items[0]
+	a.update(a.generation, target.ID, services.StatusQuerying, "")
+	a.update(a.generation, target.ID, services.StatusLimited, "cooldown")
+	got := a.GetState().Items[0]
+	if got.LastStatus != services.StatusOutStock || got.LastCheckedAt != saved.LastCheckedAt || !strings.Contains(got.Detail, "上次有效结果") {
+		t.Fatalf("previous result lost: %+v", got)
 	}
 }
 
@@ -179,5 +191,46 @@ func TestScheduledPickupDoesNotTriggerStockAlert(t *testing.T) {
 	case <-alerts:
 		t.Fatal("scheduled pickup triggered stock alert")
 	default:
+	}
+}
+
+func TestSingleLimitedQueryLeavesOtherStoresActive(t *testing.T) {
+	a := NewDesktop()
+	a.ctx = context.Background()
+	a.regionCooling = func(string) bool { return false }
+	a.state.Items = []Target{testTarget("R484"), testTarget("R639")}
+	a.queryErrorStatus = func(error) string { return services.StatusLimited }
+	a.query = func(_ context.Context, _ model.Area, store model.Store, _ []model.Product) (map[string]bool, error) {
+		if store.StoreNumber == "R484" {
+			return nil, errors.New("one query rejected")
+		}
+		return map[string]bool{"R639.MK2P4CH/A": false}, nil
+	}
+	if e := a.Start(); e != nil {
+		t.Fatal(e)
+	}
+	defer a.Pause()
+	state := awaitState(t, a, func(s State) bool { return s.Items[1].Status == services.StatusOutStock })
+	if state.Items[0].Status != services.StatusLimited {
+		t.Fatal("failed query must still cool")
+	}
+}
+
+func TestExistingSessionCooldownDoesNotAddAnotherBackoff(t *testing.T) {
+	a := NewDesktop()
+	a.ctx = context.Background()
+	a.regionCooling = func(string) bool { return false }
+	a.state.Items = []Target{testTarget("R484")}
+	until := time.Now().Add(15 * time.Second)
+	a.query = func(context.Context, model.Area, model.Store, []model.Product) (map[string]bool, error) {
+		return nil, &services.PickupCooldown{Until: until}
+	}
+	if e := a.Start(); e != nil {
+		t.Fatal(e)
+	}
+	defer a.Pause()
+	state := awaitState(t, a, func(s State) bool { return s.NextAt > 0 })
+	if state.NextAt > until.Add(time.Second).UnixMilli() {
+		t.Fatalf("cached cooldown incorrectly increased backoff: next=%d until=%d", state.NextAt, until.UnixMilli())
 	}
 }

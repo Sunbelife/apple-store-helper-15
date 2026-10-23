@@ -89,13 +89,21 @@ func ProductPurchaseURL(areaCode string, productType string, partNumber string, 
 // pickupLocationQuery follows the website's postal-code search in mainland China.
 // Some valid retail store IDs return HTTP 541 when sent as store=.
 func pickupLocationQuery(areaCode, storeNumber, postalCode string) string {
+	postalCode = strings.TrimSpace(postalCode)
+	storeNumber = strings.TrimSpace(storeNumber)
+	// Apple's catalog uses the city-wide 610000 for Chengdu, but its pickup
+	// endpoint rejects it. 610021 returns both R502 and R580 (verified 2026-10-23).
+	// Apply at request time so saved monitors and refreshed catalogs also benefit.
+	if areaCode == "cn" && postalCode == "610000" && (storeNumber == "R502" || storeNumber == "R580") {
+		postalCode = "610021"
+	}
 	validPostal := len(postalCode) == 6
 	for _, c := range postalCode {
 		if c < '0' || c > '9' {
 			validPostal = false
 		}
 	}
-	if areaCode == "jp" || (areaCode == "cn" && validPostal) {
+	if (areaCode == "jp" && postalCode != "") || (areaCode == "cn" && validPostal) {
 		return "location=" + url.QueryEscape(postalCode)
 	}
 	return "store=" + url.QueryEscape(storeNumber)

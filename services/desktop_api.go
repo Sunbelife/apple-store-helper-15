@@ -32,6 +32,8 @@ func QueryRetailPickup(ctx context.Context, area model.Area, store model.Store, 
 	return service.getSkuByLinkContext(ctx, link)
 }
 
+var errPickupLocationInvalid = errors.New("Apple 不接受该查询地点，请更新门店信息后重试")
+
 var errPickupUnsupported = errors.New("该地区 Apple 官网未开放门店取货查询")
 
 var errPickupNotOpen = errors.New("Apple 尚未开放该产品的门店取货，请稍后查看；不是无货或风控")
